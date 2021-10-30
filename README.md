@@ -13,7 +13,7 @@
 使用service account讓Github Actions將專案部署至Cloud Run上。
 - docker image path: `asia-east1-docker.pkg.dev/nth-weft-328504/backend-repo/application-backend`
 - cloud run service name: `application-backend`
-- cloud run service url: [ https://backend-repo-mhkzpmkvca-de.a.run.app](https://backend-repo-mhkzpmkvca-de.a.run.app)
+- cloud run service url: [ https://application-backend-mhkzpmkvca-de.a.run.app](https://application-backend-mhkzpmkvca-de.a.run.app)
 - cloud run url access permission: `allUsers`
 
 ### Github Actions
