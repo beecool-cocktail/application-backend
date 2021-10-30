@@ -1,0 +1,10 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '--build-arg=REVISION_ID=${REVISION_ID}'
+      - '--tag=asia-east1-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_IMAGE_NAME}:${_TAG}'
+      - '--file=./Dockerfile'
+      - '.'
+images:
+  - 'asia-east1-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_IMAGE_NAME}:${_TAG}'
