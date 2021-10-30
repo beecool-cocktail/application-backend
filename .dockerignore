@@ -1,0 +1,10 @@
+docker-compose*
+Dockerfile*
+LICENSE
+cloudbuild.yaml
+scripts/
+README.md
+.dockerignore
+.git/
+.github/
+.gitignore
