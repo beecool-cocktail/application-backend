@@ -1,0 +1,38 @@
+{
+  "Version":"1.0",
+  "Logger":{
+    "Path": "",
+    "Level": "debug"
+  },
+  "DB":{
+    "MainDB":{
+      "DriverName":"mysql",
+      "User":"root",
+      "Password":"123456",
+      "Address":"db:3306",
+      "DBName":"whispering_conner",
+      "SetConnMaxIdleTime":5,
+      "SetMaxIdleConns": 100,
+      "SetMaxOpenConns": 100
+    }
+  },
+  "HTTP":{
+    "Address":"",
+    "Port":"8080",
+    "IsTLS":false,
+    "CertificateFile":"",
+    "KeyFile":""
+  },
+  "Redis":{
+    "Network":"tcp",
+    "Address":"redis:6379",
+    "Password":"",
+    "DB":0,
+    "DialTimeoutSecond":5,
+    "ReadTimeoutSecond":3,
+    "WriteTimeoutSecond":3,
+    "PoolSize":10
+  },
+  "Others": {
+  }
+}
