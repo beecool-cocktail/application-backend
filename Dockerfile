@@ -28,6 +28,6 @@ COPY --from=build /app/ ./
 
 EXPOSE 8080
 
-CMD ["./main"]
+CMD ["./main", "--config", "serviceConfig.json"]
 
 

@@ -1,0 +1,37 @@
+version: '3'
+services:
+  db:
+    image: mysql:${MYSQL_VERSION}
+    container_name: whispering-mysql
+    ports:
+      - "${MYSQL_PORT}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: whispering_conner
+    restart: always
+    volumes:
+      - ${DATA_DIR}/mysql:/var/lib/mysql
+      - ${MYSQL_CONFIG}:/etc/mysql/conf.d/mysql.cnf
+
+  redis:
+    image: redis:${REDIS_VERSION}-alpine
+    container_name: whispering-redis
+    ports:
+      - "${REDIS_PORT}:6379"
+    restart: always
+    volumes:
+      - ${DATA_DIR}/redis:/var/lib/mysql
+#      - ${REDIS_CONFIG}:/etc/redis.conf
+
+  server:
+    build:
+      context: .
+    container_name: whispering-server
+    stdin_open: true
+    tty: true
+    restart: always
+    ports:
+      - "${ADMIN_PORT}:8080"
+    depends_on:
+      - redis
+      - db
