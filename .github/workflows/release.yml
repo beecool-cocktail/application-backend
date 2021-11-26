@@ -7,6 +7,7 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  CONFIG_FILE: serviceConfigDev.json
   REPO_NAME: backend-repo
   IMAGE_NAME: application-backend
   RUN_REGION: asia-east1
@@ -36,7 +37,7 @@ jobs:
       run: |-
         gcloud builds submit \
           --config ./cloudbuild.yml \
-          --substitutions=REVISION_ID=${GITHUB_SHA},_REPO_NAME=${REPO_NAME},_IMAGE_NAME=${IMAGE_NAME},_TAG=${TAG}
+          --substitutions=REVISION_ID=${GITHUB_SHA},_CONFIG_FILE={CONFIG_FILE},_REPO_NAME=${REPO_NAME},_IMAGE_NAME=${IMAGE_NAME},_TAG=${TAG}
 
     # Deploy image to Cloud Run
     - name: Deploy

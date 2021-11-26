@@ -3,6 +3,7 @@ steps:
     args:
       - 'build'
       - '--build-arg=REVISION_ID=${REVISION_ID}'
+      - '--build-arg=CONFIG_FILE=${_CONFIG_FILE}'
       - '--tag=asia-east1-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_IMAGE_NAME}:${_TAG}'
       - '--file=./Dockerfile'
       - '.'
