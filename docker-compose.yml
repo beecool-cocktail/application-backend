@@ -10,7 +10,7 @@ services:
       MYSQL_DATABASE: whispering_conner
     restart: always
     volumes:
-      - ${DATA_DIR}/mysql:/var/lib/mysql
+      - ${DATA_DIR}/mysql_data:/var/lib/mysql
       - ${MYSQL_CONFIG}:/etc/mysql/conf.d/mysql.cnf
 
   redis:
@@ -20,8 +20,8 @@ services:
       - "${REDIS_PORT}:6379"
     restart: always
     volumes:
-      - ${DATA_DIR}/redis:/var/lib/mysql
-#      - ${REDIS_CONFIG}:/etc/redis.conf
+      - ${DATA_DIR}/redis_data/redis:/data
+      - ${REDIS_CONFIG}:/etc/redis.conf
 
   server:
     build:
@@ -31,7 +31,8 @@ services:
     tty: true
     restart: always
     ports:
-      - "${ADMIN_PORT}:8080"
+      - "${APPLICATION_PORT}:8080"
+    command: ./wait-for-it.sh db:3306 -- ./main --config serviceConfig.json
     depends_on:
       - redis
       - db

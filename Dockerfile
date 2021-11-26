@@ -21,13 +21,22 @@ FROM alpine
 WORKDIR /app
 
 ARG REVISION_ID
+ARG CONFIG_FILE
 
 LABEL revision_id=${REVISION_ID}
 
-COPY --from=build /app/ ./
+COPY --from=build /app/main ./
+COPY --from=build /app/serviceConfig.json ./
+COPY --from=build /app/wait-for-it.sh ./
+
+RUN apk update && \
+    apk upgrade && \
+    apk add --no-cache bash
+
+RUN chmod +x ./wait-for-it.sh
 
 EXPOSE 8080
 
-CMD ["./main", "--config", "serviceConfig.json"]
+CMD ["./wait-for-it.sh", "db:3306", "--", "./main", "--config", "serviceConfigDev.json"]
 
 
