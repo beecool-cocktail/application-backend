@@ -24,8 +24,7 @@ services:
       - ${REDIS_CONFIG}:/etc/redis.conf
 
   server:
-    build:
-      context: .
+    image: blawhi2435/whispering-corner:${APPLICATION_VERSION}
     container_name: whispering-server
     stdin_open: true
     tty: true

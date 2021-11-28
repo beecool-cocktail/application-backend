@@ -21,7 +21,6 @@ FROM alpine
 WORKDIR /app
 
 ARG REVISION_ID
-ARG CONFIG_FILE
 
 LABEL revision_id=${REVISION_ID}
 
@@ -37,6 +36,6 @@ RUN chmod +x ./wait-for-it.sh
 
 EXPOSE 8080
 
-CMD ["./wait-for-it.sh", "db:3306", "--", "./main", "--config", "serviceConfigDev.json"]
+CMD ["./wait-for-it.sh", "db:3306", "--", "./main", "--config", "serviceConfig.json"]
 
 
