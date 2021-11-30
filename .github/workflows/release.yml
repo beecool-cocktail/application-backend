@@ -24,16 +24,13 @@ jobs:
         with:
           go-version: 1.17
 
-      - name: Build
-        run: go build -v ./...
-
       - name: Test
         run: go test -v ./...
 
       - name: Publish to Registry
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          name: cgservice/office
+          name: blawhi2435/whispering-corner
           username: ${{ secrets.DOCKER_USER_NAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           dockerfile: Dockerfile
