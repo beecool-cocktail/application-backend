@@ -14,7 +14,7 @@ services:
     restart: always
     volumes:
       - ${DATA_DIR}/mysql_data:/var/lib/mysql
-      - ${MYSQL_CONFIG}:/etc/mysql/conf.d/mysql.cnf
+      - ${MYSQL_CONFIG}:/etc/mysql/my.cnf
 
   redis:
     image: redis:${REDIS_VERSION}

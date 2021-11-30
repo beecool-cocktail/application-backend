@@ -19,3 +19,5 @@ main
 # production
 /build
 /script
+/mysql_data
+/redis_data
