@@ -1,9 +1,8 @@
 name: deploy to Cloud Run
 
 on:
-  create:
-    tags:
-    - v*
+  push:
+    branches: [ deploy-to-compute-engine ]
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
@@ -18,33 +17,45 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    # Setup gcloud CLI
-    - uses: google-github-actions/setup-gcloud@master
-      with:
-        service_account_email: ${{ secrets.GCP_SA_EMAIL }}
-        service_account_key: ${{ secrets.GCP_SA_KEY }}
-        project_id: ${{ secrets.GCP_PROJECT_ID }}
-        export_default_credentials: true
-        
-    # Print gcloud info
-    - name: Info
-      run: gcloud info
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
 
-    # Build and push image to Google Artifact Registry
-    - name: Build
-      run: |-
-        gcloud builds submit \
-          --config ./cloudbuild.yml \
-          --substitutions=REVISION_ID=${GITHUB_SHA},_CONFIG_FILE={CONFIG_FILE},_REPO_NAME=${REPO_NAME},_IMAGE_NAME=${IMAGE_NAME},_TAG=${TAG}
+      - name: Build
+        run: go build -v ./...
 
-    # Deploy image to Cloud Run
-    - name: Deploy
-      run: |-
-        gcloud run deploy "${IMAGE_NAME}" \
-          --region "$RUN_REGION" \
-          --image "asia-east1-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:${TAG}" \
-          --platform "managed" \
-          --allow-unauthenticated
-          
+      - name: Test
+        run: go test -v ./...
+
+      - name: Publish to Registry
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: cgservice/office
+          username: ${{ secrets.DOCKER_USER_NAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          dockerfile: Dockerfile
+
+      - name: copy file via ssh key
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER_NAME }}
+          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "docker-compose.yml"
+          target: "~/backend-application"
+
+      - name: executing remote ssh commands via ssh key
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER_NAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd backend-application
+            docker-compose pull
+            docker-compose up -d
