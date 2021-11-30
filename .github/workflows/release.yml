@@ -54,5 +54,6 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd backend-application
+            echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USER_NAME }} --password-stdin
             docker-compose pull
             docker-compose up -d
