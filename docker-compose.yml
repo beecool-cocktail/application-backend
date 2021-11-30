@@ -14,7 +14,7 @@ services:
       - ${MYSQL_CONFIG}:/etc/mysql/conf.d/mysql.cnf
 
   redis:
-    image: redis:${REDIS_VERSION}-alpine
+    image: redis:${REDIS_VERSION}
     container_name: whispering-redis
     ports:
       - "${REDIS_PORT}:6379"
