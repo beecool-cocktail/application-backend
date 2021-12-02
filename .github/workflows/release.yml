@@ -1,8 +1,9 @@
 name: deploy to Cloud Run
 
 on:
-  push:
-    branches: [ deploy-to-compute-engine ]
+  create:
+    tags:
+      - v*
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
