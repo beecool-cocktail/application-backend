@@ -51,3 +51,23 @@ func NewService(fileName string) (*Service, error) {
 
 	return service, nil
 }
+
+func NewDBService(fileName string) (*Service, error) {
+	conf, err := newConfigure(fileName)
+	if err != nil {
+		return nil, err
+	}
+
+	db, err := newMySQL(conf)
+	if err != nil {
+		return nil, err
+	}
+
+
+	service := &Service{
+		Configure: conf,
+		DB:        db,
+	}
+
+	return service, nil
+}
