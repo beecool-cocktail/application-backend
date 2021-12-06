@@ -1,0 +1,32 @@
+name: update docker hub
+
+on:
+  push:
+    branches: [ develop ]
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  CONFIG_FILE: serviceConfigDev.json
+
+jobs:
+
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+
+      - name: Test
+        run: go test -v ./...
+
+      - name: Publish to Registry
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: blawhi2435/whispering-corner
+          username: ${{ secrets.DOCKER_USER_NAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          dockerfile: Dockerfile
