@@ -2,7 +2,7 @@ name: update docker hub
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ master ]
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
