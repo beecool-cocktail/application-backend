@@ -6,14 +6,15 @@ import (
 )
 
 type User struct {
-	ID                  int64     `gorm:"type:bigint(20) NOT NULL;primary_key;"`
-	Account             string    `gorm:"type:varchar(20) NOT NULL;index:idx_account"`
-	Password            string    `gorm:"type:varchar(100) NOT NULL"`
-	Status              int       `gorm:"type:tinyint(1) NOT NULL DEFAULT 0"`
-	Name                string    `gorm:"type:varchar(32) NOT NULL DEFAULT ''"`
-	Email               string    `gorm:"type:varchar(64) NOT NULL DEFAULT ''"`
-	Remark              string    `gorm:"type:varchar(64) NOT NULL DEFAULT ''"`
-	CreatedDate         time.Time `gorm:"type:timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;index:idx_date"`
+	ID          int64     `gorm:"type:bigint(64) NOT NULL;primary_key;auto_increment"`
+	UserID      int64     `gorm:"type:bigint(64) NOT NULL;uniqueIndex:idx_user_id"`
+	Account     string    `gorm:"type:varchar(20) NOT NULL;uniqueIndex:idx_account"`
+	Password    string    `gorm:"type:varchar(100) NOT NULL DEFAULT ''"`
+	Status      int       `gorm:"type:tinyint(1) NOT NULL DEFAULT 0"`
+	Name        string    `gorm:"type:varchar(32) NOT NULL DEFAULT ''"`
+	Email       string    `gorm:"type:varchar(64) NOT NULL DEFAULT ''"`
+	Remark      string    `gorm:"type:varchar(64) NOT NULL DEFAULT ''"`
+	CreatedDate time.Time `gorm:"type:timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;index:idx_date"`
 }
 
 type UserCache struct {
@@ -27,6 +28,7 @@ type UserCache struct {
 
 type UserMySQLRepository interface {
 	Store(ctx context.Context, d *User) error
+	QueryById(ctx context.Context, id int64) (*User, error)
 }
 
 type UserRedisRepository interface {
@@ -34,5 +36,4 @@ type UserRedisRepository interface {
 }
 
 type UserUsecase interface {
-	Register(ctx context.Context, d *User, r *UserCache) (int64, string, error)
 }

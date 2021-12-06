@@ -34,5 +34,14 @@
     "PoolSize":10
   },
   "Others": {
+    "GoogleOAuth2": {
+      "ClientID": "1000067287437-at6sjqjdj8vd13iergnsjgml7nv974c9.apps.googleusercontent.com",
+      "ClientSecret": "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",
+      "RedirectURL": "whisperingcorner.zapto.org/api/google-authenticate",
+      "Scopes": [
+        "https://www.googleapis.com/auth/userinfo.profile",
+        "https://www.googleapis.com/auth/userinfo.email"
+      ]
+    }
   }
 }

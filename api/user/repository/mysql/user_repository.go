@@ -22,3 +22,10 @@ func (u *userMySQLRepository) Store(ctx context.Context, d *domain.User) error {
 
 	return nil
 }
+
+func (u *userMySQLRepository) QueryById(ctx context.Context, id int64) (*domain.User, error) {
+	var socialAccount domain.User
+	res := u.db.Where("user_id = ?", id).Find(&socialAccount)
+
+	return &socialAccount, res.Error
+}

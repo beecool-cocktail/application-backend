@@ -1,0 +1,46 @@
+basePath: /api
+definitions:
+  ResponseData:
+    properties:
+      data:
+        type: object
+        x-go-name: Data
+      error_code:
+        type: string
+        x-go-name: ErrorCode
+      error_message:
+        type: string
+        x-go-name: ErrorMessage
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+host: localhost:8080
+info:
+  description: This is api server
+  title: api server
+  version: "0.1"
+paths:
+  /google-login:
+    post:
+      description: todo
+      operationId: googleLogin
+      responses:
+        "201":
+          description: ""
+          headers:
+            Authorization:
+              description: jwt token
+              type: string
+      security:
+      - Bearer: []
+      summary: Login with google OAuth2
+      tags:
+      - login
+schemes:
+- http
+- https
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

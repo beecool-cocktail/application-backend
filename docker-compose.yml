@@ -13,8 +13,9 @@ services:
       MYSQL_DATABASE: whispering_conner
     restart: always
     volumes:
-      - ${DATA_DIR}/mysql_data:/var/lib/mysql
+#      - ${DATA_DIR}/mysql_data:/var/lib/mysql
       - ${MYSQL_CONFIG}:/etc/mysql/my.cnf
+      - ./dockerconf/sql:/docker-entrypoint-initdb.d
 
   redis:
     image: redis:${REDIS_VERSION}
@@ -26,7 +27,7 @@ services:
       - "${REDIS_PORT}:6379"
     restart: always
     volumes:
-      - ${DATA_DIR}/redis_data/redis:/data
+#      - ${DATA_DIR}/redis_data/redis:/data
       - ${REDIS_CONFIG}:/etc/redis.conf
 
   server:

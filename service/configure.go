@@ -14,7 +14,7 @@ type Configure struct {
 	DB      *mysqlConfig
 	HTTP    *httpConfig
 	Redis   *redisConfig
-	Others  map[string]json.RawMessage
+	Others  *otherConfig
 }
 
 type loggerConfig struct {
@@ -54,6 +54,17 @@ type redisConfig struct {
 	ReadTimeoutSecond  int
 	WriteTimeoutSecond int
 	PoolSize           int
+}
+
+type otherConfig struct {
+	GoogleOAuth2 *GoogleOAuth2
+}
+
+type GoogleOAuth2 struct {
+	ClientID     string
+	ClientSecret string
+	RedirectURL  string
+	Scopes       []string
 }
 
 func newConfigure(fileName string) (*Configure, error) {

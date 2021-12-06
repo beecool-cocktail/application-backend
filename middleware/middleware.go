@@ -1,25 +1,35 @@
 package middleware
 
 import (
+	"errors"
+	"github.com/beecool-cocktail/application-backend/domain"
+	"github.com/beecool-cocktail/application-backend/viewmodels"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis"
+	"net/http"
+	"strings"
 	"time"
 )
 
-type Handler struct {
-	redisAdp *redis.Client
+type PayloadData struct {
+	UserID  int64  `json:"user_id"`
+	Account string `json:"account"`
+	Name    string `json:"name"`
 }
 
-func NewMiddlewareHandler(redis *redis.Client) *Handler {
-	return &Handler{redisAdp:redis}
+type MyClaims struct {
+	PayloadData
+	jwt.StandardClaims
 }
 
-func (h *Handler) CORSMiddleware() gin.HandlerFunc {
+var secret = "secret"
+
+func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Content-OrderType", "application/json")
-		c.Writer.Header().Set("Access-Control-Allow-Headers"," Content-Type,Access-Control-Allow-Origin,Access-Control-Allow-Headers,x-token")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", " Content-Type,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Authorization")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
 
 		if c.Request.Method == "OPTIONS" {
@@ -30,34 +40,62 @@ func (h *Handler) CORSMiddleware() gin.HandlerFunc {
 	}
 }
 
-//func (h *Handler) AuthMiddleware() gin.HandlerFunc {
-//	return func(c *gin.Context) {
-//		session := sessions.Default(c)
-//		id := session.Get("id").(int64)
-//		key := "client:client_id:" + strconv.FormatInt(id, 10)
-//		token := c.Request.Header.Get("x-token")
-//		client, err := h.redisAdp.HMGet(key, "access_token", "token_expire").Result()
-//		if err != nil {
-//			c.AbortWithStatusJSON(http.StatusUnauthorized, viewmodels.ResponseData{ErrorCode:"", ErrorMessage:""})
-//		}
-//
-//		accessToken, ok := client["access_token"].(string)
-//		if !ok {
-//			c.AbortWithStatusJSON(http.StatusUnauthorized, viewmodels.ResponseData{ErrorCode:"", ErrorMessage:""})
-//		}
-//
-//		tokenExpire, ok := client["token_expire"].(string)
-//		if !ok {
-//			c.AbortWithStatusJSON(http.StatusUnauthorized, viewmodels.ResponseData{ErrorCode:"", ErrorMessage:""})
-//		}
-//
-//		if !isTokenValid(token, accessToken, tokenExpire) {
-//			c.AbortWithStatusJSON(http.StatusUnauthorized, viewmodels.ResponseData{ErrorCode:"", ErrorMessage:""})
-//		}
-//
-//		c.Next()
-//	}
-//}
+func GenToken( data PayloadData) (string, error) {
+	c := MyClaims{
+		PayloadData: data,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(2 * time.Hour).Unix(),
+			Issuer: "GiftForm69King",
+			Audience: data.Account,
+		},
+	}
+	// Choose specific algorithm
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
+	// Choose specific Signature
+	return token.SignedString(secret)
+}
+
+func parseToken(tokenString string) (*MyClaims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &MyClaims{}, func(token *jwt.Token) (i interface{}, err error) {
+		return secret, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	// Valid token
+	if claims, ok := token.Claims.(*MyClaims); ok && token.Valid {
+		return claims, nil
+	}
+	return nil, errors.New("invalid token")
+}
+
+// JWTAuthMiddleware Middleware of JWT
+func JWTAuthMiddleware() func(c *gin.Context) {
+	return func(c *gin.Context) {
+		// Get token from Header.Authorization field.
+		authHeader := c.Request.Header.Get("Authorization")
+		if authHeader == "" {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, viewmodels.ResponseData{ErrorCode:domain.GetErrorCode(domain.ErrTokenExpired), ErrorMessage:domain.ErrTokenExpired.Error()})
+			return
+		}
+
+		parts := strings.SplitN(authHeader, " ", 2)
+		if !(len(parts) == 2 && parts[0] == "Bearer") {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, viewmodels.ResponseData{ErrorCode:domain.GetErrorCode(domain.ErrTokenExpired), ErrorMessage:domain.ErrTokenExpired.Error()})
+			return
+		}
+		// parts[0] is Bearer, parts is token.
+		mc, err := parseToken(parts[1])
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, viewmodels.ResponseData{ErrorCode:domain.GetErrorCode(domain.ErrTokenExpired), ErrorMessage:domain.ErrTokenExpired.Error()})
+			return
+		}
+		// Store Account info into Context
+		c.Set("account", mc.Account)
+		// After that, we can get Account info from c.Get("account")
+		c.Next()
+	}
+}
 
 func isTokenValid(requestToken string, serverToken string, expire string) bool {
 	expireTime := parseTime(expire)

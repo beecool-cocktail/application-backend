@@ -1,6 +1,6 @@
-// Package classification office-admin api server
+// Package classification api server
 //
-// This is office-admin server
+// This is api server
 //
 // Version: 0.1
 // Schemes: http, https
@@ -13,7 +13,7 @@
 // securityDefinitions:
 //   Bearer:
 //     type: apiKey
-//     name: x-token
+//     name: Authorization
 //     in: header
 // swagger:meta
 package cmd

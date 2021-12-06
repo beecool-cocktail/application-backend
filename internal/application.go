@@ -5,12 +5,16 @@ import (
 	_userRepo "github.com/beecool-cocktail/application-backend/api/user/repository/mysql"
 	_userCache "github.com/beecool-cocktail/application-backend/api/user/repository/redis"
 	_userUsecase "github.com/beecool-cocktail/application-backend/api/user/usercase"
+	_socialAccountHandlerHttpDelivery "github.com/beecool-cocktail/application-backend/api/social-account/delivery/http"
+	_socialAccountMySQLRepo "github.com/beecool-cocktail/application-backend/api/social-account/repository/mysql"
+	_socialAccountGoogleOAuth "github.com/beecool-cocktail/application-backend/api/social-account/repository/google-oauth2"
+	_socialAccountUsecase "github.com/beecool-cocktail/application-backend/api/social-account/usecase"
 	"github.com/beecool-cocktail/application-backend/middleware"
 	"github.com/beecool-cocktail/application-backend/service"
 	"github.com/beecool-cocktail/application-backend/util"
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
 	"github.com/sirupsen/logrus"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
 
 func Init(cfgFile string) {
@@ -27,18 +31,29 @@ func Init(cfgFile string) {
 }
 
 func initializeRoutes(s *service.Service) {
+	g := s.Configure.Others.GoogleOAuth2
+	googleOAuthConfig := &oauth2.Config{
+		ClientID:     g.ClientID,
+		ClientSecret: g.ClientSecret,
+		RedirectURL:  g.RedirectURL,
+		Scopes:       g.Scopes,
+		Endpoint:     google.Endpoint,
+	}
 
-	store := cookie.NewStore([]byte("secret"))
-	s.HTTP.Use(sessions.Sessions("mysession", store))
-
-	middlewareHandler := middleware.NewMiddlewareHandler(s.Redis)
 	// CORSMiddleware for all handler
-	s.HTTP.Use(middlewareHandler.CORSMiddleware())
+	s.HTTP.Use(middleware.CORSMiddleware())
 
 	userMySQLRepo := _userRepo.NewMySQLUserRepository(s.DB)
+	socialAccountMySQLRepo := _socialAccountMySQLRepo.NewMySQLSocialAccountRepository(s.DB)
+
 	userRedisRepo := _userCache.NewRedisUserRepository(s.Redis)
 
-	userUsecase := _userUsecase.NewUserUsecase(userMySQLRepo, userRedisRepo)
+	socialAccountGoogleOAuthRepo := _socialAccountGoogleOAuth.NewGoogleOAuthSocialAccountRepository(googleOAuthConfig)
 
-	_userHandlerHttpDelivery.NewUserHandler(s.HTTP, userUsecase, middlewareHandler)
+
+	userUsecase := _userUsecase.NewUserUsecase(userMySQLRepo, userRedisRepo)
+	socialAccountUsecase := _socialAccountUsecase.NewSocialAccountUsecase(userMySQLRepo, socialAccountMySQLRepo, socialAccountGoogleOAuthRepo)
+
+	_userHandlerHttpDelivery.NewUserHandler(s, userUsecase)
+	_socialAccountHandlerHttpDelivery.NewSocialAccountHandler(s, socialAccountUsecase)
 }

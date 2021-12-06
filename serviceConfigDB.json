@@ -9,7 +9,7 @@
       "DriverName":"mysql",
       "User":"root",
       "Password":"123456",
-      "Address":"127.0.0.1:3308",
+      "Address":"127.0.0.1:3306",
       "DBName":"whispering_conner",
       "SetConnMaxIdleTime":5,
       "SetMaxIdleConns": 100,
