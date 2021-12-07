@@ -34,7 +34,7 @@ RUN apk update && \
 
 RUN chmod +x ./wait-for-it.sh
 
-EXPOSE 8080
+EXPOSE 6969
 
 CMD ["./wait-for-it.sh", "db:3306", "--", "./main", "--config", "serviceConfig.json"]
 

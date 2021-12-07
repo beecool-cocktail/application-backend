@@ -15,7 +15,7 @@ services:
     volumes:
 #      - ${DATA_DIR}/mysql_data:/var/lib/mysql
       - ${MYSQL_CONFIG}:/etc/mysql/my.cnf
-      - ./dockerconf/sql:/docker-entrypoint-initdb.d
+      - ./dockerconf/mysql/sql:/docker-entrypoint-initdb.d
 
   redis:
     image: redis:${REDIS_VERSION}
@@ -40,7 +40,7 @@ services:
     tty: true
     restart: always
     ports:
-      - "${APPLICATION_PORT}:8080"
+      - "${APPLICATION_PORT}:6969"
     command: ./wait-for-it.sh db:3306 -- ./main --config serviceConfig.json
     depends_on:
       - redis
