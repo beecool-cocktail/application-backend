@@ -7,7 +7,11 @@
 
 ## Development
 ### Docker
-- 待整合MySQL
+主要提供給前端開發人員使用：
+
+- `docker-compose pull`：pull backend server image，名稱為 `blawhi2435/whispering-corner`
+- `docker-compose up -d`：啟動 API Server、MySQL、Redis，Listen [http://localhost:6969](http://localhost:6969)。
+- `docker-compose down`：停止 API Server、MySQL、Redis。
 
 ### GCP部署
 使用service account讓Github Actions將專案部署至Cloud Run上。
