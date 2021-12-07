@@ -4,7 +4,7 @@ services:
     image: mysql:${MYSQL_VERSION}
     container_name: whispering-mysql
     networks:
-      backend_application:
+      whispering:
         ipv4_address: 172.28.0.2
     ports:
       - "${MYSQL_PORT}:3306"
@@ -21,7 +21,7 @@ services:
     image: redis:${REDIS_VERSION}
     container_name: whispering-redis
     networks:
-      backend_application:
+      whispering:
         ipv4_address: 172.28.0.3
     ports:
       - "${REDIS_PORT}:6379"
@@ -34,7 +34,7 @@ services:
     image: blawhi2435/whispering-corner:${APPLICATION_VERSION}
     container_name: whispering-server
     networks:
-      backend_application:
+      whispering:
         ipv4_address: 172.28.0.4
     stdin_open: true
     tty: true
@@ -47,7 +47,7 @@ services:
       - db
 
 networks:
-  backend_application:
+  whispering:
     driver: bridge
     ipam:
       driver: default
