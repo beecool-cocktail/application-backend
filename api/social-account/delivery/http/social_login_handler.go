@@ -17,7 +17,7 @@ func NewSocialAccountHandler(s *service.Service, socialAccountUsecase domain.Soc
 		SocialAccountUsecase: socialAccountUsecase,
 	}
 
-	s.HTTP.POST("/api/google-authenticate", handler.GoogleAuthenticate)
+	s.HTTP.GET("/api/google-authenticate", handler.GoogleAuthenticate)
 }
 
 func (s *SocialAccount) GoogleAuthenticate(c *gin.Context) {
@@ -37,5 +37,5 @@ func (s *SocialAccount) GoogleAuthenticate(c *gin.Context) {
 	}
 
 	c.Header("Authorization", jwtToken)
-	c.Redirect(http.StatusTemporaryRedirect, "localhost:3000")
+	c.Redirect(http.StatusTemporaryRedirect, "http://localhost:8080")
 }
