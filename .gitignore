@@ -21,3 +21,4 @@ main
 /script
 /mysql_data
 /redis_data
+serviceConfigLocal.json
