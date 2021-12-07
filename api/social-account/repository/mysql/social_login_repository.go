@@ -39,7 +39,7 @@ func (s *socialAccountMySQLRepository) Store(ctx context.Context, ds *domain.Soc
 
 func (s *socialAccountMySQLRepository) QueryById(ctx context.Context, id string) (*domain.SocialAccount, error) {
 	var socialAccount domain.SocialAccount
-	res := s.db.Where("social_id = ?", id).Find(&socialAccount)
+	res := s.db.Where("social_id = ?", id).Take(&socialAccount)
 
 
 	return &socialAccount, res.Error
