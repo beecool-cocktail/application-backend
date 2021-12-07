@@ -7,7 +7,7 @@ import (
 )
 
 type SocialAccount struct {
-	ID          int64     `gorm:"type:bigint(64) NOT NULL;primary_key;auto_increment"`
+	ID          int64     `gorm:"type:bigint(64) NOT NULL auto_increment;primary_key"`
 	SocialID    string    `gorm:"type:varchar(64) NOT NULL;uniqueIndex:idx_social_id"`
 	UserID      int64     `gorm:"type:bigint(20) NOT NULL;uniqueIndex:idx_user_id"`
 	Type        int       `gorm:"type:tinyint(1) NOT NULL DEFAULT 0"`
