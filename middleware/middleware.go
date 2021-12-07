@@ -22,7 +22,7 @@ type MyClaims struct {
 	jwt.StandardClaims
 }
 
-var secret = "secret"
+var secret = []byte("secret")
 
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
