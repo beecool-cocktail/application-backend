@@ -20,10 +20,10 @@ func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase) {
 		UserUsecase: userUsecase,
 	}
 
-	s.HTTP.POST("/api/google-login", handler.SocialLogin)
+	s.HTTP.GET("/api/google-login", handler.SocialLogin)
 }
 
-// swagger:operation POST /google-login login googleLogin
+// swagger:operation GET /google-login login googleLogin
 // ---
 // summary: Login with google OAuth2
 // description: todo
