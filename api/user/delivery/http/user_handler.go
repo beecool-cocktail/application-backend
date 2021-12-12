@@ -26,7 +26,7 @@ func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase) {
 // swagger:operation GET /google-login login googleLogin
 // ---
 // summary: Login with google OAuth2
-// description: todo
+// description: Login success will get Bearer [token] in header Authorization.
 // security:
 // - Bearer: []
 // responses:

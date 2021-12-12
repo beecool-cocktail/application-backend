@@ -20,8 +20,8 @@ info:
   version: "0.1"
 paths:
   /google-login:
-    post:
-      description: todo
+    get:
+      description: Login success will get Bearer [token] in header Authorization.
       operationId: googleLogin
       responses:
         "201":
