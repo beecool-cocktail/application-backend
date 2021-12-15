@@ -1,5 +1,52 @@
 basePath: /api
 definitions:
+  GetPopularCocktailListRequest:
+    properties:
+      page:
+        example: 1
+        format: int64
+        type: integer
+        x-go-name: Page
+      page_size:
+        example: 10
+        format: int64
+        type: integer
+        x-go-name: PageSize
+    required:
+    - page
+    - page_size
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  GetPopularCocktailListResponse:
+    properties:
+      popular_cocktail_list:
+        items:
+          $ref: '#/definitions/PopularCocktailList'
+        type: array
+        x-go-name: PopularCocktailList
+      total:
+        format: int64
+        type: integer
+        x-go-name: Total
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  PopularCocktailList:
+    properties:
+      cocktail_id:
+        format: int64
+        type: integer
+        x-go-name: CocktailID
+      created_date:
+        type: string
+        x-go-name: CreatedDate
+      photo:
+        type: string
+        x-go-name: Photo
+      title:
+        type: string
+        x-go-name: Title
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   ResponseData:
     properties:
       data:
@@ -13,12 +60,38 @@ definitions:
         x-go-name: ErrorMessage
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-host: localhost:8080
+host: localhost:6969
 info:
   description: This is api server
   title: api server
   version: "0.1"
 paths:
+  /cocktails:
+    post:
+      description: Get popular cocktail list order by create date.
+      operationId: popularCocktailListRequest
+      parameters:
+      - in: body
+        name: Body
+        schema:
+          $ref: '#/definitions/GetPopularCocktailListRequest'
+      responses:
+        "200":
+          $ref: '#/responses/popularCocktailListResponse'
+        "400":
+          description: ' bad request'
+        "401":
+          description: ' unauthorized'
+        "404":
+          description: ' item not found'
+        "500":
+          description: ' internal error'
+      security:
+      - Bearer:
+        - '[]'
+      summary: Get popular cocktail list
+      tags:
+      - cocktail
   /google-login:
     get:
       description: Login success will get Bearer [token] in header Authorization.
@@ -35,6 +108,11 @@ paths:
       summary: Login with google OAuth2
       tags:
       - login
+responses:
+  popularCocktailListResponse:
+    description: ""
+    schema:
+      $ref: '#/definitions/GetPopularCocktailListResponse'
 schemes:
 - http
 - https

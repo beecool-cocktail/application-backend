@@ -34,7 +34,7 @@ to quickly create a Cobra application.`,
 		return fmt.Errorf("invalid db cmd specified: %s", args[0])
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		tables := []interface{}{domain.User{}, domain.SocialAccount{}}
+		tables := []interface{}{domain.User{}, domain.SocialAccount{}, domain.Cocktail{}, domain.CocktailIngredient{}, domain.CocktailStep{}}
 
 		subcmd := args[0]
 		internal.Migrate(cfgFile, subcmd, tables)

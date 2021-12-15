@@ -9,6 +9,9 @@ import (
 	_socialAccountMySQLRepo "github.com/beecool-cocktail/application-backend/api/social-account/repository/mysql"
 	_socialAccountGoogleOAuth "github.com/beecool-cocktail/application-backend/api/social-account/repository/google-oauth2"
 	_socialAccountUsecase "github.com/beecool-cocktail/application-backend/api/social-account/usecase"
+	_cocktailUsecase "github.com/beecool-cocktail/application-backend/api/cocktail/usecase"
+	_cocktailHandlerHttpDelivery "github.com/beecool-cocktail/application-backend/api/cocktail/delivery/http"
+	_cocktailMySQLRepo "github.com/beecool-cocktail/application-backend/api/cocktail/repository/mysql"
 	"github.com/beecool-cocktail/application-backend/middleware"
 	"github.com/beecool-cocktail/application-backend/service"
 	"github.com/beecool-cocktail/application-backend/util"
@@ -45,6 +48,7 @@ func initializeRoutes(s *service.Service) {
 
 	userMySQLRepo := _userRepo.NewMySQLUserRepository(s.DB)
 	socialAccountMySQLRepo := _socialAccountMySQLRepo.NewMySQLSocialAccountRepository(s.DB)
+	cocktailMySQLRepo := _cocktailMySQLRepo.NewMySQLCocktailRepository(s.DB)
 
 	userRedisRepo := _userCache.NewRedisUserRepository(s.Redis)
 
@@ -53,7 +57,9 @@ func initializeRoutes(s *service.Service) {
 
 	userUsecase := _userUsecase.NewUserUsecase(userMySQLRepo, userRedisRepo)
 	socialAccountUsecase := _socialAccountUsecase.NewSocialAccountUsecase(userMySQLRepo, socialAccountMySQLRepo, socialAccountGoogleOAuthRepo)
+	cocktailUsecase := _cocktailUsecase.NewCocktailUsecase(cocktailMySQLRepo)
 
 	_userHandlerHttpDelivery.NewUserHandler(s, userUsecase)
 	_socialAccountHandlerHttpDelivery.NewSocialAccountHandler(s, socialAccountUsecase)
+	_cocktailHandlerHttpDelivery.NewCocktailHandler(s, cocktailUsecase)
 }

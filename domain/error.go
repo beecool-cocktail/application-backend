@@ -14,6 +14,7 @@ const (
 	CodeUserNotFound          = "A0002"
 	CodePasswordNotMatch      = "A0003"
 	CodeTokenExpired          = "A0004"
+	CodeCocktailNotFound      = "B0001"
 	CodeInternalError         = "S0001"
 	CodeResponseEncodedFailed = "S0002"
 )
@@ -25,6 +26,7 @@ var (
 	ErrUserAlreadyExist      = errors.New("user already exist")
 	ErrUserNotFound          = errors.New("user not found")
 	ErrPasswordNotMatch      = errors.New("password not match")
+	ErrCocktailNotFound      = errors.New("cocktail not found")
 	ErrTokenExpired          = errors.New("token expired")
 )
 
@@ -50,6 +52,8 @@ func GetErrorCode(err error) string {
 		return CodePasswordNotMatch
 	case ErrTokenExpired:
 		return CodeTokenExpired
+	case ErrCocktailNotFound:
+		return CodeCocktailNotFound
 
 	default:
 		return CodeInternalError
@@ -75,6 +79,8 @@ func GetStatusCode(err error) int {
 		return http.StatusUnauthorized
 	case ErrTokenExpired:
 		return http.StatusUnauthorized
+	case ErrCocktailNotFound:
+		return http.StatusNotFound
 
 	default:
 		return http.StatusInternalServerError
