@@ -37,6 +37,26 @@ Workflow中使用到的環境參數介紹。
 - IMAGE_NAME: Artifact Registry上的映像名稱。
 - TAG: image version，目前都先使用release。
 
+### Go-Swagger
+#### Installing 
+Homebrew/Linuxbrew
+```
+brew tap go-swagger/go-swagger
+brew install go-swagger
+```
+ 
+ > Note: <br />
+ > 其他安裝方式可以參考[這裡](https://goswagger.io/install.html)。
+
+### Run Swagger
+```bash
+# start swagger server
+$ swagger serve -F=swagger swagger.yaml
+
+# create api document markdown
+$ swagger generate markdown -f ./swagger.yaml --output swagger.md
+```
+
 ## Reference
 - [Gin Web Framework](https://github.com/gin-gonic/gin)
 - [Building Go Web Applications and Micro services Using Gin](https://semaphoreci.com/community/tutorials/building-go-web-applications-and-microservices-using-gin)
