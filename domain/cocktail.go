@@ -11,7 +11,6 @@ type Cocktail struct {
 	Title       string    `gorm:"type:varchar(16) NOT NULL;; comment: 調酒名稱"`
 	Description string    `gorm:"type:varchar(512) NOT NULL; comment: 調酒介紹"`
 	UserID      int64     `gorm:"type:bigint(64) NOT NULL;index:idx_user_id; comment: 作者id"`
-	UserName    string    `gorm:"type:varchar(32) NOT NULL DEFAULT '';comment: 作者名稱"`
 	CreatedDate time.Time `gorm:"type:timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;index:idx_date"`
 }
 
