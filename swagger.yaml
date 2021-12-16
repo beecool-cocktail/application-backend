@@ -30,6 +30,20 @@ definitions:
         x-go-name: Total
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  GoogleAuthenticateRequest:
+    properties:
+      code:
+        type: string
+        x-go-name: Code
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  GoogleAuthenticateResponse:
+    properties:
+      token:
+        type: string
+        x-go-name: Token
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   PopularCocktailList:
     properties:
       cocktail_id:
@@ -92,23 +106,36 @@ paths:
       summary: Get popular cocktail list
       tags:
       - cocktail
-  /google-login:
-    get:
-      description: Login success will get Bearer [token] in header Authorization.
-      operationId: googleLogin
+  /google-authenticate:
+    post:
+      description: Use Code to exchange access token.
+      operationId: googleAuthenticateRequest
+      parameters:
+      - in: body
+        name: Body
+        schema:
+          $ref: '#/definitions/GoogleAuthenticateRequest'
       responses:
         "201":
-          description: ""
-          headers:
-            Authorization:
-              description: jwt token
-              type: string
-      security:
-      - Bearer: []
+          $ref: '#/responses/googleAuthenticateResponse'
+      summary: Get access token.
+      tags:
+      - login
+  /google-login:
+    get:
+      description: Will redirect with authorization code.
+      operationId: googleLogin
+      responses:
+        "307":
+          description: ' redirect'
       summary: Login with google OAuth2
       tags:
       - login
 responses:
+  googleAuthenticateResponse:
+    description: ""
+    schema:
+      $ref: '#/definitions/GoogleAuthenticateResponse'
   popularCocktailListResponse:
     description: ""
     schema:

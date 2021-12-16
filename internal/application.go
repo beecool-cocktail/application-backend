@@ -1,17 +1,16 @@
 package internal
 
 import (
+	_cocktailHandlerHttpDelivery "github.com/beecool-cocktail/application-backend/api/cocktail/delivery/http"
+	_cocktailMySQLRepo "github.com/beecool-cocktail/application-backend/api/cocktail/repository/mysql"
+	_cocktailUsecase "github.com/beecool-cocktail/application-backend/api/cocktail/usecase"
+	_socialAccountGoogleOAuth "github.com/beecool-cocktail/application-backend/api/social-account/repository/google-oauth2"
+	_socialAccountMySQLRepo "github.com/beecool-cocktail/application-backend/api/social-account/repository/mysql"
+	_socialAccountUsecase "github.com/beecool-cocktail/application-backend/api/social-account/usecase"
 	_userHandlerHttpDelivery "github.com/beecool-cocktail/application-backend/api/user/delivery/http"
 	_userRepo "github.com/beecool-cocktail/application-backend/api/user/repository/mysql"
 	_userCache "github.com/beecool-cocktail/application-backend/api/user/repository/redis"
 	_userUsecase "github.com/beecool-cocktail/application-backend/api/user/usercase"
-	_socialAccountHandlerHttpDelivery "github.com/beecool-cocktail/application-backend/api/social-account/delivery/http"
-	_socialAccountMySQLRepo "github.com/beecool-cocktail/application-backend/api/social-account/repository/mysql"
-	_socialAccountGoogleOAuth "github.com/beecool-cocktail/application-backend/api/social-account/repository/google-oauth2"
-	_socialAccountUsecase "github.com/beecool-cocktail/application-backend/api/social-account/usecase"
-	_cocktailUsecase "github.com/beecool-cocktail/application-backend/api/cocktail/usecase"
-	_cocktailHandlerHttpDelivery "github.com/beecool-cocktail/application-backend/api/cocktail/delivery/http"
-	_cocktailMySQLRepo "github.com/beecool-cocktail/application-backend/api/cocktail/repository/mysql"
 	"github.com/beecool-cocktail/application-backend/middleware"
 	"github.com/beecool-cocktail/application-backend/service"
 	"github.com/beecool-cocktail/application-backend/util"
@@ -59,7 +58,6 @@ func initializeRoutes(s *service.Service) {
 	socialAccountUsecase := _socialAccountUsecase.NewSocialAccountUsecase(userMySQLRepo, socialAccountMySQLRepo, socialAccountGoogleOAuthRepo)
 	cocktailUsecase := _cocktailUsecase.NewCocktailUsecase(cocktailMySQLRepo)
 
-	_userHandlerHttpDelivery.NewUserHandler(s, userUsecase)
-	_socialAccountHandlerHttpDelivery.NewSocialAccountHandler(s, socialAccountUsecase)
+	_userHandlerHttpDelivery.NewUserHandler(s, userUsecase, socialAccountUsecase)
 	_cocktailHandlerHttpDelivery.NewCocktailHandler(s, cocktailUsecase)
 }
