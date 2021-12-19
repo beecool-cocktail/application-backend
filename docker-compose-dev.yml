@@ -41,7 +41,7 @@ services:
     restart: always
     ports:
       - "${APPLICATION_PORT}:6969"
-    command: ./wait-for-it.sh db:3306 -- nohup ./main --config serviceConfigDev.json & >> log.out
+    command: ./wait-for-it.sh db:3306 -- ./main --config serviceConfigDev.json
     depends_on:
       - redis
       - db
