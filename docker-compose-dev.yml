@@ -41,7 +41,7 @@ services:
     restart: always
     ports:
       - "${APPLICATION_PORT}:6969"
-    command: ./wait-for-it.sh db:3306 -- ./main --config serviceConfig.json
+    command: ./wait-for-it.sh db:3306 -- ./main --config serviceConfigDev.json >> api.log
     depends_on:
       - redis
       - db

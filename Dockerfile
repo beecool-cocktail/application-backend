@@ -26,6 +26,7 @@ LABEL revision_id=${REVISION_ID}
 
 COPY --from=build /app/main ./
 COPY --from=build /app/serviceConfig.json ./
+COPY --from=build /app/serviceConfigDev.json ./
 COPY --from=build /app/wait-for-it.sh ./
 
 RUN apk update && \
