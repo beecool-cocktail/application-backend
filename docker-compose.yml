@@ -46,6 +46,21 @@ services:
       - redis
       - db
 
+  swagger:
+    image: quay.io/goswagger/swagger
+    container_name: whispering-swagger
+    networks:
+      whispering:
+        ipv4_address: 172.28.0.5
+    restart: always
+    volumes:
+      - ./swagger.yaml:/swagger.yaml
+    ports:
+      - "${SWAGGER_PORT}:3030"
+    command: serve -F=swagger -p 3030 --no-open /swagger.yaml
+    depends_on:
+      - server
+
 networks:
   whispering:
     driver: bridge
