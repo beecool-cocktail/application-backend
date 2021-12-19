@@ -1,0 +1,71 @@
+version: '3'
+services:
+  db:
+    image: mysql:${MYSQL_VERSION}
+    container_name: whispering-mysql
+    networks:
+      whispering:
+        ipv4_address: 172.28.0.2
+    ports:
+      - "${MYSQL_PORT}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: whispering_69_Conner
+      MYSQL_DATABASE: whispering_conner
+    restart: always
+    volumes:
+      - ${DATA_DIR}/mysql_data:/var/lib/mysql
+      - ${MYSQL_CONFIG}:/etc/mysql/my.cnf
+      - ./dockerconf/mysql/sql:/docker-entrypoint-initdb.d
+
+  redis:
+    image: redis:${REDIS_VERSION}
+    container_name: whispering-redis
+    networks:
+      whispering:
+        ipv4_address: 172.28.0.3
+    ports:
+      - "${REDIS_PORT}:6379"
+    restart: always
+    volumes:
+      - ${DATA_DIR}/redis_data/redis:/data
+      - ${REDIS_CONFIG}:/etc/redis.conf
+
+  server:
+    image: blawhi2435/whispering-corner:${APPLICATION_VERSION}
+    container_name: whispering-server
+    networks:
+      whispering:
+        ipv4_address: 172.28.0.4
+    stdin_open: true
+    tty: true
+    restart: always
+    ports:
+      - "${APPLICATION_PORT}:6969"
+    command: ./wait-for-it.sh db:3306 -- ./main --config serviceConfig.json
+    depends_on:
+      - redis
+      - db
+
+  swagger:
+    image: quay.io/goswagger/swagger
+    container_name: whispering-swagger
+    networks:
+      whispering:
+        ipv4_address: 172.28.0.5
+    restart: always
+    volumes:
+      - ./swagger.yaml:/swagger.yaml
+    ports:
+      - "${SWAGGER_PORT}:3030"
+    command: serve -F=swagger -p 3030 --no-open /swagger.yaml
+    depends_on:
+      - server
+
+networks:
+  whispering:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
+          gateway: 172.28.0.1

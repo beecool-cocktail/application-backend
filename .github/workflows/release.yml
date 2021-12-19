@@ -28,14 +28,6 @@ jobs:
       - name: Test
         run: go test -v ./...
 
-      - name: Publish to Registry
-        uses: elgohr/Publish-Docker-Github-Action@master
-        with:
-          name: blawhi2435/whispering-corner
-          username: ${{ secrets.DOCKER_USER_NAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          dockerfile: Dockerfile
-
       - name: copy file via ssh key
         uses: appleboy/scp-action@master
         with:
@@ -43,8 +35,8 @@ jobs:
           username: ${{ secrets.SSH_USER_NAME }}
           port: ${{ secrets.SSH_PORT }}
           key: ${{ secrets.SSH_KEY }}
-          source: "docker-compose.yml"
-          target: "~/backend-application"
+          source: "docker-compose-dev.yml"
+          target: "~/backend-application/docker-compose.yml"
 
       - name: executing remote ssh commands via ssh key
         uses: appleboy/ssh-action@v0.1.4
