@@ -36,7 +36,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           key: ${{ secrets.SSH_KEY }}
           source: "docker-compose-dev.yml"
-          target: "~/backend-application/docker-compose.yml"
+          target: "~/backend-application"
 
       - name: executing remote ssh commands via ssh key
         uses: appleboy/ssh-action@v0.1.4
@@ -48,5 +48,5 @@ jobs:
           script: |
             cd backend-application
             echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USER_NAME }} --password-stdin
-            docker-compose pull
-            docker-compose up -d
+            docker-compose -f docker-compose-dev.yml pull
+            docker-compose -f docker-compose-dev.yml up -d
