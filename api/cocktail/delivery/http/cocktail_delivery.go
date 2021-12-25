@@ -44,6 +44,7 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 	if err := c.BindJSON(&request); err != nil {
 		logrus.Error(err)
 		util.PackResponseWithError(c, domain.ErrRequestDecodeFailed, "request unmarshal failed")
+		return
 	}
 
 	cocktails, total, err := co.CocktailUsecase.GetAllWithFilter(c, nil, domain.PaginationUsecase{

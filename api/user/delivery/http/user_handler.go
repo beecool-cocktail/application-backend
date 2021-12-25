@@ -67,20 +67,24 @@ func (u *UserHandler) GoogleAuthenticate(c *gin.Context) {
 	if err := c.BindJSON(&request); err != nil {
 		logrus.Error(err)
 		util.PackResponseWithError(c, domain.ErrRequestDecodeFailed, "request unmarshal failed")
+		return
 	}
 
 	token, err := u.SocialAccountUsecase.Exchange(c, request.Code)
 	if err != nil {
+		logrus.Error(err)
 		util.PackResponseWithError(c, err, err.Error())
+		return
 	}
 
 	jwtToken, err := u.SocialAccountUsecase.GetUserInfo(c, token)
 	if err != nil {
+		logrus.Error(err)
 		util.PackResponseWithError(c, err, err.Error())
+		return
 	}
 
 	response.Token = jwtToken
-
 	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
 }
 
@@ -96,11 +100,13 @@ func (u *UserHandler) Logout(c *gin.Context) {
 	if err := c.BindJSON(&request); err != nil {
 		logrus.Error(err)
 		util.PackResponseWithError(c, domain.ErrRequestDecodeFailed, "request unmarshal failed")
+		return
 	}
 
 	err := u.UserUsecase.Logout(c, request.UserID)
 	if err != nil {
 		util.PackResponseWithError(c, err, err.Error())
+		return
 	}
 
 
