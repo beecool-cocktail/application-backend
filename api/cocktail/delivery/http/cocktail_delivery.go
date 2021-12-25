@@ -28,8 +28,6 @@ func NewCocktailHandler(s *service.Service, cocktailUsecase domain.CocktailUseca
 //
 // Get popular cocktail list order by create date.
 //
-// security:
-// - Bearer: []
 //
 // Responses:
 //   200: popularCocktailListResponse

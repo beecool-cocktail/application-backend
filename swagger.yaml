@@ -133,9 +133,6 @@ paths:
           description: ' item not found'
         "500":
           description: ' internal error'
-      security:
-      - Bearer:
-        - '[]'
       summary: Get popular cocktail list
       tags:
       - cocktail
@@ -168,11 +165,16 @@ paths:
     get:
       description: Get user id, name, email, numberOfPost, numberOfCollection and
         photo.
-      operationId: login
+      operationId: info
       responses:
         "200":
           $ref: '#/responses/getUserInfoResponse'
+      security:
+      - Bearer:
+        - apiKey
       summary: Get user information.
+      tags:
+      - user
   /user/logout:
     post:
       description: make token invalid.

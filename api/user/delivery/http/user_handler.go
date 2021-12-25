@@ -114,10 +114,12 @@ func (u *UserHandler) Logout(c *gin.Context) {
 	util.PackResponseWithData(c, http.StatusOK, nil, domain.GetErrorCode(nil), "")
 }
 
-// swagger:operation GET /user/info login
+// swagger:operation GET /user/info user info
 // ---
 // summary: Get user information.
 // description: Get user id, name, email, numberOfPost, numberOfCollection and photo.
+// security:
+// - Bearer: [apiKey]
 // responses:
 //  "200":
 //    "$ref": "#/responses/getUserInfoResponse"
