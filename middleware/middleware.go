@@ -3,10 +3,12 @@ package middleware
 import (
 	"errors"
 	"github.com/beecool-cocktail/application-backend/domain"
+	"github.com/beecool-cocktail/application-backend/service"
 	"github.com/beecool-cocktail/application-backend/viewmodels"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -24,7 +26,15 @@ type MyClaims struct {
 
 var secret = []byte("secret")
 
-func CORSMiddleware() gin.HandlerFunc {
+type Handler struct {
+	service *service.Service
+}
+
+func NewMiddlewareHandler(redis *service.Service) *Handler {
+	return &Handler{service: redis}
+}
+
+func (h *Handler) CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -70,7 +80,7 @@ func parseToken(tokenString string) (*MyClaims, error) {
 }
 
 // JWTAuthMiddleware Middleware of JWT
-func JWTAuthMiddleware() func(c *gin.Context) {
+func (h *Handler) JWTAuthMiddleware() func(c *gin.Context) {
 	return func(c *gin.Context) {
 		// Get token from Header.Authorization field.
 		authHeader := c.Request.Header.Get("Authorization")
@@ -85,11 +95,29 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 			return
 		}
 		// parts[0] is Bearer, parts is token.
-		mc, err := parseToken(parts[1])
+		token := parts[1]
+		mc, err := parseToken(token)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, viewmodels.ResponseData{ErrorCode:domain.GetErrorCode(domain.ErrTokenExpired), ErrorMessage:domain.ErrTokenExpired.Error()})
 			return
 		}
+
+		key := "admin:admin_id:" + strconv.FormatInt(mc.UserID, 10)
+		user, err := h.service.Redis.HMGet(key, "access_token").Result()
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, viewmodels.ResponseData{ErrorCode: domain.GetErrorCode(domain.ErrTokenExpired), ErrorMessage: domain.ErrTokenExpired.Error()})
+			return
+		}
+
+		serverAccessToken, ok := user[0].(string)
+		if !ok {
+			c.AbortWithStatusJSON(domain.GetStatusCode(domain.ErrTokenExpired), viewmodels.ResponseData{ErrorCode: domain.GetErrorCode(domain.ErrTokenExpired), ErrorMessage: domain.ErrTokenExpired.Error()})
+		}
+
+		if !isTokenValid(token, serverAccessToken) {
+			c.AbortWithStatusJSON(domain.GetStatusCode(domain.ErrTokenExpired), viewmodels.ResponseData{ErrorCode: domain.GetErrorCode(domain.ErrTokenExpired), ErrorMessage: domain.ErrTokenExpired.Error()})
+		}
+
 		// Store Account info into Context
 		c.Set("account", mc.Account)
 		// After that, we can get Account info from c.Get("account")
@@ -97,9 +125,8 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 	}
 }
 
-func isTokenValid(requestToken string, serverToken string, expire string) bool {
-	expireTime := parseTime(expire)
-	if requestToken != serverToken || expireTime.Before(time.Now()) {
+func isTokenValid(requestToken string, serverToken string) bool {
+	if requestToken != serverToken {
 		return false
 	}
 

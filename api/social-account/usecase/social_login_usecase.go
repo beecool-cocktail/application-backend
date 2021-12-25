@@ -14,14 +14,16 @@ import (
 
 type socialLoginUsecase struct {
 	userMySQLRepo                domain.UserMySQLRepository
+	userRedisRepo                domain.UserRedisRepository
 	socialAccountMySQLRepo       domain.SocialAccountMySQLRepository
 	socialAccountGoogleOAuthRepo domain.SocialAccountGoogleOAuthRepository
 }
 
-func NewSocialAccountUsecase(userMySQLRepo domain.UserMySQLRepository, socialAccountMySQLRepo domain.SocialAccountMySQLRepository,
-	socialAccountGoogleOAuthRepo domain.SocialAccountGoogleOAuthRepository) domain.SocialAccountUsecase {
+func NewSocialAccountUsecase(userMySQLRepo domain.UserMySQLRepository, userRedisRepo domain.UserRedisRepository,
+	socialAccountMySQLRepo domain.SocialAccountMySQLRepository, socialAccountGoogleOAuthRepo domain.SocialAccountGoogleOAuthRepository) domain.SocialAccountUsecase {
 	return &socialLoginUsecase{
 		userMySQLRepo:                userMySQLRepo,
+		userRedisRepo:                userRedisRepo,
 		socialAccountMySQLRepo:       socialAccountMySQLRepo,
 		socialAccountGoogleOAuthRepo: socialAccountGoogleOAuthRepo,
 	}
@@ -85,6 +87,16 @@ func (s *socialLoginUsecase) GetUserInfo(ctx context.Context, token *oauth2.Toke
 		Name:    name,
 	}
 	jwtToken, err := middleware.GenToken(payloadData)
+	if err != nil {
+		return "", err
+	}
+
+	err = s.userRedisRepo.Store(ctx, &domain.UserCache{
+		Id:          userID,
+		Account:     account,
+		Name:        name,
+		AccessToken: jwtToken,
+	})
 	if err != nil {
 		return "", err
 	}

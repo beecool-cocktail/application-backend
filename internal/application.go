@@ -43,8 +43,9 @@ func initializeRoutes(s *service.Service) {
 	}
 
 	// CORSMiddleware for all handler
-	s.HTTP.Use(middleware.CORSMiddleware())
-
+	middlewareHandler := middleware.NewMiddlewareHandler(s)
+	// CORSMiddleware for all handler
+	s.HTTP.Use(middlewareHandler.CORSMiddleware())
 	userMySQLRepo := _userRepo.NewMySQLUserRepository(s.DB)
 	socialAccountMySQLRepo := _socialAccountMySQLRepo.NewMySQLSocialAccountRepository(s.DB)
 	cocktailMySQLRepo := _cocktailMySQLRepo.NewMySQLCocktailRepository(s.DB)
@@ -55,7 +56,7 @@ func initializeRoutes(s *service.Service) {
 
 
 	userUsecase := _userUsecase.NewUserUsecase(userMySQLRepo, userRedisRepo)
-	socialAccountUsecase := _socialAccountUsecase.NewSocialAccountUsecase(userMySQLRepo, socialAccountMySQLRepo, socialAccountGoogleOAuthRepo)
+	socialAccountUsecase := _socialAccountUsecase.NewSocialAccountUsecase(userMySQLRepo, userRedisRepo, socialAccountMySQLRepo, socialAccountGoogleOAuthRepo)
 	cocktailUsecase := _cocktailUsecase.NewCocktailUsecase(cocktailMySQLRepo)
 
 	_userHandlerHttpDelivery.NewUserHandler(s, userUsecase, socialAccountUsecase)

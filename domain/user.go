@@ -20,9 +20,9 @@ type UserCache struct {
 	Id           int64  `structs:"id"`
 	Account      string `structs:"account"`
 	Name         string `structs:"Name"`
-	AccessToken  string `structs:"access_token,omitempty"`
-	RefreshToken string `structs:"refresh_token,omitempty"`
-	TokenExpire  string `structs:"token_expire,omitempty"`
+	AccessToken  string `structs:"access_token"`
+	RefreshToken string `structs:"refresh_token"`
+	TokenExpire  string `structs:"token_expire"`
 }
 
 type UserMySQLRepository interface {
@@ -31,8 +31,10 @@ type UserMySQLRepository interface {
 }
 
 type UserRedisRepository interface {
-	Store(ctx context.Context, r *UserCache, key string) error
+	Store(ctx context.Context, r *UserCache) error
+	UpdateToken(ctx context.Context, r *UserCache) error
 }
 
 type UserUsecase interface {
+	Logout(ctx context.Context, id int64) error
 }
