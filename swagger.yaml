@@ -30,6 +30,31 @@ definitions:
         x-go-name: Total
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  GetUserInfoResponse:
+    properties:
+      email:
+        type: string
+        x-go-name: Email
+      number_of_collection:
+        format: int64
+        type: integer
+        x-go-name: NumberOfCollection
+      number_of_post:
+        format: int64
+        type: integer
+        x-go-name: NumberOfPost
+      photo:
+        type: string
+        x-go-name: Photo
+      user_id:
+        format: int64
+        type: integer
+        x-go-name: UserID
+      user_name:
+        type: string
+        x-go-name: Name
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   GoogleAuthenticateRequest:
     properties:
       code:
@@ -139,6 +164,15 @@ paths:
       summary: Login with google OAuth2
       tags:
       - login
+  /user/info:
+    get:
+      description: Get user id, name, email, numberOfPost, numberOfCollection and
+        photo.
+      operationId: login
+      responses:
+        "200":
+          $ref: '#/responses/getUserInfoResponse'
+      summary: Get user information.
   /user/logout:
     post:
       description: make token invalid.
