@@ -3,7 +3,6 @@ package mysql
 import (
 	"context"
 	"github.com/beecool-cocktail/application-backend/domain"
-	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -24,7 +23,6 @@ func (s *socialAccountMySQLRepository) Store(ctx context.Context, ds *domain.Soc
 		}
 
 		ds.UserID = du.ID
-		logrus.Debug(ds.UserID)
 		err = tx.Select("social_id", "user_id", "type").Create(ds).Error
 		if err != nil {
 			return err
