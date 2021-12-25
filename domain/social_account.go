@@ -27,7 +27,7 @@ type GoogleUserInfo struct {
 
 type SocialAccountMySQLRepository interface {
 	QueryById(ctx context.Context, id string) (*SocialAccount, error)
-	Store(ctx context.Context, s *SocialAccount, u *User) error
+	Store(ctx context.Context, s *SocialAccount, u *User) (int64, error)
 }
 
 type SocialAccountGoogleOAuthRepository interface {

@@ -52,21 +52,18 @@ func (s *socialLoginUsecase) GetUserInfo(ctx context.Context, token *oauth2.Toke
 		} else {
 			// first time use google login, register a new user
 			account = util.GenString(16)
-			userID = util.GetID(util.IdGenerator)
 			name = googleUserInfo.Name
-			storeErr := s.socialAccountMySQLRepo.Store(ctx,
+			userID, err = s.socialAccountMySQLRepo.Store(ctx,
 				&domain.SocialAccount{
 					SocialID: googleUserInfo.ID,
-					UserID:   userID,
 					Type:     social_account.ParseSocialAccountType(social_account.Google),
 				},
 				&domain.User{
-					UserID:  userID,
 					Account: account,
 					Name:    name,
 					Email:   googleUserInfo.Email,
 				})
-			if storeErr != nil {
+			if err != nil {
 				return "", err
 			}
 		}
@@ -78,7 +75,7 @@ func (s *socialLoginUsecase) GetUserInfo(ctx context.Context, token *oauth2.Toke
 		}
 
 		account = user.Account
-		userID = user.UserID
+		userID = user.ID
 		name = user.Name
 	}
 

@@ -3,6 +3,7 @@ package mysql
 import (
 	"context"
 	"github.com/beecool-cocktail/application-backend/domain"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -14,15 +15,17 @@ func NewMySQLSocialAccountRepository(db *gorm.DB) domain.SocialAccountMySQLRepos
 	return &socialAccountMySQLRepository{db}
 }
 
-func (s *socialAccountMySQLRepository) Store(ctx context.Context, ds *domain.SocialAccount, du *domain.User) error {
+func (s *socialAccountMySQLRepository) Store(ctx context.Context, ds *domain.SocialAccount, du *domain.User) (int64, error) {
 
 	err := s.db.Transaction(func(tx *gorm.DB) error {
-		err := tx.Select("social_id", "user_id", "type").Create(ds).Error
+		err := tx.Select("user_id", "account", "name", "email").Create(du).Error
 		if err != nil {
 			return err
 		}
 
-		err = tx.Select("user_id", "account", "name", "email").Create(du).Error
+		ds.UserID = du.ID
+		logrus.Debug(ds.UserID)
+		err = tx.Select("social_id", "user_id", "type").Create(ds).Error
 		if err != nil {
 			return err
 		}
@@ -31,10 +34,10 @@ func (s *socialAccountMySQLRepository) Store(ctx context.Context, ds *domain.Soc
 	})
 
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	return du.ID, nil
 }
 
 func (s *socialAccountMySQLRepository) QueryById(ctx context.Context, id string) (*domain.SocialAccount, error) {
