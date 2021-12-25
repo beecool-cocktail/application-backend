@@ -20,7 +20,7 @@ func NewCocktailUsecase(cocktailMySQLRepo domain.CocktailMySQLRepository) domain
 	}
 }
 
-func (c *cocktailUsecase) GetAllWithFilter(ctx context.Context, filter map[string]interface{}, pagination domain.PaginationUsecase) (*[]domain.Cocktail, int64, error) {
+func (c *cocktailUsecase) GetAllWithFilter(ctx context.Context, filter map[string]interface{}, pagination domain.PaginationUsecase) ([]domain.Cocktail, int64, error) {
 	sortByDir := make(map[string]sortbydir.SortByDir)
 	for sort, dir := range pagination.SortByDir {
 		sortByDir[sort] = sortbydir.ParseSortByDirByInt(dir)

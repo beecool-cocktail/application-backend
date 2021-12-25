@@ -57,10 +57,10 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 	}
 
 	var cocktailList []viewmodels.PopularCocktailList
-	for _, cocktail := range *cocktails {
+	for _, cocktail := range cocktails {
 		out := viewmodels.PopularCocktailList{
 			CocktailID: cocktail.CocktailID,
-			Photo: "",
+			Photo: cocktail.Photo,
 			Title: cocktail.Title,
 			CreatedDate: util.GetFormatTime(cocktail.CreatedDate, "UTC"),
 		}

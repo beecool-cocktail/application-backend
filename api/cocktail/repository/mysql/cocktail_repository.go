@@ -15,7 +15,7 @@ func NewMySQLCocktailRepository(db *gorm.DB) domain.CocktailMySQLRepository {
 	return &cocktailMySQLRepository{db}
 }
 
-func (c *cocktailMySQLRepository) GetAllWithFilter(ctx context.Context, filter map[string]interface{}, pagination domain.PaginationMySQLRepository) (*[]domain.Cocktail, int64, error) {
+func (c *cocktailMySQLRepository) GetAllWithFilter(ctx context.Context, filter map[string]interface{}, pagination domain.PaginationMySQLRepository) ([]domain.Cocktail, int64, error) {
 	var cocktail []domain.Cocktail
 	var total int64
 
@@ -34,5 +34,5 @@ func (c *cocktailMySQLRepository) GetAllWithFilter(ctx context.Context, filter m
 	res := orm.Find(&cocktail)
 	orm.Count(&total)
 
-	return &cocktail, total, res.Error
+	return cocktail, total, res.Error
 }

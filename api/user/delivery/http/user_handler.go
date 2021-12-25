@@ -89,7 +89,7 @@ func (u *UserHandler) GoogleAuthenticate(c *gin.Context) {
 // summary: User logout.
 // description: make token invalid.
 // responses:
-//  "200": description: success
+//  "200": success
 func (u *UserHandler) Logout(c *gin.Context) {
 	var request viewmodels.LogoutRequest
 

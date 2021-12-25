@@ -44,6 +44,14 @@ definitions:
         x-go-name: Token
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  LogoutRequest:
+    properties:
+      user_id:
+        format: int64
+        type: integer
+        x-go-name: UserID
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   PopularCocktailList:
     properties:
       cocktail_id:
@@ -131,6 +139,19 @@ paths:
       summary: Login with google OAuth2
       tags:
       - login
+  /user/logout:
+    post:
+      description: make token invalid.
+      operationId: logoutRequest
+      parameters:
+      - in: body
+        name: Body
+        schema:
+          $ref: '#/definitions/LogoutRequest'
+      responses: {}
+      summary: User logout.
+      tags:
+      - user
 responses:
   googleAuthenticateResponse:
     description: ""

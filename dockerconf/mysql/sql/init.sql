@@ -101,10 +101,10 @@ KEY `idx_date` (`created_date`)
 CREATE TABLE `cocktails` (
  `id` bigint(64) NOT NULL AUTO_INCREMENT,
  `cocktail_id` bigint(64) NOT NULL,
+ `user_id` bigint(64) NOT NULL COMMENT ' 作者id',
+ `photo` varchar(128) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT ' 調酒圖片',
  `title` varchar(16) COLLATE utf8mb4_general_ci NOT NULL COMMENT ' 調酒名稱',
  `description` varchar(512) COLLATE utf8mb4_general_ci NOT NULL COMMENT ' 調酒介紹',
- `user_id` bigint(64) NOT NULL COMMENT ' 作者id',
- `user_name` varchar(32) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT ' 作者名稱',
  `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
  PRIMARY KEY (`id`),
  UNIQUE KEY `idx_cocktail_id` (`cocktail_id`),
@@ -115,7 +115,7 @@ CREATE TABLE `cocktails` (
 LOCK TABLES `cocktails` WRITE;
 /*!40000 ALTER TABLE `cocktails` DISABLE KEYS */;
 
-INSERT INTO `cocktails` (`id`, `cocktail_id`, `title`, `description`, `user_id`, `user_name`, `created_date`)
+INSERT INTO `cocktails` (`id`, `cocktail_id`, `title`, `description`, `user_id`, `photo`, `created_date`)
 VALUES
 (1, 123456, 'Side Car', 'Good to drink', 1, 'static/my_image01.jpg', '2021-01-15 18:38:30'),
 (2, 1111111, 'Old Fashion', 'Good to drink', 1, 'static/my_image01.jpg', '2021-02-15 18:38:30'),
