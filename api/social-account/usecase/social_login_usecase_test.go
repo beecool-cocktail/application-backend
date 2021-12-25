@@ -46,7 +46,6 @@ func Test_socialLoginUsecase_GetUserInfo(t *testing.T) {
 
 	mockSocialAccount := domain.SocialAccount{
 		SocialID: "googleUUID",
-		UserID: 123456,
 	}
 
 	mockGoogleUserInfo := domain.GoogleUserInfo{
@@ -54,12 +53,11 @@ func Test_socialLoginUsecase_GetUserInfo(t *testing.T) {
 	}
 
 	mockUser := domain.User{
-		UserID: 123456,
 		Account: "account",
 		Name: "Andy",
 	}
 
-	t.Run("First login Success", func(t *testing.T) {
+	t.Run("Not first login Success", func(t *testing.T) {
 		mockSocialAccountGoogleOAuth2Repo.
 			On("GetUserInfo", mock.Anything, mock.MatchedBy(func(token *oauth2.Token) bool { return token == oauthToken })).
 			Return(&mockGoogleUserInfo, nil).Once()
@@ -79,7 +77,7 @@ func Test_socialLoginUsecase_GetUserInfo(t *testing.T) {
 		assert.NoError(t, err)
 	})
 
-	t.Run("Not First login Success", func(t *testing.T) {
+	t.Run("First login Success", func(t *testing.T) {
 		mockSocialAccountGoogleOAuth2Repo.
 			On("GetUserInfo", mock.Anything, mock.MatchedBy(func(token *oauth2.Token) bool { return token == oauthToken })).
 			Return(&mockGoogleUserInfo, nil).Once()
@@ -90,7 +88,7 @@ func Test_socialLoginUsecase_GetUserInfo(t *testing.T) {
 
 		mockSocialAccountMySQLRepo.
 			On("Store", mock.Anything, mock.Anything, mock.Anything).
-			Return(nil).Once()
+			Return(int64(1), nil).Once()
 
 
 		s := NewSocialAccountUsecase(mockUserNySQLRepo, mockSocialAccountMySQLRepo, mockSocialAccountGoogleOAuth2Repo)

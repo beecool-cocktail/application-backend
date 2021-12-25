@@ -38,15 +38,22 @@ func (_m *SocialAccountMySQLRepository) QueryById(ctx context.Context, id string
 }
 
 // Store provides a mock function with given fields: ctx, s, u
-func (_m *SocialAccountMySQLRepository) Store(ctx context.Context, s *domain.SocialAccount, u *domain.User) error {
+func (_m *SocialAccountMySQLRepository) Store(ctx context.Context, s *domain.SocialAccount, u *domain.User) (int64, error) {
 	ret := _m.Called(ctx, s, u)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *domain.SocialAccount, *domain.User) error); ok {
+	var r0 int64
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.SocialAccount, *domain.User) int64); ok {
 		r0 = rf(ctx, s, u)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(int64)
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, *domain.SocialAccount, *domain.User) error); ok {
+		r1 = rf(ctx, s, u)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }

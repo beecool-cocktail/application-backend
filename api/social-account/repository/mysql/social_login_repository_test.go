@@ -20,31 +20,31 @@ func Test_socialAccountMySQLRepository_Store(t *testing.T) {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 
-	mockSocialAccount := &domain.SocialAccount{
-		SocialID: "googleUUID",
-		UserID:   123456,
-		Type:     social_account.ParseSocialAccountType(social_account.Google),
-	}
-
 	mockUser := &domain.User{
-		UserID:  123456,
 		Account: "account",
 		Name:    "Andy",
 		Email:   "abc123@gmail.com",
 	}
 
+	mockSocialAccount := &domain.SocialAccount{
+		SocialID: "googleUUID",
+		UserID:   1,
+		Type:     social_account.ParseSocialAccountType(social_account.Google),
+	}
+
 	const sqlInsertSocialAccounts = "INSERT INTO `social_accounts` (`social_id`,`user_id`,`type`) VALUES (?,?,?)"
-	const sqlInsertUsers = "INSERT INTO `users` (`user_id`,`account`,`name`,`email`) VALUES (?,?,?,?)"
+	const sqlInsertUsers = "INSERT INTO `users` (`account`,`name`,`email`) VALUES (?,?,?)"
 
 	t.Run("Success", func(t *testing.T) {
 		mock.ExpectBegin()
+		mock.ExpectExec(regexp.QuoteMeta(sqlInsertUsers)).
+			WithArgs(mockUser.Account, mockUser.Name, mockUser.Email).
+			WillReturnResult(sqlmock.NewResult(1, 1))
+
 		mock.ExpectExec(regexp.QuoteMeta(sqlInsertSocialAccounts)).
 			WithArgs(mockSocialAccount.SocialID, mockSocialAccount.UserID, mockSocialAccount.Type).
 			WillReturnResult(sqlmock.NewResult(0, 1))
 
-		mock.ExpectExec(regexp.QuoteMeta(sqlInsertUsers)).
-			WithArgs(mockUser.UserID, mockUser.Account, mockUser.Name, mockUser.Email).
-			WillReturnResult(sqlmock.NewResult(0, 1))
 		mock.ExpectCommit()
 
 		d := NewMySQLSocialAccountRepository(db)
@@ -58,8 +58,8 @@ func Test_socialAccountMySQLRepository_Store(t *testing.T) {
 
 	t.Run("Failed and Rollback", func(t *testing.T) {
 		mock.ExpectBegin()
-		mock.ExpectExec(regexp.QuoteMeta(sqlInsertSocialAccounts)).
-			WithArgs(mockSocialAccount.SocialID, mockSocialAccount.UserID, mockSocialAccount.Type).
+		mock.ExpectExec(regexp.QuoteMeta(sqlInsertUsers)).
+			WithArgs(mockUser.Account, mockUser.Name, mockUser.Email).
 			WillReturnError(errors.New("insert failed"))
 		mock.ExpectRollback()
 
