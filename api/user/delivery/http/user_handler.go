@@ -28,6 +28,7 @@ func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase, socialAc
 	s.HTTP.GET("/api/google-login", handler.SocialLogin)
 	s.HTTP.POST("/api/google-authenticate", handler.GoogleAuthenticate)
 	s.HTTP.POST("/api/user/logout", handler.Logout)
+	s.HTTP.GET("/api/user/info", handler.GetUserInfo)
 }
 
 // swagger:route GET /google-login login googleLogin
@@ -111,4 +112,33 @@ func (u *UserHandler) Logout(c *gin.Context) {
 
 
 	util.PackResponseWithData(c, http.StatusOK, nil, domain.GetErrorCode(nil), "")
+}
+
+// swagger:operation GET /user/info login
+// ---
+// summary: Get user information.
+// description: Get user id, name, email, numberOfPost, numberOfCollection and photo.
+// responses:
+//  "200":
+//    "$ref": "#/responses/getUserInfoResponse"
+func (u *UserHandler) GetUserInfo(c *gin.Context) {
+	var response viewmodels.GetUserInfoResponse
+	userId := c.GetInt64("user_id")
+
+	user, err := u.UserUsecase.QueryById(c, userId)
+	if err != nil {
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
+	response = viewmodels.GetUserInfoResponse{
+		UserID: user.ID,
+		Name: user.Name,
+		Email: user.Email,
+		Photo: user.Photo,
+		NumberOfPost: user.NumberOfPost,
+		NumberOfCollection: user.NumberOfCollection,
+	}
+
+	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
 }

@@ -8,7 +8,6 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -102,25 +101,25 @@ func (h *Handler) JWTAuthMiddleware() func(c *gin.Context) {
 			return
 		}
 
-		key := "admin:admin_id:" + strconv.FormatInt(mc.UserID, 10)
-		user, err := h.service.Redis.HMGet(key, "access_token").Result()
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, viewmodels.ResponseData{ErrorCode: domain.GetErrorCode(domain.ErrTokenExpired), ErrorMessage: domain.ErrTokenExpired.Error()})
-			return
-		}
+		//key := "admin:admin_id:" + strconv.FormatInt(mc.UserID, 10)
+		//user, err := h.service.Redis.HMGet(key, "access_token").Result()
+		//if err != nil {
+		//	c.AbortWithStatusJSON(http.StatusUnauthorized, viewmodels.ResponseData{ErrorCode: domain.GetErrorCode(domain.ErrTokenExpired), ErrorMessage: domain.ErrTokenExpired.Error()})
+		//	return
+		//}
+		//
+		//serverAccessToken, ok := user[0].(string)
+		//if !ok {
+		//	c.AbortWithStatusJSON(domain.GetStatusCode(domain.ErrTokenExpired), viewmodels.ResponseData{ErrorCode: domain.GetErrorCode(domain.ErrTokenExpired), ErrorMessage: domain.ErrTokenExpired.Error()})
+		//}
+		//
+		//if !isTokenValid(token, serverAccessToken) {
+		//	c.AbortWithStatusJSON(domain.GetStatusCode(domain.ErrTokenExpired), viewmodels.ResponseData{ErrorCode: domain.GetErrorCode(domain.ErrTokenExpired), ErrorMessage: domain.ErrTokenExpired.Error()})
+		//}
 
-		serverAccessToken, ok := user[0].(string)
-		if !ok {
-			c.AbortWithStatusJSON(domain.GetStatusCode(domain.ErrTokenExpired), viewmodels.ResponseData{ErrorCode: domain.GetErrorCode(domain.ErrTokenExpired), ErrorMessage: domain.ErrTokenExpired.Error()})
-		}
-
-		if !isTokenValid(token, serverAccessToken) {
-			c.AbortWithStatusJSON(domain.GetStatusCode(domain.ErrTokenExpired), viewmodels.ResponseData{ErrorCode: domain.GetErrorCode(domain.ErrTokenExpired), ErrorMessage: domain.ErrTokenExpired.Error()})
-		}
-
-		// Store Account info into Context
+		// Store info into Context
 		c.Set("account", mc.Account)
-		// After that, we can get Account info from c.Get("account")
+		c.Set("user_id", mc.Id)
 		c.Next()
 	}
 }

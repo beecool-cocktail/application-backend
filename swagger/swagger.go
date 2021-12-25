@@ -32,3 +32,9 @@ type swaggerLogoutRequest struct {
 	// in: body
 	Body viewmodels.LogoutRequest
 }
+
+// swagger:parameters getUserInfoResponse
+type swaggerGetUserInfoResponse struct {
+	// in: body
+	Body viewmodels.GetUserInfoResponse
+}
