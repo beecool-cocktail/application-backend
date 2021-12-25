@@ -118,8 +118,10 @@ func (u *UserHandler) Logout(c *gin.Context) {
 // ---
 // summary: Get user information.
 // description: Get user id, name, email, numberOfPost, numberOfCollection and photo.
+//
 // security:
 // - Bearer: [apiKey]
+//
 // responses:
 //  "200":
 //    "$ref": "#/responses/getUserInfoResponse"

@@ -189,6 +189,10 @@ paths:
       tags:
       - user
 responses:
+  getUserInfoResponse:
+    description: ""
+    schema:
+      $ref: '#/definitions/GetUserInfoResponse'
   googleAuthenticateResponse:
     description: ""
     schema:
