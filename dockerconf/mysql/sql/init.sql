@@ -47,7 +47,6 @@ DROP TABLE IF EXISTS `users`;
 
 CREATE TABLE `users` (
 `id` bigint(64) NOT NULL AUTO_INCREMENT,
-`user_id` bigint(64) NOT NULL,
 `account` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
 `password` varchar(100) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
 `status` tinyint(1) NOT NULL DEFAULT '0',
@@ -57,7 +56,6 @@ CREATE TABLE `users` (
 `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 PRIMARY KEY (`id`),
 UNIQUE KEY `idx_account` (`account`),
-UNIQUE KEY `idx_user_id` (`user_id`),
 KEY `idx_date` (`created_date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
