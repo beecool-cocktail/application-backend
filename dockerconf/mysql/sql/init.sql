@@ -119,17 +119,17 @@ LOCK TABLES `cocktails` WRITE;
 
 INSERT INTO `cocktails` (`id`, `cocktail_id`, `title`, `description`, `user_id`, `user_name`, `created_date`)
 VALUES
-(1, 123456, 'Side Car', 'Good to drink', 1, '', '2021-01-15 18:38:30'),
-(2, 1111111, 'Old Fashion', 'Good to drink', 1, '', '2021-02-15 18:38:30'),
-(3, 222222, 'Gin tonic', 'Good to drink', 1, '', '2021-03-15 18:38:30'),
-(4, 333333, 'Very Impressive', 'Good to drink', 2, '', '2021-04-15 18:38:30'),
-(5, 444444, 'Pathetic', 'Good to drink', 2, '', '2021-05-15 18:38:30'),
-(6, 555555, 'Old Fashion', 'Good to drink', 3, '', '2021-12-10 18:38:30'),
-(7, 666666, 'Old Fashion', 'Good to drink', 3, '', '2021-12-11 18:38:30'),
-(8, 777777, 'Old Fashion', 'Good to drink', 4, '', '2021-12-12 18:38:30'),
-(9, 888888, 'Old Fashion', 'Good to drink', 5, '', '2021-12-13 18:38:30'),
-(10, 999999, 'Old Fashion', 'Good to drink', 6, '', '2021-12-14 18:38:30'),
-(11, 12121212, 'Old Fashion', 'Good to drink', 6, '', '2021-12-15 18:38:30');
+(1, 123456, 'Side Car', 'Good to drink', 1, 'static/my_image01.jpg', '2021-01-15 18:38:30'),
+(2, 1111111, 'Old Fashion', 'Good to drink', 1, 'static/my_image01.jpg', '2021-02-15 18:38:30'),
+(3, 222222, 'Gin tonic', 'Good to drink', 1, 'static/my_image01.jpg', '2021-03-15 18:38:30'),
+(4, 333333, 'Very Impressive', 'Good to drink', 2, 'static/my_image01.jpg', '2021-04-15 18:38:30'),
+(5, 444444, 'Pathetic', 'Good to drink', 2, 'static/my_image01.jpg', '2021-05-15 18:38:30'),
+(6, 555555, 'Old Fashion', 'Good to drink', 3, 'static/my_image01.jpg', '2021-12-10 18:38:30'),
+(7, 666666, 'Old Fashion', 'Good to drink', 3, 'static/my_image01.jpg', '2021-12-11 18:38:30'),
+(8, 777777, 'Old Fashion', 'Good to drink', 4, 'static/my_image01.jpg', '2021-12-12 18:38:30'),
+(9, 888888, 'Old Fashion', 'Good to drink', 5, 'static/my_image01.jpg', '2021-12-13 18:38:30'),
+(10, 999999, 'Old Fashion', 'Good to drink', 6, 'static/my_image01.jpg', '2021-12-14 18:38:30'),
+(11, 12121212, 'Old Fashion', 'Good to drink', 6, 'static/my_image01.jpg', '2021-12-15 18:38:30');
 
 /*!40000 ALTER TABLE `cocktails` ENABLE KEYS */;
 UNLOCK TABLES;
