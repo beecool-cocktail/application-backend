@@ -15,15 +15,15 @@ type CocktailMySQLRepository struct {
 }
 
 // GetAllWithFilter provides a mock function with given fields: ctx, filter, pagination
-func (_m *CocktailMySQLRepository) GetAllWithFilter(ctx context.Context, filter map[string]interface{}, pagination domain.PaginationMySQLRepository) (*[]domain.Cocktail, int64, error) {
+func (_m *CocktailMySQLRepository) GetAllWithFilter(ctx context.Context, filter map[string]interface{}, pagination domain.PaginationMySQLRepository) ([]domain.Cocktail, int64, error) {
 	ret := _m.Called(ctx, filter, pagination)
 
-	var r0 *[]domain.Cocktail
-	if rf, ok := ret.Get(0).(func(context.Context, map[string]interface{}, domain.PaginationMySQLRepository) *[]domain.Cocktail); ok {
+	var r0 []domain.Cocktail
+	if rf, ok := ret.Get(0).(func(context.Context, map[string]interface{}, domain.PaginationMySQLRepository) []domain.Cocktail); ok {
 		r0 = rf(ctx, filter, pagination)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*[]domain.Cocktail)
+			r0 = ret.Get(0).([]domain.Cocktail)
 		}
 	}
 

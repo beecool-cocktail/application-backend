@@ -15,7 +15,8 @@ import (
 )
 
 func Test_socialLoginUsecase_Exchange(t *testing.T) {
-	mockUserNySQLRepo := new(mocks.UserMySQLRepository)
+	mockUserMySQLRepo := new(mocks.UserMySQLRepository)
+	mockUserRedisRepo := new(mocks.UserRedisRepository)
 	mockSocialAccountGoogleOAuth2Repo := new(mocks.SocialAccountGoogleOAuthRepository)
 	mockSocialAccountMySQLRepo := new(mocks.SocialAccountMySQLRepository)
 
@@ -26,7 +27,7 @@ func Test_socialLoginUsecase_Exchange(t *testing.T) {
 			On("Exchange", mock.Anything, mock.MatchedBy(func(code string) bool { return code == "code" })).
 			Return(nil, nil).Once()
 
-		s := NewSocialAccountUsecase(mockUserNySQLRepo, mockSocialAccountMySQLRepo, mockSocialAccountGoogleOAuth2Repo)
+		s := NewSocialAccountUsecase(mockUserMySQLRepo, mockUserRedisRepo, mockSocialAccountMySQLRepo, mockSocialAccountGoogleOAuth2Repo)
 		_, err := s.Exchange(context.TODO(), "code")
 
 		assert.NoError(t, err)
@@ -34,25 +35,27 @@ func Test_socialLoginUsecase_Exchange(t *testing.T) {
 }
 
 func Test_socialLoginUsecase_GetUserInfo(t *testing.T) {
-	mockUserNySQLRepo := new(mocks.UserMySQLRepository)
+	mockUserMySQLRepo := new(mocks.UserMySQLRepository)
+	mockUserRedisRepo := new(mocks.UserRedisRepository)
 	mockSocialAccountGoogleOAuth2Repo := new(mocks.SocialAccountGoogleOAuthRepository)
 	mockSocialAccountMySQLRepo := new(mocks.SocialAccountMySQLRepository)
-
-	go util.StartUserIdGenerator()
 
 	oauthToken := &oauth2.Token{
 		AccessToken: "token",
 	}
 
 	mockSocialAccount := domain.SocialAccount{
+		UserID: 1,
 		SocialID: "googleUUID",
 	}
 
 	mockGoogleUserInfo := domain.GoogleUserInfo{
+		Name: "Andy",
 		ID: "googleUUID",
 	}
 
-	mockUser := domain.User{
+	mockUserMySQL := domain.User{
+		ID: 1,
 		Account: "account",
 		Name: "Andy",
 	}
@@ -66,12 +69,17 @@ func Test_socialLoginUsecase_GetUserInfo(t *testing.T) {
 			On("QueryById", mock.Anything, mock.MatchedBy(func(googleUUID string) bool { return googleUUID == mockGoogleUserInfo.ID })).
 			Return(&mockSocialAccount, nil).Once()
 
-		mockUserNySQLRepo.
+		mockUserMySQLRepo.
 			On("QueryById", mock.Anything, mock.MatchedBy(func(userID int64) bool { return userID == mockSocialAccount.UserID })).
-			Return(&mockUser, nil).Once()
+			Return(&mockUserMySQL, nil).Once()
 
+		mockUserRedisRepo.
+			On("Store", mock.Anything, mock.MatchedBy(func(mockUser *domain.UserCache) bool {
+				return matchedByUserRedis(mockUser, &mockUserMySQL)
+			})).
+			Return(nil).Once()
 
-		s := NewSocialAccountUsecase(mockUserNySQLRepo, mockSocialAccountMySQLRepo, mockSocialAccountGoogleOAuth2Repo)
+		s := NewSocialAccountUsecase(mockUserMySQLRepo, mockUserRedisRepo, mockSocialAccountMySQLRepo, mockSocialAccountGoogleOAuth2Repo)
 		_, err := s.GetUserInfo(context.TODO(), oauthToken)
 
 		assert.NoError(t, err)
@@ -90,8 +98,11 @@ func Test_socialLoginUsecase_GetUserInfo(t *testing.T) {
 			On("Store", mock.Anything, mock.Anything, mock.Anything).
 			Return(int64(1), nil).Once()
 
+		mockUserRedisRepo.
+			On("Store", mock.Anything, mock.Anything).
+			Return(nil).Once()
 
-		s := NewSocialAccountUsecase(mockUserNySQLRepo, mockSocialAccountMySQLRepo, mockSocialAccountGoogleOAuth2Repo)
+		s := NewSocialAccountUsecase(mockUserMySQLRepo, mockUserRedisRepo, mockSocialAccountMySQLRepo, mockSocialAccountGoogleOAuth2Repo)
 		_, err := s.GetUserInfo(context.TODO(), oauthToken)
 
 		assert.NoError(t, err)
@@ -102,7 +113,7 @@ func Test_socialLoginUsecase_GetUserInfo(t *testing.T) {
 			On("GetUserInfo", mock.Anything, mock.MatchedBy(func(token *oauth2.Token) bool { return token == oauthToken })).
 			Return(nil, errors.New("get google user info failed")).Once()
 
-		s := NewSocialAccountUsecase(mockUserNySQLRepo, mockSocialAccountMySQLRepo, mockSocialAccountGoogleOAuth2Repo)
+		s := NewSocialAccountUsecase(mockUserMySQLRepo, mockUserRedisRepo, mockSocialAccountMySQLRepo, mockSocialAccountGoogleOAuth2Repo)
 		_, err := s.GetUserInfo(context.TODO(), oauthToken)
 
 		assert.Equal(t, err, errors.New("get google user info failed"))
@@ -117,7 +128,7 @@ func Test_socialLoginUsecase_GetUserInfo(t *testing.T) {
 			On("QueryById", mock.Anything, mock.MatchedBy(func(googleUUID string) bool { return googleUUID == mockGoogleUserInfo.ID })).
 			Return(nil, errors.New("get social account info failed")).Once()
 
-		s := NewSocialAccountUsecase(mockUserNySQLRepo, mockSocialAccountMySQLRepo, mockSocialAccountGoogleOAuth2Repo)
+		s := NewSocialAccountUsecase(mockUserMySQLRepo, mockUserRedisRepo, mockSocialAccountMySQLRepo, mockSocialAccountGoogleOAuth2Repo)
 		_, err := s.GetUserInfo(context.TODO(), oauthToken)
 
 		assert.Equal(t, err, errors.New("get social account info failed"))

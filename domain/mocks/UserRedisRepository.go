@@ -14,13 +14,27 @@ type UserRedisRepository struct {
 	mock.Mock
 }
 
-// Store provides a mock function with given fields: ctx, r, key
-func (_m *UserRedisRepository) Store(ctx context.Context, r *domain.UserCache, key string) error {
-	ret := _m.Called(ctx, r, key)
+// Store provides a mock function with given fields: ctx, r
+func (_m *UserRedisRepository) Store(ctx context.Context, r *domain.UserCache) error {
+	ret := _m.Called(ctx, r)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *domain.UserCache, string) error); ok {
-		r0 = rf(ctx, r, key)
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.UserCache) error); ok {
+		r0 = rf(ctx, r)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// UpdateToken provides a mock function with given fields: ctx, r
+func (_m *UserRedisRepository) UpdateToken(ctx context.Context, r *domain.UserCache) error {
+	ret := _m.Called(ctx, r)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.UserCache) error); ok {
+		r0 = rf(ctx, r)
 	} else {
 		r0 = ret.Error(0)
 	}

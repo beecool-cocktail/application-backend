@@ -25,7 +25,7 @@ func (u *userMySQLRepository) Store(ctx context.Context, d *domain.User) error {
 
 func (u *userMySQLRepository) QueryById(ctx context.Context, id int64) (*domain.User, error) {
 	var user domain.User
-	res := u.db.Where("id = ?", id).Find(&user)
+	res := u.db.Where("id = ?", id).Take(&user)
 
 	return &user, res.Error
 }
