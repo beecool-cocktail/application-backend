@@ -27,6 +27,7 @@ func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase, socialAc
 
 	s.HTTP.GET("/api/google-login", handler.SocialLogin)
 	s.HTTP.POST("/api/google-authenticate", handler.GoogleAuthenticate)
+	s.HTTP.POST("/api/user/logout", handler.Logout)
 }
 
 // swagger:route GET /google-login login googleLogin
@@ -81,4 +82,27 @@ func (u *UserHandler) GoogleAuthenticate(c *gin.Context) {
 	response.Token = jwtToken
 
 	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
+}
+
+// swagger:operation POST /user/logout user logoutRequest
+// ---
+// summary: User logout.
+// description: make token invalid.
+// responses:
+//  "200": description: success
+func (u *UserHandler) Logout(c *gin.Context) {
+	var request viewmodels.LogoutRequest
+
+	if err := c.BindJSON(&request); err != nil {
+		logrus.Error(err)
+		util.PackResponseWithError(c, domain.ErrRequestDecodeFailed, "request unmarshal failed")
+	}
+
+	err := u.UserUsecase.Logout(c, request.UserID)
+	if err != nil {
+		util.PackResponseWithError(c, err, err.Error())
+	}
+
+
+	util.PackResponseWithData(c, http.StatusOK, nil, domain.GetErrorCode(nil), "")
 }

@@ -26,3 +26,9 @@ type swaggerGoogleAuthenticateResponse struct {
 	// in: body
 	Body viewmodels.GoogleAuthenticateResponse
 }
+
+// swagger:parameters logoutRequest
+type swaggerLogoutRequest struct {
+	// in: body
+	Body viewmodels.LogoutRequest
+}
