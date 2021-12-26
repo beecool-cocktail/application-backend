@@ -52,7 +52,7 @@ CREATE TABLE `users` (
 `status` tinyint(1) NOT NULL DEFAULT '0',
 `name` varchar(32) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
 `email` varchar(64) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
-`photo` varchar(128) COLLATE utf8mb4_general_ci NOT NULL,
+`photo` varchar(128) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
 `number_of_post` int(10) unsigned NOT NULL DEFAULT '0' COMMENT ' 貼文數',
 `number_of_collection` int(10) unsigned NOT NULL DEFAULT '0' COMMENT ' 收藏數',
 `remark` varchar(64) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',

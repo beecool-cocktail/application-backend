@@ -1,8 +1,8 @@
 version: '3'
 services:
   db:
-    image: mysql:${MYSQL_VERSION}
-    container_name: whispering-mysql
+    image: mariadb:latest
+    container_name: whispering-mariadb
     networks:
       whispering:
         ipv4_address: 172.28.0.2
