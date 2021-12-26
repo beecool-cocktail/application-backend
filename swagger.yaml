@@ -114,26 +114,25 @@ info:
   version: "0.1"
 paths:
   /cocktails:
-    post:
-      description: Get popular cocktail list order by create date.
-      operationId: popularCocktailListRequest
+    get:
+      description: |-
+        summary: Get popular cocktail list
+        description: Get popular cocktail list order by create date.
+      operationId: noRequest
       parameters:
-      - in: body
-        name: Body
-        schema:
-          $ref: '#/definitions/GetPopularCocktailListRequest'
+      - example: 1
+        in: query
+        name: page
+        required: true
+        type: integer
+      - example: 10
+        in: query
+        name: page_size
+        required: true
+        type: integer
       responses:
         "200":
           $ref: '#/responses/popularCocktailListResponse'
-        "400":
-          description: ' bad request'
-        "401":
-          description: ' unauthorized'
-        "404":
-          description: ' item not found'
-        "500":
-          description: ' internal error'
-      summary: Get popular cocktail list
       tags:
       - cocktail
   /google-authenticate:

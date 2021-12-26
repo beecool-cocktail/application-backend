@@ -59,6 +59,6 @@ func initializeRoutes(s *service.Service) {
 	socialAccountUsecase := _socialAccountUsecase.NewSocialAccountUsecase(userMySQLRepo, userRedisRepo, socialAccountMySQLRepo, socialAccountGoogleOAuthRepo)
 	cocktailUsecase := _cocktailUsecase.NewCocktailUsecase(cocktailMySQLRepo)
 
-	_userHandlerHttpDelivery.NewUserHandler(s, userUsecase, socialAccountUsecase)
+	_userHandlerHttpDelivery.NewUserHandler(s, userUsecase, socialAccountUsecase, *middlewareHandler)
 	_cocktailHandlerHttpDelivery.NewCocktailHandler(s, cocktailUsecase)
 }

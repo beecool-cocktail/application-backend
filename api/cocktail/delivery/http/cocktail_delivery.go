@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"net/http"
+	"strconv"
 )
 
 type CocktailHandler struct {
@@ -19,35 +20,42 @@ func NewCocktailHandler(s *service.Service, cocktailUsecase domain.CocktailUseca
 		CocktailUsecase: cocktailUsecase,
 	}
 
-	s.HTTP.POST("/api/cocktails", handler.CocktailList)
+	s.HTTP.GET("/api/cocktails", handler.CocktailList)
 }
 
-// swagger:route POST /cocktails cocktail popularCocktailListRequest
+// swagger:operation GET /cocktails cocktail noRequest
 //
-// Get popular cocktail list
+// summary: Get popular cocktail list
+// description: Get popular cocktail list order by create date.
 //
-// Get popular cocktail list order by create date.
+// ---
 //
+// parameters:
+// - name: page
+//   in: query
+//   required: true
+//   type: integer
+//   example: 1
 //
-// Responses:
-//   200: popularCocktailListResponse
-//   400: description: bad request
-//   401: description: unauthorized
-//   404: description: item not found
-//   500: description: internal error
+// - name: page_size
+//   in: query
+//   required: true
+//   type: integer
+//   example: 10
+//
+// responses:
+//  "200":
+//    "$ref": "#/responses/popularCocktailListResponse"
 func (co *CocktailHandler) CocktailList(c *gin.Context) {
 
-	var request viewmodels.GetPopularCocktailListRequest
 	var response viewmodels.GetPopularCocktailListResponse
-	if err := c.BindJSON(&request); err != nil {
-		logrus.Error(err)
-		util.PackResponseWithError(c, domain.ErrRequestDecodeFailed, "request unmarshal failed")
-		return
-	}
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, err := strconv.Atoi(c.DefaultQuery("page_size", "10"))
+
 
 	cocktails, total, err := co.CocktailUsecase.GetAllWithFilter(c, nil, domain.PaginationUsecase{
-		Page: request.Page,
-		PageSize: request.PageSize,
+		Page: page,
+		PageSize: pageSize,
 	})
 	if err != nil {
 		logrus.Error(err)
