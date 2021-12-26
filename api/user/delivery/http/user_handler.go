@@ -2,6 +2,7 @@ package http
 
 import (
 	"github.com/beecool-cocktail/application-backend/domain"
+	"github.com/beecool-cocktail/application-backend/middleware"
 	"github.com/beecool-cocktail/application-backend/service"
 	"github.com/beecool-cocktail/application-backend/util"
 	"github.com/beecool-cocktail/application-backend/viewmodels"
@@ -18,7 +19,9 @@ type UserHandler struct {
 	SocialAccountUsecase domain.SocialAccountUsecase
 }
 
-func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase, socialAccountUsecase domain.SocialAccountUsecase) {
+func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase, socialAccountUsecase domain.SocialAccountUsecase,
+	middlewareHandler middleware.Handler) {
+
 	handler := &UserHandler{
 		Configure:   s.Configure,
 		UserUsecase: userUsecase,
@@ -28,7 +31,7 @@ func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase, socialAc
 	s.HTTP.GET("/api/google-login", handler.SocialLogin)
 	s.HTTP.POST("/api/google-authenticate", handler.GoogleAuthenticate)
 	s.HTTP.POST("/api/user/logout", handler.Logout)
-	s.HTTP.GET("/api/user/info", handler.GetUserInfo)
+	s.HTTP.GET("/api/user/info", middlewareHandler.JWTAuthMiddleware(), handler.GetUserInfo)
 }
 
 // swagger:route GET /google-login login googleLogin

@@ -119,7 +119,7 @@ func (h *Handler) JWTAuthMiddleware() func(c *gin.Context) {
 
 		// Store info into Context
 		c.Set("account", mc.Account)
-		c.Set("user_id", mc.Id)
+		c.Set("user_id", mc.UserID)
 		c.Next()
 	}
 }
