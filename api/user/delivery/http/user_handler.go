@@ -145,6 +145,7 @@ func (u *UserHandler) GetUserInfo(c *gin.Context) {
 		Photo: user.Photo,
 		NumberOfPost: user.NumberOfPost,
 		NumberOfCollection: user.NumberOfCollection,
+		IsCollectionPublic: user.IsCollectionPublic,
 	}
 
 	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")

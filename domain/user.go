@@ -15,6 +15,7 @@ type User struct {
 	Photo              string    `gorm:"type:varchar(128) NOT NULL"`
 	NumberOfPost       int       `gorm:"type:int unsigned NOT NULL DEFAULT 0; comment: 貼文數"`
 	NumberOfCollection int       `gorm:"type:int unsigned NOT NULL DEFAULT 0; comment: 收藏數"`
+	IsCollectionPublic bool      `gorm:"type:tinyint(1) NOT NULL DEFAULT 0; comment: 公開收藏 0=不公開, 1=公開"`
 	Remark             string    `gorm:"type:varchar(64) NOT NULL DEFAULT ''"`
 	CreatedDate        time.Time `gorm:"type:timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;index:idx_date"`
 }

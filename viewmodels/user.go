@@ -13,10 +13,12 @@ type LogoutRequest struct {
 }
 
 type GetUserInfoResponse struct {
-	UserID int64 `json:"user_id"`
-	Name string `json:"user_name"`
-	Email string `json:"email"`
-	Photo string `json:"photo"`
-	NumberOfPost int `json:"number_of_post"`
-	NumberOfCollection int `json:"number_of_collection"`
+	UserID             int64  `json:"user_id"`
+	Name               string `json:"user_name"`
+	Email              string `json:"email"`
+	Photo              string `json:"photo"`
+	NumberOfPost       int    `json:"number_of_post"`
+	NumberOfCollection int    `json:"number_of_collection"`
+	// 是否公開收藏 false=不公開, true=公開
+	IsCollectionPublic bool   `json:"is_collection_public"`
 }
