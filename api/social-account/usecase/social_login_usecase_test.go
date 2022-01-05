@@ -51,7 +51,7 @@ func Test_socialLoginUsecase_GetUserInfo(t *testing.T) {
 
 	mockGoogleUserInfo := domain.GoogleUserInfo{
 		Name: "Andy",
-		ID: "googleUUID",
+		Sub: "googleUUID",
 	}
 
 	mockUserMySQL := domain.User{
@@ -66,7 +66,7 @@ func Test_socialLoginUsecase_GetUserInfo(t *testing.T) {
 			Return(&mockGoogleUserInfo, nil).Once()
 
 		mockSocialAccountMySQLRepo.
-			On("QueryById", mock.Anything, mock.MatchedBy(func(googleUUID string) bool { return googleUUID == mockGoogleUserInfo.ID })).
+			On("QueryById", mock.Anything, mock.MatchedBy(func(googleUUID string) bool { return googleUUID == mockGoogleUserInfo.Sub })).
 			Return(&mockSocialAccount, nil).Once()
 
 		mockUserMySQLRepo.
@@ -91,7 +91,7 @@ func Test_socialLoginUsecase_GetUserInfo(t *testing.T) {
 			Return(&mockGoogleUserInfo, nil).Once()
 
 		mockSocialAccountMySQLRepo.
-			On("QueryById", mock.Anything, mock.MatchedBy(func(googleUUID string) bool { return googleUUID == mockGoogleUserInfo.ID })).
+			On("QueryById", mock.Anything, mock.MatchedBy(func(googleUUID string) bool { return googleUUID == mockGoogleUserInfo.Sub })).
 			Return(nil, gorm.ErrRecordNotFound).Once()
 
 		mockSocialAccountMySQLRepo.
@@ -125,7 +125,7 @@ func Test_socialLoginUsecase_GetUserInfo(t *testing.T) {
 			Return(&mockGoogleUserInfo, nil).Once()
 
 		mockSocialAccountMySQLRepo.
-			On("QueryById", mock.Anything, mock.MatchedBy(func(googleUUID string) bool { return googleUUID == mockGoogleUserInfo.ID })).
+			On("QueryById", mock.Anything, mock.MatchedBy(func(googleUUID string) bool { return googleUUID == mockGoogleUserInfo.Sub })).
 			Return(nil, errors.New("get social account info failed")).Once()
 
 		s := NewSocialAccountUsecase(mockUserMySQLRepo, mockUserRedisRepo, mockSocialAccountMySQLRepo, mockSocialAccountGoogleOAuth2Repo)

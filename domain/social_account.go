@@ -15,7 +15,7 @@ type SocialAccount struct {
 }
 
 type GoogleUserInfo struct {
-	ID            string
+	Sub           string
 	Email         string
 	VerifiedEmail string
 	Name          string

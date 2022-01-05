@@ -46,7 +46,7 @@ func (s *socialLoginUsecase) GetUserInfo(ctx context.Context, token *oauth2.Toke
 
 	var userID int64
 	var account, name string
-	socialAccount, err := s.socialAccountMySQLRepo.QueryById(ctx, googleUserInfo.ID)
+	socialAccount, err := s.socialAccountMySQLRepo.QueryById(ctx, googleUserInfo.Sub)
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			logrus.Error(err)
@@ -57,7 +57,7 @@ func (s *socialLoginUsecase) GetUserInfo(ctx context.Context, token *oauth2.Toke
 			name = googleUserInfo.Name
 			userID, err = s.socialAccountMySQLRepo.Store(ctx,
 				&domain.SocialAccount{
-					SocialID: googleUserInfo.ID,
+					SocialID: googleUserInfo.Sub,
 					Type:     social_account.ParseSocialAccountType(social_account.Google),
 				},
 				&domain.User{
