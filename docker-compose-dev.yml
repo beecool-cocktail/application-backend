@@ -39,6 +39,8 @@ services:
     stdin_open: true
     tty: true
     restart: always
+    volumes:
+      - ${IMAGE_PATH}:/static/images
     ports:
       - "${APPLICATION_PORT}:6969"
     command: ./wait-for-it.sh db:3306 -- ./main --config serviceConfigDev.json
