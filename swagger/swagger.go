@@ -1,6 +1,9 @@
 package swagger
 
-import "github.com/beecool-cocktail/application-backend/viewmodels"
+import (
+	"bytes"
+	"github.com/beecool-cocktail/application-backend/viewmodels"
+)
 
 
 // swagger:parameters popularCocktailListRequest
@@ -38,4 +41,24 @@ type swaggerLogoutRequest struct {
 type swaggerGetUserInfoResponse struct {
 	// in: body
 	Body viewmodels.GetUserInfoResponse
+}
+
+// swagger:parameters updateUserInfoRequest
+type swaggerUpdateUserInfoRequest struct {
+	// in: body
+	Body viewmodels.UpdateUserInfoRequest
+}
+
+// swagger:parameters updateUserPhoto
+type swaggerUpdateUserPhoto struct {
+	// in: formData
+	//
+	// swagger:file
+	File *bytes.Buffer `json:"file"`
+}
+
+// swagger:response updateUserPhotoResponse
+type swaggerUpdateUserPhotoResponse struct {
+	// in: body
+	Body viewmodels.UpdateUserPhotoResponse
 }

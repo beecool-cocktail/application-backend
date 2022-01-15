@@ -7,7 +7,7 @@ import (
 )
 
 func newLogger(configure *Configure) (*logrus.Logger, error) {
-	if configure.HTTP == nil {
+	if configure.Logger == nil {
 		return nil, errors.New("logger configure is not initialed")
 	}
 

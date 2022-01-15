@@ -35,6 +35,10 @@ definitions:
       email:
         type: string
         x-go-name: Email
+      is_collection_public:
+        description: 是否公開收藏 false=不公開, true=公開
+        type: boolean
+        x-go-name: IsCollectionPublic
       number_of_collection:
         format: int64
         type: integer
@@ -107,6 +111,30 @@ definitions:
         x-go-name: ErrorMessage
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  UpdateUserInfoRequest:
+    properties:
+      is_collection_public:
+        description: public user collection post
+        example: false
+        type: boolean
+        x-go-name: IsCollectionPublic
+      name:
+        description: name for this user
+        example: Feen Lin
+        type: string
+        x-go-name: Name
+    required:
+    - name
+    - is_collection_public
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  UpdateUserPhotoResponse:
+    properties:
+      photo:
+        type: string
+        x-go-name: Photo
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
 host: localhost:6969
 info:
   description: This is api server
@@ -160,6 +188,40 @@ paths:
       summary: Login with google OAuth2
       tags:
       - login
+  /user/edit-info:
+    post:
+      description: Edit user name and collection of publicity status.
+      operationId: updateUserInfoRequest
+      parameters:
+      - in: body
+        name: Body
+        schema:
+          $ref: '#/definitions/UpdateUserInfoRequest'
+      responses: {}
+      security:
+      - Bearer:
+        - apiKey
+      summary: Edit user information.
+      tags:
+      - user
+  /user/edit-photo:
+    post:
+      description: Edit user name and collection of publicity status.
+      operationId: updateUserPhoto
+      parameters:
+      - in: formData
+        name: file
+        type: file
+        x-go-name: File
+      responses:
+        "201":
+          $ref: '#/responses/updateUserPhotoResponse'
+      security:
+      - Bearer:
+        - apiKey
+      summary: Edit user information.
+      tags:
+      - user
   /user/info:
     get:
       description: Get user id, name, email, numberOfPost, numberOfCollection and
@@ -200,6 +262,10 @@ responses:
     description: ""
     schema:
       $ref: '#/definitions/GetPopularCocktailListResponse'
+  updateUserPhotoResponse:
+    description: ""
+    schema:
+      $ref: '#/definitions/UpdateUserPhotoResponse'
 schemes:
 - http
 - https

@@ -10,6 +10,7 @@ require (
 	github.com/gin-gonic/gin v1.7.6 // indirect
 	github.com/go-playground/validator/v10 v10.9.0 // indirect
 	github.com/go-redis/redis v6.15.9+incompatible // indirect
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/jinzhu/now v1.1.3 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible // indirect

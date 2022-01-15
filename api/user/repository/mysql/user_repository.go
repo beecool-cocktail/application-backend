@@ -2,9 +2,20 @@ package mysql
 
 import (
 	"context"
+	"fmt"
 	"github.com/beecool-cocktail/application-backend/domain"
+	"github.com/fatih/structs"
 	"gorm.io/gorm"
 )
+
+type basicInfo struct {
+	Name               string `structs:"name"`
+	IsCollectionPublic bool   `structs:"is_collection_public"`
+}
+
+type photo struct {
+	Photo string `structs:"photo"`
+}
 
 type userMySQLRepository struct {
 	db *gorm.DB
@@ -28,4 +39,28 @@ func (u *userMySQLRepository) QueryById(ctx context.Context, id int64) (*domain.
 	res := u.db.Where("id = ?", id).Take(&user)
 
 	return &user, res.Error
+}
+
+func (u *userMySQLRepository) UpdateBasicInfo(ctx context.Context, d *domain.User) (int64, error) {
+	var user domain.User
+	updateColumn := basicInfo{
+		Name: d.Name,
+		IsCollectionPublic: d.IsCollectionPublic,
+	}
+
+	res := u.db.Model(&user).Where("id = ?", d.ID).Updates(structs.Map(updateColumn))
+	fmt.Println(res.Statement)
+
+	return res.RowsAffected, res.Error
+}
+
+func (u *userMySQLRepository) UpdateImage(ctx context.Context, d *domain.UserImage) (int64, error) {
+	var user domain.User
+	updateColumn := photo{
+		Photo: d.Path,
+	}
+
+	res := u.db.Model(&user).Where("id = ?", d.ID).Updates(structs.Map(updateColumn))
+
+	return res.RowsAffected, res.Error
 }

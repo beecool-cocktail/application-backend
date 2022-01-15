@@ -5,8 +5,10 @@ import (
 	"errors"
 	"github.com/beecool-cocktail/application-backend/domain"
 	"github.com/beecool-cocktail/application-backend/util"
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
+	"path/filepath"
 )
 
 type userUsecase struct {
@@ -48,4 +50,29 @@ func (u *userUsecase) QueryById(ctx context.Context, id int64) (*domain.User, er
 	}
 
 	return user, nil
+}
+
+func (u *userUsecase) UpdateBasicInfo(ctx context.Context, d *domain.User) (int64, error) {
+
+	rowsAffected, err := u.userMySQLRepo.UpdateBasicInfo(ctx, d)
+	if err != nil {
+		return 0, err
+	}
+
+	return rowsAffected, nil
+}
+
+func (u *userUsecase) UpdateImage(ctx context.Context, d *domain.UserImage) (int64, error) {
+
+	extension := filepath.Ext(d.File.Filename)
+	newFileName := uuid.New().String() + extension
+	path := "static/images/"
+	d.Path = path + newFileName
+
+	rowsAffected, err := u.userMySQLRepo.UpdateImage(ctx, d)
+	if err != nil {
+		return 0, err
+	}
+
+	return rowsAffected, nil
 }

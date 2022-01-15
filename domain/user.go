@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"mime/multipart"
 	"time"
 )
 
@@ -29,9 +30,17 @@ type UserCache struct {
 	TokenExpire  string `structs:"token_expire"`
 }
 
+type UserImage struct {
+	ID   int64
+	Path string
+	File *multipart.FileHeader
+}
+
 type UserMySQLRepository interface {
 	Store(ctx context.Context, d *User) error
 	QueryById(ctx context.Context, id int64) (*User, error)
+	UpdateBasicInfo(ctx context.Context, d *User) (int64, error)
+	UpdateImage(ctx context.Context, d *UserImage) (int64, error)
 }
 
 type UserRedisRepository interface {
@@ -42,4 +51,6 @@ type UserRedisRepository interface {
 type UserUsecase interface {
 	Logout(ctx context.Context, id int64) error
 	QueryById(ctx context.Context, id int64) (*User, error)
+	UpdateBasicInfo(ctx context.Context, d *User) (int64, error)
+	UpdateImage(ctx context.Context, d *UserImage) (int64, error)
 }

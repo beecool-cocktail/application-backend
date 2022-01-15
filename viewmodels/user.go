@@ -20,5 +20,21 @@ type GetUserInfoResponse struct {
 	NumberOfPost       int    `json:"number_of_post"`
 	NumberOfCollection int    `json:"number_of_collection"`
 	// 是否公開收藏 false=不公開, true=公開
+	IsCollectionPublic bool `json:"is_collection_public"`
+}
+
+type UpdateUserInfoRequest struct {
+	// name for this user
+	// required: true
+	// example: Feen Lin
+	Name               string `json:"name" binding:"required"`
+
+	// public user collection post
+	// required: true
+	// example: false
 	IsCollectionPublic bool   `json:"is_collection_public"`
+}
+
+type UpdateUserPhotoResponse struct {
+	Photo string `json:"photo"`
 }

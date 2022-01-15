@@ -14,8 +14,8 @@ import (
 )
 
 type UserHandler struct {
-	Configure   *service.Configure
-	UserUsecase domain.UserUsecase
+	Configure            *service.Configure
+	UserUsecase          domain.UserUsecase
 	SocialAccountUsecase domain.SocialAccountUsecase
 }
 
@@ -23,8 +23,8 @@ func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase, socialAc
 	middlewareHandler middleware.Handler) {
 
 	handler := &UserHandler{
-		Configure:   s.Configure,
-		UserUsecase: userUsecase,
+		Configure:            s.Configure,
+		UserUsecase:          userUsecase,
 		SocialAccountUsecase: socialAccountUsecase,
 	}
 
@@ -32,6 +32,8 @@ func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase, socialAc
 	s.HTTP.POST("/api/google-authenticate", handler.GoogleAuthenticate)
 	s.HTTP.POST("/api/user/logout", handler.Logout)
 	s.HTTP.GET("/api/user/info", middlewareHandler.JWTAuthMiddleware(), handler.GetUserInfo)
+	s.HTTP.POST("/api/user/edit-info", middlewareHandler.JWTAuthMiddleware(), handler.UpdateUserInfo)
+	s.HTTP.POST("/api/user/edit-photo", middlewareHandler.JWTAuthMiddleware(), handler.UpdateUserPhoto)
 }
 
 // swagger:route GET /google-login login googleLogin
@@ -113,7 +115,6 @@ func (u *UserHandler) Logout(c *gin.Context) {
 		return
 	}
 
-
 	util.PackResponseWithData(c, http.StatusOK, nil, domain.GetErrorCode(nil), "")
 }
 
@@ -139,13 +140,94 @@ func (u *UserHandler) GetUserInfo(c *gin.Context) {
 	}
 
 	response = viewmodels.GetUserInfoResponse{
-		UserID: user.ID,
-		Name: user.Name,
-		Email: user.Email,
-		Photo: user.Photo,
-		NumberOfPost: user.NumberOfPost,
+		UserID:             user.ID,
+		Name:               user.Name,
+		Email:              user.Email,
+		Photo:              user.Photo,
+		NumberOfPost:       user.NumberOfPost,
 		NumberOfCollection: user.NumberOfCollection,
 		IsCollectionPublic: user.IsCollectionPublic,
+	}
+
+	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
+}
+
+// swagger:operation POST /user/edit-info user updateUserInfoRequest
+// ---
+// summary: Edit user information.
+// description: Edit user name and collection of publicity status.
+//
+// security:
+// - Bearer: [apiKey]
+//
+// responses:
+//  "200": success
+func (u *UserHandler) UpdateUserInfo(c *gin.Context) {
+	var request viewmodels.UpdateUserInfoRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		logrus.Error(err)
+		util.PackResponseWithError(c, domain.ErrRequestDecodeFailed, "parameter illegal")
+		return
+	}
+
+	userId := c.GetInt64("user_id")
+
+	_, err := u.UserUsecase.UpdateBasicInfo(c, &domain.User{
+		ID:                 userId,
+		Name:               request.Name,
+		IsCollectionPublic: request.IsCollectionPublic,
+	})
+	if err != nil {
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
+	util.PackResponseWithData(c, http.StatusOK, nil, domain.GetErrorCode(nil), "")
+}
+
+
+// swagger:operation POST /user/edit-photo user updateUserPhoto
+// ---
+// summary: Edit user information.
+// description: Edit user name and collection of publicity status.
+//
+// security:
+// - Bearer: [apiKey]
+//
+// responses:
+//  "201":
+//    "$ref": "#/responses/updateUserPhotoResponse"
+func (u *UserHandler) UpdateUserPhoto(c *gin.Context) {
+	var response viewmodels.UpdateUserPhotoResponse
+	file, err := c.FormFile("file")
+	if err != nil {
+		logrus.Error(err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
+	userId := c.GetInt64("user_id")
+
+	userImage := domain.UserImage {
+		ID: userId,
+		File: file,
+	}
+
+	_, err = u.UserUsecase.UpdateImage(c, &userImage)
+	if err != nil {
+		logrus.Error(err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
+	if err := c.SaveUploadedFile(file, "/" + userImage.Path); err != nil {
+		logrus.Error(err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
+	response = viewmodels.UpdateUserPhotoResponse{
+		Photo: userImage.Path,
 	}
 
 	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
