@@ -29,8 +29,10 @@ func TestUserHandler_GoogleAuthenticate(t *testing.T) {
 	}
 
 	r := testutil.GetRouteWithcontext()
+	logger := testutil.GetLogger()
 
 	handler := UserHandler{
+		Logger:               logger,
 		UserUsecase:          mockUserUsecase,
 		SocialAccountUsecase: mockSocialAccountUsecase,
 	}
@@ -81,8 +83,10 @@ func TestUserHandler_Logout(t *testing.T) {
 	}
 
 	r := testutil.GetRouteWithcontext()
+	logger := testutil.GetLogger()
 
 	handler := UserHandler{
+		Logger:               logger,
 		UserUsecase:          mockUserUsecase,
 		SocialAccountUsecase: mockSocialAccountUsecase,
 	}
@@ -129,8 +133,10 @@ func TestUserHandler_GetUserInfo(t *testing.T) {
 	}
 
 	r := testutil.GetRouteWithcontext()
+	logger := testutil.GetLogger()
 
 	handler := UserHandler{
+		Logger:               logger,
 		UserUsecase:          mockUserUsecase,
 		SocialAccountUsecase: mockSocialAccountUsecase,
 	}
@@ -180,8 +186,10 @@ func TestUserHandler_UpdateUserInfo(t *testing.T) {
 	}
 
 	r := testutil.GetRouteWithcontext()
+	logger := testutil.GetLogger()
 
 	handler := UserHandler{
+		Logger:               logger,
 		UserUsecase:          mockUserUsecase,
 		SocialAccountUsecase: mockSocialAccountUsecase,
 	}

@@ -15,6 +15,7 @@ import (
 
 type UserHandler struct {
 	Configure            *service.Configure
+	Logger               *logrus.Logger
 	UserUsecase          domain.UserUsecase
 	SocialAccountUsecase domain.SocialAccountUsecase
 }
@@ -24,6 +25,7 @@ func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase, socialAc
 
 	handler := &UserHandler{
 		Configure:            s.Configure,
+		Logger:               s.Logger,
 		UserUsecase:          userUsecase,
 		SocialAccountUsecase: socialAccountUsecase,
 	}
@@ -67,25 +69,28 @@ func (u *UserHandler) SocialLogin(c *gin.Context) {
 //  "201":
 //    "$ref": "#/responses/googleAuthenticateResponse"
 func (u *UserHandler) GoogleAuthenticate(c *gin.Context) {
+	api := "/google-authenticate"
 	var request viewmodels.GoogleAuthenticateRequest
 	var response viewmodels.GoogleAuthenticateResponse
 
 	if err := c.BindJSON(&request); err != nil {
-		logrus.Error(err)
-		util.PackResponseWithError(c, domain.ErrRequestDecodeFailed, "request unmarshal failed")
+		service.GetLoggerEntry(u.Logger, api, request).Errorf("parameter illegal - %s", err)
+		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
 		return
 	}
 
+	service.GetLoggerEntry(u.Logger, api, request).Info()
+
 	token, err := u.SocialAccountUsecase.Exchange(c, request.Code)
 	if err != nil {
-		logrus.Error(err)
+		service.GetLoggerEntry(u.Logger, api, request).Errorf("exchange google token failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
 
 	jwtToken, err := u.SocialAccountUsecase.GetUserInfo(c, token)
 	if err != nil {
-		logrus.Error(err)
+		service.GetLoggerEntry(u.Logger, api, request).Errorf("get user info failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
@@ -101,16 +106,18 @@ func (u *UserHandler) GoogleAuthenticate(c *gin.Context) {
 // responses:
 //  "200": success
 func (u *UserHandler) Logout(c *gin.Context) {
+	api := "/user/logout"
 	var request viewmodels.LogoutRequest
 
 	if err := c.BindJSON(&request); err != nil {
-		logrus.Error(err)
-		util.PackResponseWithError(c, domain.ErrRequestDecodeFailed, "request unmarshal failed")
+		service.GetLoggerEntry(u.Logger, api, request).Errorf("parameter illegal - %s", err)
+		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
 		return
 	}
 
 	err := u.UserUsecase.Logout(c, request.UserID)
 	if err != nil {
+		service.GetLoggerEntry(u.Logger, api, request).Errorf("logout failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
@@ -130,11 +137,13 @@ func (u *UserHandler) Logout(c *gin.Context) {
 //  "200":
 //    "$ref": "#/responses/getUserInfoResponse"
 func (u *UserHandler) GetUserInfo(c *gin.Context) {
+	api := "/user/info"
 	var response viewmodels.GetUserInfoResponse
 	userId := c.GetInt64("user_id")
 
 	user, err := u.UserUsecase.QueryById(c, userId)
 	if err != nil {
+		service.GetLoggerEntry(u.Logger, api, nil).Errorf("query by id failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
@@ -163,10 +172,11 @@ func (u *UserHandler) GetUserInfo(c *gin.Context) {
 // responses:
 //  "200": success
 func (u *UserHandler) UpdateUserInfo(c *gin.Context) {
+	api := "/user/edit-info"
 	var request viewmodels.UpdateUserInfoRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		logrus.Error(err)
-		util.PackResponseWithError(c, domain.ErrRequestDecodeFailed, "parameter illegal")
+		service.GetLoggerEntry(u.Logger, api, request).Errorf("parameter illegal - %s", err)
+		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
 		return
 	}
 
@@ -178,13 +188,13 @@ func (u *UserHandler) UpdateUserInfo(c *gin.Context) {
 		IsCollectionPublic: request.IsCollectionPublic,
 	})
 	if err != nil {
+		service.GetLoggerEntry(u.Logger, api, request).Errorf("update basic info failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
 
 	util.PackResponseWithData(c, http.StatusOK, nil, domain.GetErrorCode(nil), "")
 }
-
 
 // swagger:operation POST /user/edit-photo user updateUserPhoto
 // ---
@@ -198,30 +208,31 @@ func (u *UserHandler) UpdateUserInfo(c *gin.Context) {
 //  "201":
 //    "$ref": "#/responses/updateUserPhotoResponse"
 func (u *UserHandler) UpdateUserPhoto(c *gin.Context) {
+	api := "/user/edit-photo"
 	var response viewmodels.UpdateUserPhotoResponse
 	file, err := c.FormFile("file")
 	if err != nil {
-		logrus.Error(err)
+		service.GetLoggerEntry(u.Logger, api, nil).Errorf("parameter illegal - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
 
 	userId := c.GetInt64("user_id")
 
-	userImage := domain.UserImage {
-		ID: userId,
+	userImage := domain.UserImage{
+		ID:   userId,
 		File: file,
 	}
 
 	_, err = u.UserUsecase.UpdateImage(c, &userImage)
 	if err != nil {
-		logrus.Error(err)
+		service.GetLoggerEntry(u.Logger, api, nil).Errorf("update image failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
 
-	if err := c.SaveUploadedFile(file, "/" + userImage.Path); err != nil {
-		logrus.Error(err)
+	if err := c.SaveUploadedFile(file, "/"+userImage.Path); err != nil {
+		service.GetLoggerEntry(u.Logger, api, nil).Errorf("parameter illegal - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}

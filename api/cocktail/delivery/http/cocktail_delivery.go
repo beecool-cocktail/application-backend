@@ -6,17 +6,18 @@ import (
 	"github.com/beecool-cocktail/application-backend/util"
 	"github.com/beecool-cocktail/application-backend/viewmodels"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
 )
 
 type CocktailHandler struct {
+	Service *service.Service
 	CocktailUsecase domain.CocktailUsecase
 }
 
 func NewCocktailHandler(s *service.Service, cocktailUsecase domain.CocktailUsecase) {
 	handler := &CocktailHandler{
+		Service: s,
 		CocktailUsecase: cocktailUsecase,
 	}
 
@@ -47,10 +48,20 @@ func NewCocktailHandler(s *service.Service, cocktailUsecase domain.CocktailUseca
 //  "200":
 //    "$ref": "#/responses/popularCocktailListResponse"
 func (co *CocktailHandler) CocktailList(c *gin.Context) {
-
+	api := "/cocktails"
 	var response viewmodels.GetPopularCocktailListResponse
 	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if err != nil {
+		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("parameter illegal - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
 	pageSize, err := strconv.Atoi(c.DefaultQuery("page_size", "10"))
+	if err != nil {
+		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("parameter illegal - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
 
 
 	cocktails, total, err := co.CocktailUsecase.GetAllWithFilter(c, nil, domain.PaginationUsecase{
@@ -58,7 +69,7 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 		PageSize: pageSize,
 	})
 	if err != nil {
-		logrus.Error(err)
+		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("get cocktails with filter failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}

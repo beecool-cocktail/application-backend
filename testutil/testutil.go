@@ -13,10 +13,9 @@ const (
 	Account string = "Andy"
 )
 
-func GetLogger() *logrus.Entry {
+func GetLogger() *logrus.Logger {
 	log := logrus.New()
-	logger := logrus.NewEntry(log)
-	return logger
+	return log
 }
 
 func GetRouter() *gin.Engine {

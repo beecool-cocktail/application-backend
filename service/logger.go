@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"github.com/sirupsen/logrus"
 	"os"
 )
@@ -19,13 +20,15 @@ func newLogger(configure *Configure) (*logrus.Logger, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.SetFormatter(&logrus.JSONFormatter{})
+	//log.SetFormatter(&logrus.JSONFormatter{})
 	log.SetOutput(os.Stdout)
 	log.SetLevel(level)
 
 	return log, nil
 }
 
-func GetLoggerEntry(log *logrus.Logger, ip, user_id string) *logrus.Entry {
-	return log.WithFields(logrus.Fields{"request_ip": ip, "user_id": user_id})
+func GetLoggerEntry(log *logrus.Logger, api string, request interface{}) *logrus.Entry {
+	formatRequest := fmt.Sprintf("%+v", request)
+	return log.WithFields(logrus.Fields{"api": api, "request_data": formatRequest})
+
 }
