@@ -59,6 +59,13 @@ func (u *userUsecase) UpdateBasicInfo(ctx context.Context, d *domain.User) (int6
 		return 0, err
 	}
 
+	err = u.userRedisRepo.UpdateBasicInfo(ctx, &domain.UserCache{
+		Name: d.Name,
+	})
+	if err != nil {
+		return 0, err
+	}
+
 	return rowsAffected, nil
 }
 

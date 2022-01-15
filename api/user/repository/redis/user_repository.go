@@ -8,13 +8,17 @@ import (
 	"strconv"
 )
 
+type userRedisRepository struct {
+	redis *redis.Client
+}
+
 type userToken struct {
 	AccessToken  string `structs:"access_token"`
 	RefreshToken string `structs:"refresh_token"`
 }
 
-type userRedisRepository struct {
-	redis *redis.Client
+type userInfo struct {
+	Name string `structs:"name"`
 }
 
 func NewRedisUserRepository(redis *redis.Client) domain.UserRedisRepository {
@@ -40,3 +44,16 @@ func (u *userRedisRepository) UpdateToken(ctx context.Context, r *domain.UserCac
 
 	return nil
 }
+
+func (u *userRedisRepository) UpdateBasicInfo(ctx context.Context, r *domain.UserCache) error {
+	key := "user:user_id" + strconv.FormatInt(r.Id, 10)
+
+	token := userInfo{
+		Name: r.Name,
+	}
+
+	u.redis.HMSet(key, structs.Map(token))
+
+	return nil
+}
+

@@ -28,6 +28,20 @@ func (_m *UserRedisRepository) Store(ctx context.Context, r *domain.UserCache) e
 	return r0
 }
 
+// UpdateBasicInfo provides a mock function with given fields: ctx, r
+func (_m *UserRedisRepository) UpdateBasicInfo(ctx context.Context, r *domain.UserCache) error {
+	ret := _m.Called(ctx, r)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.UserCache) error); ok {
+		r0 = rf(ctx, r)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // UpdateToken provides a mock function with given fields: ctx, r
 func (_m *UserRedisRepository) UpdateToken(ctx context.Context, r *domain.UserCache) error {
 	ret := _m.Called(ctx, r)

@@ -46,6 +46,7 @@ type UserMySQLRepository interface {
 type UserRedisRepository interface {
 	Store(ctx context.Context, r *UserCache) error
 	UpdateToken(ctx context.Context, r *UserCache) error
+	UpdateBasicInfo(ctx context.Context, r *UserCache) error
 }
 
 type UserUsecase interface {

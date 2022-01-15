@@ -19,7 +19,7 @@ func Test_userMySQLRepository_QueryById(t *testing.T) {
 	}
 
 	mockUser := &domain.User{
-		ID:     1,
+		ID: 1,
 	}
 
 	rows := sqlmock.NewRows([]string{"id"}).
@@ -39,5 +39,93 @@ func Test_userMySQLRepository_QueryById(t *testing.T) {
 		d := NewMySQLUserRepository(db)
 		_, err = d.QueryById(context.TODO(), 2)
 		assert.Equal(t, gorm.ErrRecordNotFound, err)
+	})
+}
+
+func Test_userMySQLRepository_Store(t *testing.T) {
+	db, mock, err := testutil.BeforeEach()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	mockUser := &domain.User{
+		ID:       1,
+		Account:  "test_account",
+		Password: "pass",
+	}
+
+	const sqlInsert = "INSERT INTO `users` (`account`,`password`,`id`) VALUES (?,?,?)"
+
+	mock.ExpectBegin()
+	mock.ExpectExec(regexp.QuoteMeta(sqlInsert)).
+		WithArgs(mockUser.Account, mockUser.Password, mockUser.ID).
+		WillReturnResult(sqlmock.NewResult(0, 1))
+	mock.ExpectCommit()
+
+	d := NewMySQLUserRepository(db)
+
+	d.Store(context.TODO(), mockUser)
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+}
+
+func Test_userMySQLRepository_UpdateBasicInfo(t *testing.T) {
+	db, mock, err := testutil.BeforeEach()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	mockUser := &domain.User{
+		ID:                 123456,
+		Name:               "Andy",
+		IsCollectionPublic: true,
+	}
+
+	sqlUpdate := "UPDATE `users` SET `is_collection_public`=?,`name`=? WHERE id = ?"
+
+	t.Run("Success", func(t *testing.T) {
+		mock.ExpectBegin()
+		mock.ExpectExec(regexp.QuoteMeta(sqlUpdate)).
+			WithArgs(mockUser.IsCollectionPublic, mockUser.Name, mockUser.ID).
+			WillReturnResult(sqlmock.NewResult(0, 1))
+		mock.ExpectCommit()
+		d := NewMySQLUserRepository(db)
+		rowsAffected, _ := d.UpdateBasicInfo(context.TODO(), mockUser)
+		assert.Equal(t, int64(1), rowsAffected)
+
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("there were unfulfilled expectations: %s", err)
+		}
+	})
+}
+
+func Test_userMySQLRepository_UpdateImage(t *testing.T) {
+	db, mock, err := testutil.BeforeEach()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	mockUser := &domain.UserImage{
+		ID:                 123456,
+		Path: "static/images/",
+	}
+
+	sqlUpdate := "UPDATE `users` SET `photo`=? WHERE id = ?"
+
+	t.Run("Success", func(t *testing.T) {
+		mock.ExpectBegin()
+		mock.ExpectExec(regexp.QuoteMeta(sqlUpdate)).
+			WithArgs(mockUser.Path, mockUser.ID).
+			WillReturnResult(sqlmock.NewResult(0, 1))
+		mock.ExpectCommit()
+		d := NewMySQLUserRepository(db)
+		rowsAffected, _ := d.UpdateImage(context.TODO(), mockUser)
+		assert.Equal(t, int64(1), rowsAffected)
+
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("there were unfulfilled expectations: %s", err)
+		}
 	})
 }
