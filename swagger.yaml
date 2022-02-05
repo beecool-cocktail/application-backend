@@ -111,23 +111,6 @@ definitions:
         x-go-name: ErrorMessage
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  UpdateUserInfoRequest:
-    properties:
-      is_collection_public:
-        description: public user collection post
-        example: false
-        type: boolean
-        x-go-name: IsCollectionPublic
-      name:
-        description: name for this user
-        example: Feen Lin
-        type: string
-        x-go-name: Name
-    required:
-    - name
-    - is_collection_public
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   UpdateUserPhotoResponse:
     properties:
       photo:
@@ -193,28 +176,26 @@ paths:
       description: Edit user name and collection of publicity status.
       operationId: updateUserInfoRequest
       parameters:
-      - in: body
-        name: Body
-        schema:
-          $ref: '#/definitions/UpdateUserInfoRequest'
-      responses: {}
-      security:
-      - Bearer:
-        - apiKey
-      summary: Edit user information.
-      tags:
-      - user
-  /user/edit-photo:
-    post:
-      description: Edit user name and collection of publicity status.
-      operationId: updateUserPhoto
-      parameters:
       - in: formData
         name: file
         type: file
         x-go-name: File
+      - description: name for this user
+        example: Feen Lin
+        in: formData
+        name: name
+        required: true
+        type: string
+        x-go-name: Name
+      - description: public user collection post
+        example: false
+        in: formData
+        name: is_collection_public
+        required: true
+        type: boolean
+        x-go-name: IsCollectionPublic
       responses:
-        "201":
+        "200":
           $ref: '#/responses/updateUserPhotoResponse'
       security:
       - Bearer:
