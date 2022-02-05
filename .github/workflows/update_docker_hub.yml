@@ -7,6 +7,7 @@ on:
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   CONFIG_FILE: serviceConfigDev.json
+  TAGS: v0.0.1-beta
 
 jobs:
 
@@ -29,4 +30,5 @@ jobs:
           name: blawhi2435/whispering-corner
           username: ${{ secrets.DOCKER_USER_NAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+          tags: ${{ env.TAGS }}
           dockerfile: Dockerfile
