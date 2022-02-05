@@ -24,8 +24,8 @@ jobs:
       - name: Update apt-get
         run: sudo apt-get update
 
-      - name: Add build-base
-        run: sudo apt-get install build-base
+      - name: Add build-essential
+        run: sudo apt-get install build-essential
 
       - name: Add libwebp-dev
         run: sudo apt-get install libwebp-dev
