@@ -8,6 +8,8 @@ WORKDIR /app
 COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
+RUN apk add build-base
+RUN apk add libwebp-dev
 
 COPY . .
 
@@ -32,6 +34,8 @@ COPY --from=build /app/wait-for-it.sh ./
 RUN apk update && \
     apk upgrade && \
     apk add --no-cache bash
+
+RUN apk add libwebp-dev
 
 RUN chmod +x ./wait-for-it.sh
 
