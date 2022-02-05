@@ -15,13 +15,15 @@ import (
 func Test_userUsecase_Logout(t *testing.T) {
 	mockUserMySQLRepo := new(mocks.UserMySQLRepository)
 	mockUserRedisRepo := new(mocks.UserRedisRepository)
+	mockUserFileRepo := new(mocks.UserFileRepository)
+	mockTransactionRepo := new(mocks.DBTransactionRepository)
 
 	t.Run("Success", func(t *testing.T) {
 		mockUserRedisRepo.
 			On("UpdateToken", mock.Anything, mock.Anything).
 			Return(nil, nil).Once()
 
-		u := NewUserUsecase(mockUserMySQLRepo, mockUserRedisRepo)
+		u := NewUserUsecase(mockUserMySQLRepo, mockUserRedisRepo, mockUserFileRepo, mockTransactionRepo)
 		err := u.Logout(context.TODO(), 1)
 
 		assert.NoError(t, err)
@@ -31,6 +33,8 @@ func Test_userUsecase_Logout(t *testing.T) {
 func Test_userUsecase_QueryById(t *testing.T) {
 	mockUserMySQLRepo := new(mocks.UserMySQLRepository)
 	mockUserRedisRepo := new(mocks.UserRedisRepository)
+	mockUserFileRepo := new(mocks.UserFileRepository)
+	mockTransactionRepo := new(mocks.DBTransactionRepository)
 
 	mockUser := domain.User{
 		ID: 1,
@@ -42,7 +46,7 @@ func Test_userUsecase_QueryById(t *testing.T) {
 			On("QueryById", mock.Anything, id).
 			Return(&mockUser, nil).Once()
 
-		u := NewUserUsecase(mockUserMySQLRepo, mockUserRedisRepo)
+		u := NewUserUsecase(mockUserMySQLRepo, mockUserRedisRepo, mockUserFileRepo, mockTransactionRepo)
 		user, err := u.QueryById(context.TODO(), 1)
 
 		assert.NoError(t, err)
@@ -56,7 +60,7 @@ func Test_userUsecase_QueryById(t *testing.T) {
 			On("QueryById", mock.Anything, id).
 			Return(&mockUser, gorm.ErrRecordNotFound).Once()
 
-		u := NewUserUsecase(mockUserMySQLRepo, mockUserRedisRepo)
+		u := NewUserUsecase(mockUserMySQLRepo, mockUserRedisRepo, mockUserFileRepo, mockTransactionRepo)
 		_, err := u.QueryById(context.TODO(), 1)
 
 		assert.Equal(t, domain.ErrUserNotFound, err)
@@ -67,6 +71,8 @@ func Test_userUsecase_QueryById(t *testing.T) {
 func Test_userUsecase_UpdateBasicInfo(t *testing.T) {
 	mockUserMySQLRepo := new(mocks.UserMySQLRepository)
 	mockUserRedisRepo := new(mocks.UserRedisRepository)
+	mockUserFileRepo := new(mocks.UserFileRepository)
+	mockTransactionRepo := new(mocks.DBTransactionRepository)
 
 	mockUser := domain.User{
 		ID:                 1,
@@ -74,43 +80,25 @@ func Test_userUsecase_UpdateBasicInfo(t *testing.T) {
 		IsCollectionPublic: true,
 	}
 
-	t.Run("Success", func(t *testing.T) {
-		mockUserMySQLRepo.
-			On("UpdateBasicInfo", mock.Anything, mock.Anything).
-			Return(int64(1), nil).Once()
+	mockUserImage := domain.UserImage{
+		ID:                 1,
+		Data: &multipart.FileHeader{
+			Filename: "filename.png",
+		},
+		Type: ".png",
+	}
 
+	t.Run("Success", func(t *testing.T) {
+		mockTransactionRepo.
+			On("Transaction", mock.Anything).
+			Return(nil).Once()
+		
 		mockUserRedisRepo.
 			On("UpdateBasicInfo", mock.Anything, mock.Anything).
 			Return( nil).Once()
 
-		u := NewUserUsecase(mockUserMySQLRepo, mockUserRedisRepo)
-		_, err := u.UpdateBasicInfo(context.TODO(), &mockUser)
-
-		assert.NoError(t, err)
-		mockUserMySQLRepo.AssertExpectations(t)
-	})
-}
-
-func Test_userUsecase_UpdateImage(t *testing.T) {
-	mockUserMySQLRepo := new(mocks.UserMySQLRepository)
-	mockUserRedisRepo := new(mocks.UserRedisRepository)
-
-	mockUser := domain.UserImage{
-		ID:                 1,
-		File: &multipart.FileHeader{
-			Filename: "filename",
-		},
-	}
-
-	t.Run("Success", func(t *testing.T) {
-		mockUserMySQLRepo.
-			On("UpdateImage",
-				mock.Anything,
-				mock.MatchedBy(func(u *domain.UserImage) bool { return u.Destination != "" })).
-			Return(int64(1), nil).Once()
-
-		u := NewUserUsecase(mockUserMySQLRepo, mockUserRedisRepo)
-		_, err := u.UpdateImage(context.TODO(), &mockUser)
+		u := NewUserUsecase(mockUserMySQLRepo, mockUserRedisRepo, mockUserFileRepo, mockTransactionRepo)
+		err := u.UpdateUserInfo(context.TODO(), &mockUser, &mockUserImage)
 
 		assert.NoError(t, err)
 		mockUserMySQLRepo.AssertExpectations(t)
