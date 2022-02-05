@@ -16,10 +16,10 @@ jobs:
         go-version: 1.17
 
     - name: Add build-base
-      run: apt install build-base
+      run: apt-get install build-base
 
     - name: Add libwebp-dev
-      run: apt install libwebp-dev
+      run: apt-get install libwebp-dev
 
     - name: Build
       run: go build -v ./...
