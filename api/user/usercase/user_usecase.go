@@ -8,18 +8,22 @@ import (
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
-	"path/filepath"
 )
 
 type userUsecase struct {
-	userMySQLRepo domain.UserMySQLRepository
-	userRedisRepo domain.UserRedisRepository
+	userMySQLRepo   domain.UserMySQLRepository
+	userRedisRepo   domain.UserRedisRepository
+	userFileRepo    domain.UserFileRepository
+	transactionRepo domain.DBTransactionRepository
 }
 
-func NewUserUsecase(clientMySQLRepo domain.UserMySQLRepository, clientRedisRepo domain.UserRedisRepository) domain.UserUsecase {
+func NewUserUsecase(clientMySQLRepo domain.UserMySQLRepository, clientRedisRepo domain.UserRedisRepository,
+	userFileRepo domain.UserFileRepository, transaction domain.DBTransactionRepository) domain.UserUsecase {
 	return &userUsecase{
-		userMySQLRepo: clientMySQLRepo,
-		userRedisRepo: clientRedisRepo,
+		userMySQLRepo:   clientMySQLRepo,
+		userRedisRepo:   clientRedisRepo,
+		userFileRepo:    userFileRepo,
+		transactionRepo: transaction,
 	}
 }
 
@@ -27,7 +31,7 @@ func (u *userUsecase) Logout(ctx context.Context, id int64) (err error) {
 
 	token := util.GenString(64)
 	redisToken := domain.UserCache{
-		Id: id,
+		Id:          id,
 		AccessToken: token,
 	}
 	if err := u.userRedisRepo.UpdateToken(ctx, &redisToken); err != nil {
@@ -52,34 +56,48 @@ func (u *userUsecase) QueryById(ctx context.Context, id int64) (*domain.User, er
 	return user, nil
 }
 
-func (u *userUsecase) UpdateBasicInfo(ctx context.Context, d *domain.User) (int64, error) {
+func (u *userUsecase) UpdateUserInfo(ctx context.Context, d *domain.User, ui *domain.UserImage) error {
 
-	rowsAffected, err := u.userMySQLRepo.UpdateBasicInfo(ctx, d)
+	newFileName := uuid.New().String()
+	path := "static/images/"
+	ui.Destination = path + newFileName
+	ui.Name = newFileName
+
+	if !util.ValidateImageType(ui.Type) {
+		return domain.ErrCodeFileTypeIllegal
+	}
+
+	err := u.transactionRepo.Transaction(func(i interface{}) error {
+		tx := i.(*gorm.DB)
+
+		err := u.userFileRepo.SaveAsWebp(ctx, ui)
+		if err != nil {
+			return err
+		}
+
+		_, err = u.userMySQLRepo.UpdateImageTx(ctx, tx, ui)
+		if err != nil {
+			return err
+		}
+
+		_, err = u.userMySQLRepo.UpdateBasicInfoTx(ctx, tx, d)
+		if err != nil {
+			return err
+		}
+
+		return err
+	})
+
 	if err != nil {
-		return 0, err
+		return err
 	}
 
 	err = u.userRedisRepo.UpdateBasicInfo(ctx, &domain.UserCache{
 		Name: d.Name,
 	})
 	if err != nil {
-		return 0, err
+		return err
 	}
 
-	return rowsAffected, nil
-}
-
-func (u *userUsecase) UpdateImage(ctx context.Context, d *domain.UserImage) (int64, error) {
-
-	extension := filepath.Ext(d.File.Filename)
-	newFileName := uuid.New().String() + extension
-	path := "static/images/"
-	d.Path = path + newFileName
-
-	rowsAffected, err := u.userMySQLRepo.UpdateImage(ctx, d)
-	if err != nil {
-		return 0, err
-	}
-
-	return rowsAffected, nil
+	return nil
 }

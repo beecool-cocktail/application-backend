@@ -45,17 +45,23 @@ type swaggerGetUserInfoResponse struct {
 
 // swagger:parameters updateUserInfoRequest
 type swaggerUpdateUserInfoRequest struct {
-	// in: body
-	Body viewmodels.UpdateUserInfoRequest
-}
-
-// swagger:parameters updateUserPhoto
-type swaggerUpdateUserPhoto struct {
 	// in: formData
-	//
 	// swagger:file
 	File *bytes.Buffer `json:"file"`
+
+	// name for this user
+	// in: formData
+	// required: true
+	// example: Feen Lin
+	Name               string `json:"name" binding:"required"`
+
+	// public user collection post
+	// in: formData
+	// required: true
+	// example: false
+	IsCollectionPublic bool   `json:"is_collection_public"`
 }
+
 
 // swagger:response updateUserPhotoResponse
 type swaggerUpdateUserPhotoResponse struct {

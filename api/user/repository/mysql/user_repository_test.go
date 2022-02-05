@@ -108,8 +108,8 @@ func Test_userMySQLRepository_UpdateImage(t *testing.T) {
 	}
 
 	mockUser := &domain.UserImage{
-		ID:                 123456,
-		Path: "static/images/",
+		ID:          123456,
+		Destination: "static/images/",
 	}
 
 	sqlUpdate := "UPDATE `users` SET `photo`=? WHERE id = ?"
@@ -117,7 +117,7 @@ func Test_userMySQLRepository_UpdateImage(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		mock.ExpectBegin()
 		mock.ExpectExec(regexp.QuoteMeta(sqlUpdate)).
-			WithArgs(mockUser.Path, mockUser.ID).
+			WithArgs(mockUser.Destination, mockUser.ID).
 			WillReturnResult(sqlmock.NewResult(0, 1))
 		mock.ExpectCommit()
 		d := NewMySQLUserRepository(db)

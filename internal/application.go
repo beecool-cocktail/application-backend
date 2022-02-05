@@ -9,8 +9,10 @@ import (
 	_socialAccountUsecase "github.com/beecool-cocktail/application-backend/api/social-account/usecase"
 	_userHandlerHttpDelivery "github.com/beecool-cocktail/application-backend/api/user/delivery/http"
 	_userRepo "github.com/beecool-cocktail/application-backend/api/user/repository/mysql"
+	_userFileRepo "github.com/beecool-cocktail/application-backend/api/user/repository/file"
 	_userCache "github.com/beecool-cocktail/application-backend/api/user/repository/redis"
 	_userUsecase "github.com/beecool-cocktail/application-backend/api/user/usercase"
+	_transacrionRepo "github.com/beecool-cocktail/application-backend/db/repository/mysql"
 	"github.com/beecool-cocktail/application-backend/middleware"
 	"github.com/beecool-cocktail/application-backend/service"
 	"github.com/beecool-cocktail/application-backend/util"
@@ -46,16 +48,19 @@ func initializeRoutes(s *service.Service) {
 	middlewareHandler := middleware.NewMiddlewareHandler(s)
 	// CORSMiddleware for all handler
 	s.HTTP.Use(middlewareHandler.CORSMiddleware())
+	transactionRepo := _transacrionRepo.NewDBRepository(s.DB)
 	userMySQLRepo := _userRepo.NewMySQLUserRepository(s.DB)
 	socialAccountMySQLRepo := _socialAccountMySQLRepo.NewMySQLSocialAccountRepository(s.DB)
 	cocktailMySQLRepo := _cocktailMySQLRepo.NewMySQLCocktailRepository(s.DB)
 
 	userRedisRepo := _userCache.NewRedisUserRepository(s.Redis)
 
+	userFileRepo := _userFileRepo.NewFileUserRepository()
+
 	socialAccountGoogleOAuthRepo := _socialAccountGoogleOAuth.NewGoogleOAuthSocialAccountRepository(googleOAuthConfig)
 
 
-	userUsecase := _userUsecase.NewUserUsecase(userMySQLRepo, userRedisRepo)
+	userUsecase := _userUsecase.NewUserUsecase(userMySQLRepo, userRedisRepo, userFileRepo, transactionRepo)
 	socialAccountUsecase := _socialAccountUsecase.NewSocialAccountUsecase(userMySQLRepo, userRedisRepo, socialAccountMySQLRepo, socialAccountGoogleOAuthRepo)
 	cocktailUsecase := _cocktailUsecase.NewCocktailUsecase(cocktailMySQLRepo)
 

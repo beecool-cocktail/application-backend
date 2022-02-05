@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"gorm.io/gorm"
 	"mime/multipart"
 	"time"
 )
@@ -31,9 +32,11 @@ type UserCache struct {
 }
 
 type UserImage struct {
-	ID   int64
-	Path string
-	File *multipart.FileHeader
+	ID          int64
+	Data        *multipart.FileHeader
+	Name        string
+	Type        string
+	Destination string
 }
 
 type UserMySQLRepository interface {
@@ -41,6 +44,8 @@ type UserMySQLRepository interface {
 	QueryById(ctx context.Context, id int64) (*User, error)
 	UpdateBasicInfo(ctx context.Context, d *User) (int64, error)
 	UpdateImage(ctx context.Context, d *UserImage) (int64, error)
+	UpdateBasicInfoTx(ctx context.Context, tx *gorm.DB, d *User) (int64, error)
+	UpdateImageTx(ctx context.Context, tx *gorm.DB, d *UserImage) (int64, error)
 }
 
 type UserRedisRepository interface {
@@ -49,9 +54,12 @@ type UserRedisRepository interface {
 	UpdateBasicInfo(ctx context.Context, r *UserCache) error
 }
 
+type UserFileRepository interface {
+	SaveAsWebp(ctx context.Context, ui *UserImage) error
+}
+
 type UserUsecase interface {
 	Logout(ctx context.Context, id int64) error
 	QueryById(ctx context.Context, id int64) (*User, error)
-	UpdateBasicInfo(ctx context.Context, d *User) (int64, error)
-	UpdateImage(ctx context.Context, d *UserImage) (int64, error)
+	UpdateUserInfo(ctx context.Context, d *User, ui *UserImage) error
 }

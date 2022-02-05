@@ -106,7 +106,7 @@ func Test_userUsecase_UpdateImage(t *testing.T) {
 		mockUserMySQLRepo.
 			On("UpdateImage",
 				mock.Anything,
-				mock.MatchedBy(func(u *domain.UserImage) bool { return u.Path != "" })).
+				mock.MatchedBy(func(u *domain.UserImage) bool { return u.Destination != "" })).
 			Return(int64(1), nil).Once()
 
 		u := NewUserUsecase(mockUserMySQLRepo, mockUserRedisRepo)

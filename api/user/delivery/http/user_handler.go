@@ -10,7 +10,10 @@ import (
 	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
+	"mime/multipart"
 	"net/http"
+	"path/filepath"
+	"strconv"
 )
 
 type UserHandler struct {
@@ -35,7 +38,6 @@ func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase, socialAc
 	s.HTTP.POST("/api/user/logout", handler.Logout)
 	s.HTTP.GET("/api/user/info", middlewareHandler.JWTAuthMiddleware(), handler.GetUserInfo)
 	s.HTTP.POST("/api/user/edit-info", middlewareHandler.JWTAuthMiddleware(), handler.UpdateUserInfo)
-	s.HTTP.POST("/api/user/edit-photo", middlewareHandler.JWTAuthMiddleware(), handler.UpdateUserPhoto)
 }
 
 // swagger:route GET /google-login login googleLogin
@@ -170,75 +172,75 @@ func (u *UserHandler) GetUserInfo(c *gin.Context) {
 // - Bearer: [apiKey]
 //
 // responses:
-//  "200": success
+//  "200":
+//    "$ref": "#/responses/updateUserPhotoResponse"
 func (u *UserHandler) UpdateUserInfo(c *gin.Context) {
 	api := "/user/edit-info"
-	var request viewmodels.UpdateUserInfoRequest
-	if err := c.ShouldBindJSON(&request); err != nil {
-		service.GetLoggerEntry(u.Logger, api, request).Errorf("parameter illegal - %s", err)
+	var response viewmodels.UpdateUserPhotoResponse
+	var userImage domain.UserImage
+
+	userId := c.GetInt64("user_id")
+
+	form, err := c.MultipartForm()
+	if err != nil {
+		service.GetLoggerEntry(u.Logger, api, form).Errorf("parameter illegal - %s", err)
 		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
 		return
 	}
 
-	userId := c.GetInt64("user_id")
+	var file *multipart.FileHeader
 
-	_, err := u.UserUsecase.UpdateBasicInfo(c, &domain.User{
+	//Todo move to another function
+	files := form.File
+	if _, ok := files["file"]; ok {
+		//user update photo
+		if len(files["file"]) > 0 {
+			file = files["file"][0]
+			userImage = domain.UserImage{
+				ID:   userId,
+				Data: file,
+				Type: filepath.Ext(file.Filename),
+			}
+		} else {
+			service.GetLoggerEntry(u.Logger, api, form).Errorf("parameter illegal - %s", err)
+			util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
+			return
+		}
+	} else {
+		//user didn't update photo
+	}
+
+	values := form.Value
+	isCollectionPublic, err := strconv.ParseBool(values["is_collection_public"][0])
+	if err != nil {
+		service.GetLoggerEntry(u.Logger, api, form).Errorf("parameter illegal - %s", err)
+		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
+		return
+	}
+
+	if _, ok := values["name"]; !ok && len(values["name"]) <= 0 {
+		service.GetLoggerEntry(u.Logger, api, form).Errorf("parameter illegal - %s", err)
+		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
+		return
+	}
+
+	name := values["name"][0]
+
+	err = u.UserUsecase.UpdateUserInfo(c,
+		&domain.User{
 		ID:                 userId,
-		Name:               request.Name,
-		IsCollectionPublic: request.IsCollectionPublic,
-	})
+		Name:               name,
+		IsCollectionPublic: isCollectionPublic,
+		},
+		&userImage)
 	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, request).Errorf("update basic info failed - %s", err)
-		util.PackResponseWithError(c, err, err.Error())
-		return
-	}
-
-	util.PackResponseWithData(c, http.StatusOK, nil, domain.GetErrorCode(nil), "")
-}
-
-// swagger:operation POST /user/edit-photo user updateUserPhoto
-// ---
-// summary: Edit user information.
-// description: Edit user name and collection of publicity status.
-//
-// security:
-// - Bearer: [apiKey]
-//
-// responses:
-//  "201":
-//    "$ref": "#/responses/updateUserPhotoResponse"
-func (u *UserHandler) UpdateUserPhoto(c *gin.Context) {
-	api := "/user/edit-photo"
-	var response viewmodels.UpdateUserPhotoResponse
-	file, err := c.FormFile("file")
-	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, nil).Errorf("parameter illegal - %s", err)
-		util.PackResponseWithError(c, err, err.Error())
-		return
-	}
-
-	userId := c.GetInt64("user_id")
-
-	userImage := domain.UserImage{
-		ID:   userId,
-		File: file,
-	}
-
-	_, err = u.UserUsecase.UpdateImage(c, &userImage)
-	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, nil).Errorf("update image failed - %s", err)
-		util.PackResponseWithError(c, err, err.Error())
-		return
-	}
-
-	if err := c.SaveUploadedFile(file, "/"+userImage.Path); err != nil {
-		service.GetLoggerEntry(u.Logger, api, nil).Errorf("parameter illegal - %s", err)
+		service.GetLoggerEntry(u.Logger, api, nil).Errorf("update basic info failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
 
 	response = viewmodels.UpdateUserPhotoResponse{
-		Photo: userImage.Path,
+		Photo: userImage.Destination,
 	}
 
 	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")

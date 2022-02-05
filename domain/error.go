@@ -15,6 +15,8 @@ const (
 	CodePasswordNotMatch      = "A0003"
 	CodeTokenExpired          = "A0004"
 	CodeCocktailNotFound      = "B0001"
+	CodeFileTypeIllegal       = "F0001"
+	CodeFileSizeIllegal       = "F0002"
 	CodeInternalError         = "S0001"
 	CodeResponseEncodedFailed = "S0002"
 )
@@ -28,6 +30,8 @@ var (
 	ErrPasswordNotMatch      = errors.New("password not match")
 	ErrCocktailNotFound      = errors.New("cocktail not found")
 	ErrTokenExpired          = errors.New("token expired")
+	ErrCodeFileTypeIllegal   = errors.New("illegal file type")
+	ErrCoceFileSizeIllegal   = errors.New("illegal file size")
 )
 
 func GetErrorCode(err error) string {
@@ -54,6 +58,10 @@ func GetErrorCode(err error) string {
 		return CodeTokenExpired
 	case ErrCocktailNotFound:
 		return CodeCocktailNotFound
+	case ErrCodeFileTypeIllegal:
+		return CodeFileTypeIllegal
+	case ErrCoceFileSizeIllegal:
+		return CodeFileSizeIllegal
 
 	default:
 		return CodeInternalError
@@ -81,6 +89,10 @@ func GetStatusCode(err error) int {
 		return http.StatusUnauthorized
 	case ErrCocktailNotFound:
 		return http.StatusNotFound
+	case ErrCodeFileTypeIllegal:
+		return http.StatusForbidden
+	case ErrCoceFileSizeIllegal:
+		return http.StatusForbidden
 
 	default:
 		return http.StatusInternalServerError

@@ -2,7 +2,6 @@ package mysql
 
 import (
 	"context"
-	"fmt"
 	"github.com/beecool-cocktail/application-backend/domain"
 	"github.com/fatih/structs"
 	"gorm.io/gorm"
@@ -49,7 +48,6 @@ func (u *userMySQLRepository) UpdateBasicInfo(ctx context.Context, d *domain.Use
 	}
 
 	res := u.db.Model(&user).Where("id = ?", d.ID).Updates(structs.Map(updateColumn))
-	fmt.Println(res.Statement)
 
 	return res.RowsAffected, res.Error
 }
@@ -57,10 +55,33 @@ func (u *userMySQLRepository) UpdateBasicInfo(ctx context.Context, d *domain.Use
 func (u *userMySQLRepository) UpdateImage(ctx context.Context, d *domain.UserImage) (int64, error) {
 	var user domain.User
 	updateColumn := photo{
-		Photo: d.Path,
+		Photo: d.Destination,
 	}
 
 	res := u.db.Model(&user).Where("id = ?", d.ID).Updates(structs.Map(updateColumn))
+
+	return res.RowsAffected, res.Error
+}
+
+func (u *userMySQLRepository) UpdateBasicInfoTx(ctx context.Context, tx *gorm.DB, d *domain.User) (int64, error) {
+	var user domain.User
+	updateColumn := basicInfo{
+		Name: d.Name,
+		IsCollectionPublic: d.IsCollectionPublic,
+	}
+
+	res := tx.Model(&user).Where("id = ?", d.ID).Updates(structs.Map(updateColumn))
+
+	return res.RowsAffected, res.Error
+}
+
+func (u *userMySQLRepository) UpdateImageTx(ctx context.Context, tx *gorm.DB, d *domain.UserImage) (int64, error) {
+	var user domain.User
+	updateColumn := photo{
+		Photo: d.Destination,
+	}
+
+	res := tx.Model(&user).Where("id = ?", d.ID).Updates(structs.Map(updateColumn))
 
 	return res.RowsAffected, res.Error
 }

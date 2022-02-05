@@ -23,18 +23,6 @@ type GetUserInfoResponse struct {
 	IsCollectionPublic bool `json:"is_collection_public"`
 }
 
-type UpdateUserInfoRequest struct {
-	// name for this user
-	// required: true
-	// example: Feen Lin
-	Name               string `json:"name" binding:"required"`
-
-	// public user collection post
-	// required: true
-	// example: false
-	IsCollectionPublic bool   `json:"is_collection_public"`
-}
-
 type UpdateUserPhotoResponse struct {
 	Photo string `json:"photo"`
 }
