@@ -35,6 +35,9 @@ func ValidateImageType(fileType string) bool {
 		return true
 	case ".webp":
 		return true
+	//Todo 處理未上傳檔案的情況
+	case "":
+		return true
 	default:
 		return false
 	}
