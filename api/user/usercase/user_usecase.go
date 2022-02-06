@@ -59,8 +59,11 @@ func (u *userUsecase) QueryById(ctx context.Context, id int64) (*domain.User, er
 func (u *userUsecase) UpdateUserInfo(ctx context.Context, d *domain.User, ui *domain.UserImage) error {
 
 	newFileName := uuid.New().String()
-	path := "static/images/"
-	ui.Destination = path + newFileName
+
+	//Todo move to config
+	savePath := "static/images/"
+	urlPath := "static/"
+
 	ui.Name = newFileName
 
 	if !util.ValidateImageType(ui.Type) {
@@ -70,17 +73,23 @@ func (u *userUsecase) UpdateUserInfo(ctx context.Context, d *domain.User, ui *do
 	err := u.transactionRepo.Transaction(func(i interface{}) error {
 		tx := i.(*gorm.DB)
 
-		err := u.userFileRepo.SaveAsWebp(ctx, ui)
-		if err != nil {
-			return err
+
+		if ui.Data != nil {
+			ui.Destination = savePath + newFileName
+			err := u.userFileRepo.SaveAsWebp(ctx, ui)
+			if err != nil {
+				return err
+			}
+
+			//Todo research why use pointer!!!!!!!!!!!!!!!!!!!!
+			ui.Destination = urlPath + newFileName + ".webp"
+			_, err = u.userMySQLRepo.UpdateImageTx(ctx, tx, ui)
+			if err != nil {
+				return err
+			}
 		}
 
-		_, err = u.userMySQLRepo.UpdateImageTx(ctx, tx, ui)
-		if err != nil {
-			return err
-		}
-
-		_, err = u.userMySQLRepo.UpdateBasicInfoTx(ctx, tx, d)
+		_, err := u.userMySQLRepo.UpdateBasicInfoTx(ctx, tx, d)
 		if err != nil {
 			return err
 		}
