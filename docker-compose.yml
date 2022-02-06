@@ -41,6 +41,7 @@ services:
     restart: always
     volumes:
       - ${IMAGE_PATH}:/static/images
+      - ./serviceConfig.json:/app/serviceConfig.json
     ports:
       - "${APPLICATION_PORT}:6969"
     command: ./wait-for-it.sh db:3306 -- ./main --config serviceConfig.json
