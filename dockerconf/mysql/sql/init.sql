@@ -69,15 +69,13 @@ KEY `idx_date` (`created_date`)
 
 CREATE TABLE `cocktail_ingredients` (
 `id` bigint(64) NOT NULL AUTO_INCREMENT,
-`ingredient_id` bigint(64) NOT NULL,
 `cocktail_id` bigint(64) NOT NULL,
 `ingredient_name` varchar(16) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT ' 成分名稱',
 `ingredient_amount` float NOT NULL DEFAULT '0' COMMENT '成分數量',
 `ingredient_unit` varchar(16) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT ' 成分單位',
 `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 PRIMARY KEY (`id`),
-UNIQUE KEY `idx_ingredient_id` (`ingredient_id`),
-UNIQUE KEY `idx_cocktail_id` (`cocktail_id`),
+KEY `idx_cocktail_id` (`cocktail_id`),
 KEY `idx_date` (`created_date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -87,16 +85,49 @@ KEY `idx_date` (`created_date`)
 
 CREATE TABLE `cocktail_steps` (
 `id` bigint(64) NOT NULL AUTO_INCREMENT,
-`step_id` bigint(64) NOT NULL,
 `cocktail_id` bigint(64) NOT NULL,
 `step_number` int(2) unsigned NOT NULL DEFAULT '1' COMMENT ' 步驟',
 `step_description` varchar(64) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT ' 步驟介紹',
 `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 PRIMARY KEY (`id`),
-UNIQUE KEY `idx_recipe_id` (`step_id`),
-UNIQUE KEY `idx_cocktail_id` (`cocktail_id`),
+KEY `idx_cocktail_id` (`cocktail_id`),
 KEY `idx_date` (`created_date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+# Dump of table cocktail_steps
+# ------------------------------------------------------------
+
+CREATE TABLE `cocktail_photos` (
+`id` bigint(64) NOT NULL AUTO_INCREMENT,
+`cocktail_id` bigint(64) NOT NULL,
+`photo` varchar(128) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '1' COMMENT ' 照片',
+`is_cover_photo` tinyint(1) NOT NULL DEFAULT '0' COMMENT ' 是否為封面照 0=否, 1=是',
+`created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY (`id`),
+KEY `idx_cocktail_id` (`cocktail_id`),
+KEY `idx_date` (`created_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+LOCK TABLES `cocktail_photos` WRITE;
+/*!40000 ALTER TABLE `cocktail_photos` DISABLE KEYS */;
+
+INSERT INTO `cocktail_photos` (`id`, `cocktail_id`, `photo`, `is_cover_photo`, `created_date`)
+VALUES
+(1, 123456, 'static/my_image01.jpg', 1, '2022-02-11 13:42:48'),
+(2, 1111111, 'static/my_image01.jpg', 1, '2022-02-11 13:42:48'),
+(3, 222222, 'static/my_image01.jpg', 1, '2022-02-11 13:42:48'),
+(4, 333333, 'static/my_image01.jpg', 1, '2022-02-11 13:42:48'),
+(5, 444444, 'static/my_image01.jpg', 1, '2022-02-11 13:42:48'),
+(6, 555555, 'static/my_image01.jpg', 1, '2022-02-11 13:42:48'),
+(7, 666666, 'static/my_image01.jpg', 1, '2022-02-11 13:42:48'),
+(8, 777777, 'static/my_image01.jpg', 1, '2022-02-11 13:42:48'),
+(9, 888888, 'static/my_image01.jpg', 1, '2022-02-11 13:42:48'),
+(10, 999999, 'static/my_image01.jpg', 1, '2022-02-11 13:42:48'),
+(11, 12121212, 'static/my_image01.jpg', 1, '2022-02-11 13:42:48');
+
+/*!40000 ALTER TABLE `cocktail_photos` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table cocktails
@@ -106,7 +137,6 @@ CREATE TABLE `cocktails` (
  `id` bigint(64) NOT NULL AUTO_INCREMENT,
  `cocktail_id` bigint(64) NOT NULL,
  `user_id` bigint(64) NOT NULL COMMENT ' 作者id',
- `photo` varchar(128) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT ' 調酒圖片',
  `title` varchar(16) COLLATE utf8mb4_general_ci NOT NULL COMMENT ' 調酒名稱',
  `description` varchar(512) COLLATE utf8mb4_general_ci NOT NULL COMMENT ' 調酒介紹',
  `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -119,23 +149,22 @@ CREATE TABLE `cocktails` (
 LOCK TABLES `cocktails` WRITE;
 /*!40000 ALTER TABLE `cocktails` DISABLE KEYS */;
 
-INSERT INTO `cocktails` (`id`, `cocktail_id`, `title`, `description`, `user_id`, `photo`, `created_date`)
+INSERT INTO `cocktails` (`id`, `cocktail_id`, `title`, `description`, `user_id`, `created_date`)
 VALUES
-(1, 123456, 'Side Car', 'Good to drink', 1, 'static/my_image01.jpg', '2021-01-15 18:38:30'),
-(2, 1111111, 'Old Fashion', 'Good to drink', 1, 'static/my_image01.jpg', '2021-02-15 18:38:30'),
-(3, 222222, 'Gin tonic', 'Good to drink', 1, 'static/my_image01.jpg', '2021-03-15 18:38:30'),
-(4, 333333, 'Very Impressive', 'Good to drink', 2, 'static/my_image01.jpg', '2021-04-15 18:38:30'),
-(5, 444444, 'Pathetic', 'Good to drink', 2, 'static/my_image01.jpg', '2021-05-15 18:38:30'),
-(6, 555555, 'Old Fashion', 'Good to drink', 3, 'static/my_image01.jpg', '2021-12-10 18:38:30'),
-(7, 666666, 'Old Fashion', 'Good to drink', 3, 'static/my_image01.jpg', '2021-12-11 18:38:30'),
-(8, 777777, 'Old Fashion', 'Good to drink', 4, 'static/my_image01.jpg', '2021-12-12 18:38:30'),
-(9, 888888, 'Old Fashion', 'Good to drink', 5, 'static/my_image01.jpg', '2021-12-13 18:38:30'),
-(10, 999999, 'Old Fashion', 'Good to drink', 6, 'static/my_image01.jpg', '2021-12-14 18:38:30'),
-(11, 12121212, 'Old Fashion', 'Good to drink', 6, 'static/my_image01.jpg', '2021-12-15 18:38:30');
+(1, 123456, 'Side Car', 'Good to drink', 1, '2021-01-15 18:38:30'),
+(2, 1111111, 'Old Fashion', 'Good to drink', 1, '2021-02-15 18:38:30'),
+(3, 222222, 'Gin tonic', 'Good to drink', 1, '2021-03-15 18:38:30'),
+(4, 333333, 'Very Impressive', 'Good to drink', 2, '2021-04-15 18:38:30'),
+(5, 444444, 'Pathetic', 'Good to drink', 2, '2021-05-15 18:38:30'),
+(6, 555555, 'Old Fashion', 'Good to drink', 3, '2021-12-10 18:38:30'),
+(7, 666666, 'Old Fashion', 'Good to drink', 3, '2021-12-11 18:38:30'),
+(8, 777777, 'Old Fashion', 'Good to drink', 4, '2021-12-12 18:38:30'),
+(9, 888888, 'Old Fashion', 'Good to drink', 5, '2021-12-13 18:38:30'),
+(10, 999999, 'Old Fashion', 'Good to drink', 6, '2021-12-14 18:38:30'),
+(11, 12121212, 'Old Fashion', 'Good to drink', 6, '2021-12-15 18:38:30');
 
 /*!40000 ALTER TABLE `cocktails` ENABLE KEYS */;
 UNLOCK TABLES;
-
 
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;

@@ -3,16 +3,20 @@ package internal
 import (
 	_cocktailHandlerHttpDelivery "github.com/beecool-cocktail/application-backend/api/cocktail/delivery/http"
 	_cocktailMySQLRepo "github.com/beecool-cocktail/application-backend/api/cocktail/repository/mysql"
+	_cocktailFileRepo "github.com/beecool-cocktail/application-backend/api/cocktail/repository/file"
+	_cocktailIngredientMySQLRepo "github.com/beecool-cocktail/application-backend/api/cockingredient/repository/mysql"
+	_cocktailStepMySQLRepo "github.com/beecool-cocktail/application-backend/api/cockstep/repository/mysql"
+	_cocktailPhotoMySQLRepo "github.com/beecool-cocktail/application-backend/api/cockphoto/repository/mysql"
 	_cocktailUsecase "github.com/beecool-cocktail/application-backend/api/cocktail/usecase"
 	_socialAccountGoogleOAuth "github.com/beecool-cocktail/application-backend/api/social-account/repository/google-oauth2"
 	_socialAccountMySQLRepo "github.com/beecool-cocktail/application-backend/api/social-account/repository/mysql"
 	_socialAccountUsecase "github.com/beecool-cocktail/application-backend/api/social-account/usecase"
 	_userHandlerHttpDelivery "github.com/beecool-cocktail/application-backend/api/user/delivery/http"
-	_userRepo "github.com/beecool-cocktail/application-backend/api/user/repository/mysql"
 	_userFileRepo "github.com/beecool-cocktail/application-backend/api/user/repository/file"
+	_userRepo "github.com/beecool-cocktail/application-backend/api/user/repository/mysql"
 	_userCache "github.com/beecool-cocktail/application-backend/api/user/repository/redis"
 	_userUsecase "github.com/beecool-cocktail/application-backend/api/user/usercase"
-	_transacrionRepo "github.com/beecool-cocktail/application-backend/db/repository/mysql"
+	_transactionRepo "github.com/beecool-cocktail/application-backend/db/repository/mysql"
 	"github.com/beecool-cocktail/application-backend/middleware"
 	"github.com/beecool-cocktail/application-backend/service"
 	"github.com/beecool-cocktail/application-backend/util"
@@ -44,26 +48,35 @@ func initializeRoutes(s *service.Service) {
 		Endpoint:     google.Endpoint,
 	}
 
-	// CORSMiddleware for all handler
 	middlewareHandler := middleware.NewMiddlewareHandler(s)
 	// CORSMiddleware for all handler
 	s.HTTP.Use(middlewareHandler.CORSMiddleware())
-	transactionRepo := _transacrionRepo.NewDBRepository(s.DB)
+
+	// Repository dependency injection
+	transactionRepo := _transactionRepo.NewDBRepository(s.DB)
 	userMySQLRepo := _userRepo.NewMySQLUserRepository(s.DB)
 	socialAccountMySQLRepo := _socialAccountMySQLRepo.NewMySQLSocialAccountRepository(s.DB)
 	cocktailMySQLRepo := _cocktailMySQLRepo.NewMySQLCocktailRepository(s.DB)
+	cocktailIngredientMySQLRepo := _cocktailIngredientMySQLRepo.NewMySQLCocktailIngredientRepository(s.DB)
+	cocktailStepMySQLRepo := _cocktailStepMySQLRepo.NewMySQLCocktailStepRepository(s.DB)
+	cocktailPhotoMySQLRepo := _cocktailPhotoMySQLRepo.NewMySQLCocktailStepRepository(s.DB)
 
 	userRedisRepo := _userCache.NewRedisUserRepository(s.Redis)
 
 	userFileRepo := _userFileRepo.NewFileUserRepository()
+	cocktailFileMySQL := _cocktailFileRepo.NewFileUserRepository()
 
 	socialAccountGoogleOAuthRepo := _socialAccountGoogleOAuth.NewGoogleOAuthSocialAccountRepository(googleOAuthConfig)
 
 
+	// Usecase dependency injection
 	userUsecase := _userUsecase.NewUserUsecase(userMySQLRepo, userRedisRepo, userFileRepo, transactionRepo)
-	socialAccountUsecase := _socialAccountUsecase.NewSocialAccountUsecase(userMySQLRepo, userRedisRepo, socialAccountMySQLRepo, socialAccountGoogleOAuthRepo)
-	cocktailUsecase := _cocktailUsecase.NewCocktailUsecase(cocktailMySQLRepo)
+	socialAccountUsecase := _socialAccountUsecase.NewSocialAccountUsecase(userMySQLRepo, userRedisRepo,
+		socialAccountMySQLRepo, socialAccountGoogleOAuthRepo)
+	cocktailUsecase := _cocktailUsecase.NewCocktailUsecase(cocktailMySQLRepo, cocktailFileMySQL, cocktailPhotoMySQLRepo,
+		cocktailIngredientMySQLRepo, cocktailStepMySQLRepo, transactionRepo)
 
+	// Delivery dependency injection
 	_userHandlerHttpDelivery.NewUserHandler(s, userUsecase, socialAccountUsecase, *middlewareHandler)
-	_cocktailHandlerHttpDelivery.NewCocktailHandler(s, cocktailUsecase)
+	_cocktailHandlerHttpDelivery.NewCocktailHandler(s, cocktailUsecase, *middlewareHandler)
 }

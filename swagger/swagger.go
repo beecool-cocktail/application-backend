@@ -1,7 +1,6 @@
 package swagger
 
 import (
-	"bytes"
 	"github.com/beecool-cocktail/application-backend/viewmodels"
 )
 
@@ -45,26 +44,18 @@ type swaggerGetUserInfoResponse struct {
 
 // swagger:parameters updateUserInfoRequest
 type swaggerUpdateUserInfoRequest struct {
-	// in: formData
-	// swagger:file
-	File *bytes.Buffer `json:"file"`
-
-	// name for this user
-	// in: formData
-	// required: true
-	// example: Feen Lin
-	Name               string `json:"name" binding:"required"`
-
-	// public user collection post
-	// in: formData
-	// required: true
-	// example: false
-	IsCollectionPublic bool   `json:"is_collection_public"`
+	// in: body
+	Body viewmodels.UpdateUserInfoRequest
 }
-
 
 // swagger:response updateUserPhotoResponse
 type swaggerUpdateUserPhotoResponse struct {
 	// in: body
-	Body viewmodels.UpdateUserPhotoResponse
+	Body viewmodels.UpdateUserInfoResponse
+}
+
+// swagger:parameters postArticleRequest
+type swaggerPostArticleRequest struct {
+	// in: body
+	Body viewmodels.PostArticleRequest
 }

@@ -36,3 +36,10 @@ func (c *cocktailMySQLRepository) GetAllWithFilter(ctx context.Context, filter m
 
 	return cocktail, total, res.Error
 }
+
+func (c *cocktailMySQLRepository) StoreTx(ctx context.Context, tx *gorm.DB, co *domain.Cocktail) error {
+
+	res := tx.Select("cocktail_id", "user_id", "title", "description").Create(co)
+
+	return res.Error
+}
