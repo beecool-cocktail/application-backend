@@ -2,12 +2,13 @@ name: update docker hub
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - 'beta/**'
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   CONFIG_FILE: serviceConfigDev.json
-  TAGS: v0.0.1-beta,latest
+  TAGS: v0.1.0-beta,latest
 
 jobs:
 
