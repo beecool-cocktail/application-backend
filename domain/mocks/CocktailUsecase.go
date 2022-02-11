@@ -15,15 +15,15 @@ type CocktailUsecase struct {
 }
 
 // GetAllWithFilter provides a mock function with given fields: ctx, filter, pagination
-func (_m *CocktailUsecase) GetAllWithFilter(ctx context.Context, filter map[string]interface{}, pagination domain.PaginationUsecase) ([]domain.Cocktail, int64, error) {
+func (_m *CocktailUsecase) GetAllWithFilter(ctx context.Context, filter map[string]interface{}, pagination domain.PaginationUsecase) ([]domain.APICocktail, int64, error) {
 	ret := _m.Called(ctx, filter, pagination)
 
-	var r0 []domain.Cocktail
-	if rf, ok := ret.Get(0).(func(context.Context, map[string]interface{}, domain.PaginationUsecase) []domain.Cocktail); ok {
+	var r0 []domain.APICocktail
+	if rf, ok := ret.Get(0).(func(context.Context, map[string]interface{}, domain.PaginationUsecase) []domain.APICocktail); ok {
 		r0 = rf(ctx, filter, pagination)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]domain.Cocktail)
+			r0 = ret.Get(0).([]domain.APICocktail)
 		}
 	}
 
@@ -42,4 +42,18 @@ func (_m *CocktailUsecase) GetAllWithFilter(ctx context.Context, filter map[stri
 	}
 
 	return r0, r1, r2
+}
+
+// Store provides a mock function with given fields: ctx, c, cig, cs, ci
+func (_m *CocktailUsecase) Store(ctx context.Context, c *domain.Cocktail, cig []domain.CocktailIngredient, cs []domain.CocktailStep, ci []domain.CocktailImage) error {
+	ret := _m.Called(ctx, c, cig, cs, ci)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.Cocktail, []domain.CocktailIngredient, []domain.CocktailStep, []domain.CocktailImage) error); ok {
+		r0 = rf(ctx, c, cig, cs, ci)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }

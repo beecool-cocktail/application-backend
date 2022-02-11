@@ -6,6 +6,8 @@ import (
 	context "context"
 
 	domain "github.com/beecool-cocktail/application-backend/domain"
+	gorm "gorm.io/gorm"
+
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -42,4 +44,18 @@ func (_m *CocktailMySQLRepository) GetAllWithFilter(ctx context.Context, filter 
 	}
 
 	return r0, r1, r2
+}
+
+// StoreTx provides a mock function with given fields: ctx, tx, c
+func (_m *CocktailMySQLRepository) StoreTx(ctx context.Context, tx *gorm.DB, c *domain.Cocktail) error {
+	ret := _m.Called(ctx, tx, c)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *gorm.DB, *domain.Cocktail) error); ok {
+		r0 = rf(ctx, tx, c)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }

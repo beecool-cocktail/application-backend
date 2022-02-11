@@ -2,7 +2,6 @@ package usercase
 
 import (
 	"context"
-	"mime/multipart"
 	"testing"
 
 	"github.com/beecool-cocktail/application-backend/domain"
@@ -82,10 +81,8 @@ func Test_userUsecase_UpdateBasicInfo(t *testing.T) {
 
 	mockUserImage := domain.UserImage{
 		ID:                 1,
-		Data: &multipart.FileHeader{
-			Filename: "filename.png",
-		},
-		Type: ".png",
+		Data: "path",
+		Type: "image/png",
 	}
 
 	t.Run("Success", func(t *testing.T) {
