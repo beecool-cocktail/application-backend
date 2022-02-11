@@ -17,7 +17,7 @@ func NewFileUserRepository() domain.UserFileRepository {
 func (u *userFileRepository) SaveAsWebp(ctx context.Context, ui *domain.UserImage) error {
 
 	ui.Destination = ui.Destination + ".webp"
-	err := util.SaveAsWebp(ui.Data, "/" + ui.Destination)
+	err := util.DecodeBase64AndSaveAsWebp(ui.Data, "/" + ui.Destination)
 	if err != nil {
 		return err
 	}

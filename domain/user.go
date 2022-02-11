@@ -3,7 +3,6 @@ package domain
 import (
 	"context"
 	"gorm.io/gorm"
-	"mime/multipart"
 	"time"
 )
 
@@ -33,7 +32,7 @@ type UserCache struct {
 
 type UserImage struct {
 	ID          int64
-	Data        *multipart.FileHeader
+	Data        string
 	Name        string
 	Type        string
 	Destination string

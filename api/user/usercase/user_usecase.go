@@ -74,7 +74,7 @@ func (u *userUsecase) UpdateUserInfo(ctx context.Context, d *domain.User, ui *do
 		tx := i.(*gorm.DB)
 
 
-		if ui.Data != nil {
+		if ui.Data != "" {
 			ui.Destination = savePath + newFileName
 			err := u.userFileRepo.SaveAsWebp(ctx, ui)
 			if err != nil {

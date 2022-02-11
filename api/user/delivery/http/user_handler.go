@@ -8,12 +8,10 @@ import (
 	"github.com/beecool-cocktail/application-backend/viewmodels"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"github.com/vincent-petithory/dataurl"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
-	"mime/multipart"
 	"net/http"
-	"path/filepath"
-	"strconv"
 )
 
 type UserHandler struct {
@@ -176,61 +174,40 @@ func (u *UserHandler) GetUserInfo(c *gin.Context) {
 //    "$ref": "#/responses/updateUserPhotoResponse"
 func (u *UserHandler) UpdateUserInfo(c *gin.Context) {
 	api := "/user/edit-info"
-	var response viewmodels.UpdateUserPhotoResponse
+
+	var request viewmodels.UpdateUserInfoRequest
+	var response viewmodels.UpdateUserInfoResponse
 	var userImage domain.UserImage
+	if err := c.ShouldBindJSON(&request); err != nil {
+		service.GetLoggerEntry(u.Logger, api, request).Errorf("parameter illegal - %s", err)
+		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
+		return
+	}
 
 	userId := c.GetInt64("user_id")
 
-	form, err := c.MultipartForm()
-	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, form).Errorf("parameter illegal - %s", err)
-		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
-		return
-	}
-
-	var file *multipart.FileHeader
-
-	//Todo move to another function
-	files := form.File
-	if _, ok := files["file"]; ok {
-		//user update photo
-		if len(files["file"]) > 0 {
-			file = files["file"][0]
-			userImage = domain.UserImage{
-				ID:   userId,
-				Data: file,
-				Type: filepath.Ext(file.Filename),
-			}
-		} else {
-			service.GetLoggerEntry(u.Logger, api, form).Errorf("parameter illegal - %s", err)
-			util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
+	//user update photo
+	if request.File != "" {
+		dataURL, err := dataurl.DecodeString(request.File)
+		if err != nil {
+			service.GetLoggerEntry(u.Logger, api, request).Errorf("decode data url failed - %s", err)
+			util.PackResponseWithError(c, err, err.Error())
 			return
 		}
+		userImage = domain.UserImage{
+			ID:   userId,
+			Data: string(dataURL.Data),
+			Type: dataURL.MediaType.ContentType(),
+		}
 	} else {
-		//user didn't update photo
+		// user didn't update photo
 	}
 
-	values := form.Value
-	isCollectionPublic, err := strconv.ParseBool(values["is_collection_public"][0])
-	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, form).Errorf("parameter illegal - %s", err)
-		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
-		return
-	}
-
-	if _, ok := values["name"]; !ok && len(values["name"]) <= 0 {
-		service.GetLoggerEntry(u.Logger, api, form).Errorf("parameter illegal - %s", err)
-		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
-		return
-	}
-
-	name := values["name"][0]
-
-	err = u.UserUsecase.UpdateUserInfo(c,
+	err := u.UserUsecase.UpdateUserInfo(c,
 		&domain.User{
 		ID:                 userId,
-		Name:               name,
-		IsCollectionPublic: isCollectionPublic,
+		Name:               request.Name,
+		IsCollectionPublic: request.IsCollectionPublic,
 		},
 		&userImage)
 	if err != nil {
@@ -239,7 +216,7 @@ func (u *UserHandler) UpdateUserInfo(c *gin.Context) {
 		return
 	}
 
-	response = viewmodels.UpdateUserPhotoResponse{
+	response = viewmodels.UpdateUserInfoResponse{
 		Photo: userImage.Destination,
 	}
 

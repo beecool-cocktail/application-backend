@@ -1,39 +1,23 @@
 package util
 
 import (
-	"encoding/base64"
+	"bytes"
 	"github.com/kolesa-team/go-webp/encoder"
 	"github.com/kolesa-team/go-webp/webp"
 	"image"
-	"mime/multipart"
-	"os"
-	"strings"
 	_ "image/jpeg"
 	_ "image/png"
+	"os"
+	"strings"
 )
-
-func DecodeImage(data string) (image []byte, fileType string, err error) {
-	// imageData: data:image/<format>;base64,<data>
-	dataSplit := strings.Split(data, ",")
-
-	// dataSplit[0]: data:image/<format>;base64
-	fileType = strings.Split(strings.Replace(dataSplit[0], ";", "/", -1), "/")[1]
-
-	image, err = base64.StdEncoding.DecodeString(dataSplit[1])
-	if err != nil {
-		return
-	}
-
-	return
-}
 
 func ValidateImageType(fileType string) bool {
 	switch strings.ToLower(fileType) {
-	case ".png":
+	case "image/png":
 		return true
-	case ".jpg":
+	case "image/jpg":
 		return true
-	case ".webp":
+	case "image/webp":
 		return true
 	//Todo 處理未上傳檔案的情況
 	case "":
@@ -43,18 +27,13 @@ func ValidateImageType(fileType string) bool {
 	}
 }
 
-func SaveAsWebp(fileHeader *multipart.FileHeader, dst string) error {
+func DecodeBase64AndSaveAsWebp(base64EncodedData string, dst string) error {
 	options, err := encoder.NewLossyEncoderOptions(encoder.PresetDefault, 75)
 	if err != nil {
 		return err
 	}
 
-	file, err := fileHeader.Open()
-	if err != nil {
-		return err
-	}
-
-	img, _, err := image.Decode(file)
+	img, _, err := image.Decode(bytes.NewReader([]byte(base64EncodedData)))
 	if err != nil {
 		return err
 	}
