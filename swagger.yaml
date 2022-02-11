@@ -1,5 +1,35 @@
 basePath: /api
 definitions:
+  CocktailIngredient:
+    properties:
+      amount:
+        example: 1
+        format: float
+        type: number
+        x-go-name: Amount
+      name:
+        example: Gin Tonic
+        type: string
+        x-go-name: Name
+      unit:
+        example: cup
+        type: string
+        x-go-name: Unit
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  CocktailStep:
+    properties:
+      description:
+        example: shake
+        type: string
+        x-go-name: Description
+      step:
+        example: 1
+        format: int64
+        type: integer
+        x-go-name: Step
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   GetPopularCocktailListRequest:
     properties:
       page:
@@ -98,6 +128,37 @@ definitions:
         x-go-name: Title
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  PostArticleRequest:
+    properties:
+      description:
+        example: Very good to drink
+        type: string
+        x-go-name: Description
+      files:
+        items:
+          type: string
+        type: array
+        x-go-name: Files
+      ingredient_list:
+        items:
+          $ref: '#/definitions/CocktailIngredient'
+        type: array
+        x-go-name: IngredientList
+      name:
+        example: Gin Tonic
+        type: string
+        x-go-name: Name
+      step_list:
+        items:
+          $ref: '#/definitions/CocktailStep'
+        type: array
+        x-go-name: StepList
+    required:
+    - files
+    - name
+    - description
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   ResponseData:
     properties:
       data:
@@ -111,7 +172,27 @@ definitions:
         x-go-name: ErrorMessage
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  UpdateUserPhotoResponse:
+  UpdateUserInfoRequest:
+    properties:
+      file:
+        type: string
+        x-go-name: File
+      is_collection_public:
+        description: public user collection post
+        example: false
+        type: boolean
+        x-go-name: IsCollectionPublic
+      name:
+        description: name for this user
+        example: Feen Lin
+        type: string
+        x-go-name: Name
+    required:
+    - name
+    - is_collection_public
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  UpdateUserInfoResponse:
     properties:
       photo:
         type: string
@@ -146,6 +227,21 @@ paths:
           $ref: '#/responses/popularCocktailListResponse'
       tags:
       - cocktail
+    post:
+      description: Post cocktail article.
+      operationId: postArticleRequest
+      parameters:
+      - in: body
+        name: Body
+        schema:
+          $ref: '#/definitions/PostArticleRequest'
+      responses: {}
+      security:
+      - Bearer:
+        - apiKey
+      summary: Post cocktail article.
+      tags:
+      - cocktail
   /google-authenticate:
     post:
       description: Use Code to exchange access token.
@@ -176,24 +272,10 @@ paths:
       description: Edit user name and collection of publicity status.
       operationId: updateUserInfoRequest
       parameters:
-      - in: formData
-        name: file
-        type: file
-        x-go-name: File
-      - description: name for this user
-        example: Feen Lin
-        in: formData
-        name: name
-        required: true
-        type: string
-        x-go-name: Name
-      - description: public user collection post
-        example: false
-        in: formData
-        name: is_collection_public
-        required: true
-        type: boolean
-        x-go-name: IsCollectionPublic
+      - in: body
+        name: Body
+        schema:
+          $ref: '#/definitions/UpdateUserInfoRequest'
       responses:
         "200":
           $ref: '#/responses/updateUserPhotoResponse'
@@ -246,7 +328,7 @@ responses:
   updateUserPhotoResponse:
     description: ""
     schema:
-      $ref: '#/definitions/UpdateUserPhotoResponse'
+      $ref: '#/definitions/UpdateUserInfoResponse'
 schemes:
 - http
 - https
