@@ -43,7 +43,10 @@ func (c *cocktailUsecase) fillCocktailCoverPhoto(ctx context.Context, cocktails 
 
 	for _, cocktail := range cocktails {
 		path, err := c.cocktailPhotoMySQLRepo.QueryCoverPhotoByCocktailId(ctx, cocktail.CocktailID)
-		if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			apiCocktails = append(apiCocktails, cocktail)
+			continue
+		} else if err != nil {
 			return []domain.APICocktail{}, err
 		}
 		cocktail.Photo = path
@@ -64,13 +67,8 @@ func (c *cocktailUsecase) GetAllWithFilter(ctx context.Context, filter map[strin
 		PageSize:  pagination.PageSize,
 		SortByDir: sortByDir,
 	})
-
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		logrus.Error(err)
-		return nil, 0, domain.ErrCocktailNotFound
-	} else if err != nil {
-		logrus.Error(err)
-		return nil, 0, err
+	if err != nil {
+		return []domain.APICocktail{}, 0, err
 	}
 
 	var apiCocktails []domain.APICocktail
@@ -87,7 +85,7 @@ func (c *cocktailUsecase) GetAllWithFilter(ctx context.Context, filter map[strin
 
 	apiCocktails, err = c.fillCocktailCoverPhoto(ctx, apiCocktails)
 	if err != nil {
-		return nil, 0, err
+		return []domain.APICocktail{}, 0, err
 	}
 
 	return apiCocktails, total, nil
