@@ -23,11 +23,6 @@ definitions:
         example: shake
         type: string
         x-go-name: Description
-      step:
-        example: 1
-        format: int64
-        type: integer
-        x-go-name: Step
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   GetPopularCocktailListRequest:

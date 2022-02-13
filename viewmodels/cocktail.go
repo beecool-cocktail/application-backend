@@ -24,7 +24,7 @@ type PopularCocktailList struct {
 
 type PostArticleRequest struct {
 	//required: true
-	Files          []string             `json:"files" binding:"required,lte=5"`
+	Files          []string             `json:"files" binding:"lte=5"`
 
 	//required: true
 	//example: Gin Tonic
@@ -34,9 +34,8 @@ type PostArticleRequest struct {
 
 	StepList       []CocktailStep       `json:"step_list"`
 
-	//required: true
 	//example: Very good to drink
-	Description    string               `json:"description" binding:"required"`
+	Description    string               `json:"description"`
 }
 
 type CocktailIngredient struct {
@@ -51,9 +50,6 @@ type CocktailIngredient struct {
 }
 
 type CocktailStep struct {
-	//example: 1
-	Step        int    `json:"step"`
-
 	//example: shake
 	Description string `json:"description"`
 }

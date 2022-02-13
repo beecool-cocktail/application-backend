@@ -1,7 +1,6 @@
 package http
 
 import (
-	"fmt"
 	"github.com/beecool-cocktail/application-backend/domain"
 	"github.com/beecool-cocktail/application-backend/middleware"
 	"github.com/beecool-cocktail/application-backend/service"
@@ -77,7 +76,7 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 		return
 	}
 
-	var cocktailList []viewmodels.PopularCocktailList
+	cocktailList := make([]viewmodels.PopularCocktailList, 0)
 	for _, cocktail := range cocktails {
 		out := viewmodels.PopularCocktailList{
 			CocktailID:  cocktail.CocktailID,
@@ -108,7 +107,6 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 func (co *CocktailHandler) PostArticle(c *gin.Context) {
 	api := "cocktail"
 	userId := c.GetInt64("user_id")
-	fmt.Println(userId)
 
 	var request viewmodels.PostArticleRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -134,9 +132,9 @@ func (co *CocktailHandler) PostArticle(c *gin.Context) {
 	}
 
 	var steps []domain.CocktailStep
-	for _, step := range request.StepList {
+	for stepNumber, step := range request.StepList {
 		out := domain.CocktailStep{
-			StepNumber:      step.Step,
+			StepNumber:      stepNumber,
 			StepDescription: step.Description,
 		}
 		steps = append(steps, out)
