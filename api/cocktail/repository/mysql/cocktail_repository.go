@@ -20,9 +20,6 @@ func (c *cocktailMySQLRepository) GetAllWithFilter(ctx context.Context, filter m
 	var total int64
 
 	orm := c.db.Model(&cocktail)
-	if pagination.PageSize != 0 {
-		orm.Limit(pagination.PageSize).Offset((pagination.Page - 1)* pagination.PageSize)
-	}
 
 	for sort, dir := range pagination.SortByDir {
 		dirString := sortbydir.ParseStringBySortByDir(dir)
@@ -31,8 +28,13 @@ func (c *cocktailMySQLRepository) GetAllWithFilter(ctx context.Context, filter m
 	}
 
 	orm.Where(filter)
-	res := orm.Find(&cocktail)
 	orm.Count(&total)
+
+	if pagination.PageSize != 0 {
+		orm.Limit(pagination.PageSize).Offset((pagination.Page - 1)* pagination.PageSize)
+	}
+
+	res := orm.Find(&cocktail)
 
 	return cocktail, total, res.Error
 }
