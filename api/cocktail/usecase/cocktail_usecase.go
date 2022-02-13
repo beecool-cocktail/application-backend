@@ -7,7 +7,6 @@ import (
 	"github.com/beecool-cocktail/application-backend/enum/sortbydir"
 	"github.com/beecool-cocktail/application-backend/util"
 	"github.com/google/uuid"
-	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
