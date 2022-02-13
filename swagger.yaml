@@ -149,9 +149,7 @@ definitions:
         type: array
         x-go-name: StepList
     required:
-    - files
     - name
-    - description
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   ResponseData:

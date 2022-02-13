@@ -23,7 +23,6 @@ type PopularCocktailList struct {
 }
 
 type PostArticleRequest struct {
-	//required: true
 	Files          []string             `json:"files" binding:"lte=5"`
 
 	//required: true
