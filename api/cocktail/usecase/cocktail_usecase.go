@@ -62,6 +62,8 @@ func (c *cocktailUsecase) GetAllWithFilter(ctx context.Context, filter map[strin
 		sortByDir[sort] = sortbydir.ParseSortByDirByInt(dir)
 	}
 
+	sortByDir["create_date"] = sortbydir.ParseSortByDirByInt(1)
+
 	cocktails, total, err := c.cocktailMySQLRepo.GetAllWithFilter(ctx, filter, domain.PaginationMySQLRepository{
 		Page:      pagination.Page,
 		PageSize:  pagination.PageSize,
