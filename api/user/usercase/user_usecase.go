@@ -94,6 +94,13 @@ func (u *userUsecase) UpdateUserInfo(ctx context.Context, d *domain.User, ui *do
 			return err
 		}
 
+		err = u.userRedisRepo.UpdateBasicInfo(ctx, &domain.UserCache{
+			Name: d.Name,
+		})
+		if err != nil {
+			return err
+		}
+
 		return err
 	})
 
@@ -101,12 +108,6 @@ func (u *userUsecase) UpdateUserInfo(ctx context.Context, d *domain.User, ui *do
 		return err
 	}
 
-	err = u.userRedisRepo.UpdateBasicInfo(ctx, &domain.UserCache{
-		Name: d.Name,
-	})
-	if err != nil {
-		return err
-	}
 
 	return nil
 }

@@ -2,8 +2,11 @@ package usercase
 
 import (
 	"context"
+	"errors"
+	"github.com/beecool-cocktail/application-backend/testutil"
 	"testing"
 
+	_transactionRepo "github.com/beecool-cocktail/application-backend/db/repository/mysql"
 	"github.com/beecool-cocktail/application-backend/domain"
 	"github.com/beecool-cocktail/application-backend/domain/mocks"
 	"github.com/stretchr/testify/assert"
@@ -67,37 +70,139 @@ func Test_userUsecase_QueryById(t *testing.T) {
 	})
 }
 
-func Test_userUsecase_UpdateBasicInfo(t *testing.T) {
+func Test_userUsecase_UpdateUserInfo(t *testing.T) {
+	db, dbMock, err := testutil.BeforeEach()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
 	mockUserMySQLRepo := new(mocks.UserMySQLRepository)
 	mockUserRedisRepo := new(mocks.UserRedisRepository)
 	mockUserFileRepo := new(mocks.UserFileRepository)
-	mockTransactionRepo := new(mocks.DBTransactionRepository)
+	mockTransactionRepo := _transactionRepo.NewDBRepository(db)
 
-	mockUser := domain.User{
-		ID:                 1,
-		Name:               "Andy",
-		IsCollectionPublic: true,
-	}
+	t.Run("Success - didn't update image", func(t *testing.T) {
+		mockUser := domain.User{
+			ID:                 1,
+			Name:               "Andy",
+			IsCollectionPublic: true,
+		}
 
-	mockUserImage := domain.UserImage{
-		ID:                 1,
-		Data: "path",
-		Type: "image/png",
-	}
+		mockUserImage := domain.UserImage{
+			ID:   1,
+			Type: "image/png",
+		}
 
-	t.Run("Success", func(t *testing.T) {
-		mockTransactionRepo.
-			On("Transaction", mock.Anything).
-			Return(nil).Once()
-		
+		dbMock.ExpectBegin()
+		mockUserMySQLRepo.
+			On("UpdateBasicInfoTx",
+				mock.Anything,
+				mock.Anything,
+				&mockUser).
+			Return(int64(1), nil).Once()
+
 		mockUserRedisRepo.
-			On("UpdateBasicInfo", mock.Anything, mock.Anything).
-			Return( nil).Once()
+		On("UpdateBasicInfo",
+			mock.Anything,
+			mock.MatchedBy(func(userCache *domain.UserCache) bool {
+				return matchedByUserOfUpdateUserInfo(userCache, &mockUser)
+			})).
+			Return(nil).Once()
+
+		dbMock.ExpectCommit()
 
 		u := NewUserUsecase(mockUserMySQLRepo, mockUserRedisRepo, mockUserFileRepo, mockTransactionRepo)
 		err := u.UpdateUserInfo(context.TODO(), &mockUser, &mockUserImage)
 
 		assert.NoError(t, err)
+		mockUserMySQLRepo.AssertExpectations(t)
+	})
+
+	t.Run("Success - update image", func(t *testing.T) {
+		mockUser := domain.User{
+			ID:                 1,
+			Name:               "Andy",
+			IsCollectionPublic: true,
+		}
+
+		mockUserImage := domain.UserImage{
+			ID:   1,
+			Data: "path",
+			Type: "image/png",
+		}
+
+		dbMock.ExpectBegin()
+		mockUserFileRepo.
+			On("SaveAsWebp",
+				mock.Anything,
+			mock.Anything).
+			Return(nil).Once()
+
+		mockUserMySQLRepo.
+			On("UpdateImageTx",
+				mock.Anything,
+				mock.Anything,
+			mock.Anything).
+			Return(int64(1), nil).Once()
+
+		mockUserMySQLRepo.
+			On("UpdateBasicInfoTx",
+				mock.Anything,
+				mock.Anything,
+				&mockUser).
+			Return(int64(1), nil).Once()
+
+		mockUserRedisRepo.
+			On("UpdateBasicInfo",
+				mock.Anything,
+				mock.MatchedBy(func(userCache *domain.UserCache) bool {
+					return matchedByUserOfUpdateUserInfo(userCache, &mockUser)
+				})).
+			Return(nil).Once()
+
+		dbMock.ExpectCommit()
+
+		u := NewUserUsecase(mockUserMySQLRepo, mockUserRedisRepo, mockUserFileRepo, mockTransactionRepo)
+		err := u.UpdateUserInfo(context.TODO(), &mockUser, &mockUserImage)
+
+		assert.NoError(t, err)
+		mockUserMySQLRepo.AssertExpectations(t)
+	})
+
+
+	t.Run("Success - didn't update image", func(t *testing.T) {
+		mockUser := domain.User{
+			ID:                 1,
+			Name:               "Andy",
+			IsCollectionPublic: true,
+		}
+
+		mockUserImage := domain.UserImage{
+			ID:   1,
+			Type: "image/png",
+		}
+
+		dbMock.ExpectBegin()
+		mockUserMySQLRepo.
+			On("UpdateBasicInfoTx",
+				mock.Anything,
+				mock.Anything,
+				&mockUser).
+			Return(int64(1), nil).Once()
+
+		mockUserRedisRepo.
+			On("UpdateBasicInfo",
+				mock.Anything,
+				mock.MatchedBy(func(userCache *domain.UserCache) bool {
+					return matchedByUserOfUpdateUserInfo(userCache, &mockUser)
+				})).
+			Return(errors.New("update failed")).Once()
+
+		dbMock.ExpectRollback()
+
+		u := NewUserUsecase(mockUserMySQLRepo, mockUserRedisRepo, mockUserFileRepo, mockTransactionRepo)
+		err := u.UpdateUserInfo(context.TODO(), &mockUser, &mockUserImage)
+
+		assert.EqualError(t, err, "update failed")
 		mockUserMySQLRepo.AssertExpectations(t)
 	})
 }

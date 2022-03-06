@@ -3,6 +3,7 @@ package http
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/vincent-petithory/dataurl"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -168,6 +169,64 @@ func TestUserHandler_GetUserInfo(t *testing.T) {
 		w := httptest.NewRecorder()
 
 		req, _ := http.NewRequest("POST", "/api/user/info", nil)
+		req.Header.Set("Content-Type", "application/json")
+		r.ServeHTTP(w, req)
+
+		assert.Equal(t, 200, w.Code)
+		assert.Equal(t, string(responseJsonString), w.Body.String())
+	})
+}
+
+func TestUserHandler_UpdateUserInfo(t *testing.T) {
+	mockUserUsecase := new(mocks.UserUsecase)
+	mockSocialAccountUsecase := new(mocks.SocialAccountUsecase)
+
+	r := testutil.GetRouteWithcontext()
+	logger := testutil.GetLogger()
+
+	handler := UserHandler{
+		Logger:               logger,
+		UserUsecase:          mockUserUsecase,
+		SocialAccountUsecase: mockSocialAccountUsecase,
+	}
+
+	r.POST("/api/user/edit-info", handler.UpdateUserInfo)
+
+	t.Run("Success", func(t *testing.T) {
+		requestData := viewmodels.UpdateUserInfoRequest{
+			File:               "data:image/png;base64,ZmlsZQ==",
+			Name:               "Gin",
+			IsCollectionPublic: true,
+		}
+
+		dataURL, _ := dataurl.DecodeString(requestData.File)
+
+		var responseData viewmodels.ResponseData
+		mockUserUsecase.
+			On("UpdateUserInfo",
+				mock.Anything,
+				mock.MatchedBy(func(user *domain.User) bool {
+					return matchedByUserOfUpdateUserInfo(user, requestData, testutil.UserID)
+				}),
+				mock.MatchedBy(func(userImage *domain.UserImage) bool {
+					return matchedByUserImageOfUpdateUserInfo(userImage, dataURL, testutil.UserID)
+				})).
+			Return(nil).Run(func(args mock.Arguments) {
+			arg := args.Get(2).(*domain.UserImage)
+			arg.Destination = "static/images/image01.png"
+		}).Once()
+
+		responseData.ErrorCode = domain.CodeSuccess
+		responseData.Data = viewmodels.UpdateUserInfoResponse{
+			Photo: "static/images/image01.png",
+		}
+
+		requestJsonString, _ := json.Marshal(requestData)
+		responseJsonString, _ := json.Marshal(responseData)
+
+		w := httptest.NewRecorder()
+
+		req, _ := http.NewRequest("POST", "/api/user/edit-info", bytes.NewBuffer(requestJsonString))
 		req.Header.Set("Content-Type", "application/json")
 		r.ServeHTTP(w, req)
 

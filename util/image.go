@@ -17,6 +17,8 @@ func ValidateImageType(fileType string) bool {
 		return true
 	case "image/jpg":
 		return true
+	case "image/jpeg":
+		return true
 	case "image/webp":
 		return true
 	//Todo 處理未上傳檔案的情況
