@@ -23,16 +23,80 @@ func NewCocktailHandler(s *service.Service, cocktailUsecase domain.CocktailUseca
 		CocktailUsecase: cocktailUsecase,
 	}
 
+	s.HTTP.GET("/api/cocktails/:cocktailID", handler.GetCocktailByCocktailID)
 	s.HTTP.GET("/api/cocktails", handler.CocktailList)
 	s.HTTP.POST("/api/cocktails", middlewareHandler.JWTAuthMiddleware(), handler.PostArticle)
 }
 
-// swagger:operation GET /cocktails cocktail noRequest
+// swagger:operation GET /cocktails/{id} cocktail getCocktailByIDRequest
+// ---
+// summary: Get cocktail detail information
+// description: Get cocktail photo, steps and ingredient.
 //
+// parameters:
+// - name: id
+//   in: path
+//   required: true
+//   type: integer
+//   example: 123456
+//
+// responses:
+//  "200":
+//    "$ref": "#/responses/getCocktailByIDResponse"
+func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
+	var response viewmodels.GetCocktailByIDResponse
+	cocktailID := c.Param("cocktailID")
+	api := "/cocktails" + cocktailID
+	cocktailIDNumber, err := strconv.ParseInt(cocktailID, 10, 64)
+	if err != nil {
+		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("parameter illegal - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
+	cocktail, err := co.CocktailUsecase.QueryByCocktailID(c, cocktailIDNumber)
+	if err != nil {
+		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("query by cocktail id failed - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
+	var ingredients []viewmodels.CocktailIngredient
+	for _, ingredient := range cocktail.Ingredients {
+		out := viewmodels.CocktailIngredient{
+			Name: ingredient.IngredientName,
+			Amount: ingredient.IngredientAmount,
+			Unit: ingredient.IngredientUnit,
+		}
+		ingredients = append(ingredients, out)
+	}
+
+	var steps []viewmodels.CocktailStep
+	for _, step := range cocktail.Steps {
+		out := viewmodels.CocktailStep{
+			Description: step.StepDescription,
+		}
+		steps = append(steps, out)
+	}
+
+	response = viewmodels.GetCocktailByIDResponse{
+		CocktailID: cocktail.CocktailID,
+		Photos: cocktail.Photos,
+		Title: cocktail.Title,
+		Description: cocktail.Description,
+		IngredientList: ingredients,
+		StepList: steps,
+		CreatedDate: cocktail.CreatedDate,
+	}
+
+	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
+
+}
+
+// swagger:operation GET /cocktails cocktail noRequest
+// ---
 // summary: Get popular cocktail list
 // description: Get popular cocktail list order by create date.
-//
-// ---
 //
 // parameters:
 // - name: page
@@ -81,7 +145,7 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 		out := viewmodels.PopularCocktailList{
 			CocktailID:  cocktail.CocktailID,
 			Title:       cocktail.Title,
-			Photo:       cocktail.Photo,
+			Photo:       cocktail.CoverPhoto,
 			CreatedDate: cocktail.CreatedDate,
 		}
 

@@ -26,3 +26,16 @@ func (s *cocktailIngredientMySQLRepository) StoreTx(ctx context.Context, tx *gor
 	return nil
 }
 
+func (s *cocktailIngredientMySQLRepository) QueryByCocktailId(ctx context.Context, id int64) ([]domain.CocktailIngredient, error) {
+
+	var ingredients []domain.CocktailIngredient
+	err := s.db.Select( "ingredient_name", "ingredient_amount", "ingredient_unit").
+		Where("cocktail_id = ?", id).
+		Find(&ingredients).Error
+
+	if err != nil {
+		return []domain.CocktailIngredient{}, err
+	}
+
+	return ingredients, nil
+}

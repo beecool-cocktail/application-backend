@@ -23,32 +23,49 @@ type PopularCocktailList struct {
 }
 
 type PostArticleRequest struct {
-	Files          []string             `json:"files" binding:"lte=5"`
+	Files []string `json:"files" binding:"lte=5"`
 
 	//required: true
 	//example: Gin Tonic
-	Name           string               `json:"name" binding:"required"`
+	Name string `json:"name" binding:"required"`
 
 	IngredientList []CocktailIngredient `json:"ingredient_list"`
 
-	StepList       []CocktailStep       `json:"step_list"`
+	StepList []CocktailStep `json:"step_list"`
 
 	//example: Very good to drink
-	Description    string               `json:"description"`
+	Description string `json:"description"`
 }
 
 type CocktailIngredient struct {
 	//example: Gin Tonic
-	Name   string  `json:"name"`
+	Name string `json:"name"`
 
 	//example: 1
 	Amount float32 `json:"amount"`
 
 	//example: cup
-	Unit   string  `json:"unit"`
+	Unit string `json:"unit"`
 }
 
 type CocktailStep struct {
 	//example: shake
 	Description string `json:"description"`
+}
+
+type GetCocktailByIDRequest struct {
+	// ID of an cocktail item
+	//
+	// In: path
+	ID int64 `json:"id"`
+}
+
+type GetCocktailByIDResponse struct {
+	CocktailID     int64                `json:"cocktail_id"`
+	Photos         []string             `json:"photos"`
+	Title          string               `json:"title"`
+	Description    string               `json:"description"`
+	IngredientList []CocktailIngredient `json:"ingredient_list"`
+	StepList       []CocktailStep       `json:"step_list"`
+	CreatedDate    string               `json:"created_date"`
 }

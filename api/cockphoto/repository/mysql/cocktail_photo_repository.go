@@ -31,3 +31,18 @@ func (s *cocktailCocktailMySQLRepository) QueryCoverPhotoByCocktailId(ctx contex
 
 	return photo.Photo, res.Error
 }
+
+func (s *cocktailCocktailMySQLRepository) QueryPhotosByCocktailId(ctx context.Context, id int64) ([]string, error) {
+
+	var photos []domain.CocktailPhoto
+	var photosPath []string
+	res := s.db.Select("photo").
+		Where("cocktail_id = ?", id).
+		Find(&photos)
+
+	for _, photo := range photos {
+		photosPath = append(photosPath, photo.Photo)
+	}
+
+	return photosPath, res.Error
+}

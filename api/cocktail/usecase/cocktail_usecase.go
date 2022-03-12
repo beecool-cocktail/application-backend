@@ -49,11 +49,36 @@ func (c *cocktailUsecase) fillCocktailCoverPhoto(ctx context.Context, cocktails 
 		} else if err != nil {
 			return []domain.APICocktail{}, err
 		}
-		cocktail.Photo = path
+		cocktail.CoverPhoto = path
 		apiCocktails = append(apiCocktails, cocktail)
 	}
 
 	return apiCocktails, nil
+}
+
+func (c *cocktailUsecase) fillCocktailDetails(ctx context.Context, cocktail domain.APICocktail) (domain.APICocktail, error) {
+
+	paths, err := c.cocktailPhotoMySQLRepo.QueryPhotosByCocktailId(ctx, cocktail.CocktailID)
+	if err != nil {
+		return domain.APICocktail{}, err
+	}
+	for _, path := range paths {
+		cocktail.Photos = append(cocktail.Photos, path)
+	}
+
+	ingredients, err := c.cocktailIngredientMySQLRepo.QueryByCocktailId(ctx, cocktail.CocktailID)
+	if err != nil {
+		return domain.APICocktail{}, err
+	}
+	cocktail.Ingredients = ingredients
+
+	steps, err := c.cocktailStepMySQLRepo.QueryByCocktailId(ctx, cocktail.CocktailID)
+	if err != nil {
+		return domain.APICocktail{}, err
+	}
+	cocktail.Steps = steps
+
+	return cocktail, nil
 }
 
 func (c *cocktailUsecase) GetAllWithFilter(ctx context.Context, filter map[string]interface{}, pagination domain.PaginationUsecase) ([]domain.APICocktail, int64, error) {
@@ -91,6 +116,31 @@ func (c *cocktailUsecase) GetAllWithFilter(ctx context.Context, filter map[strin
 	}
 
 	return apiCocktails, total, nil
+}
+
+func (c *cocktailUsecase) QueryByCocktailID(ctx context.Context, id int64) (domain.APICocktail, error) {
+
+	cocktail, err := c.cocktailMySQLRepo.QueryByCocktailID(ctx, id)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return domain.APICocktail{}, domain.ErrCocktailNotFound
+	} else if err != nil {
+		return domain.APICocktail{}, err
+	}
+
+	apiCocktail := domain.APICocktail{
+		CocktailID:  cocktail.CocktailID,
+		UserID:      cocktail.UserID,
+		Title:       cocktail.Title,
+		Description: cocktail.Description,
+		CreatedDate: util.GetFormatTime(cocktail.CreatedDate, "UTC"),
+	}
+
+	apiCocktail, err = c.fillCocktailDetails(ctx, apiCocktail)
+	if err != nil {
+		return domain.APICocktail{}, err
+	}
+
+	return apiCocktail, nil
 }
 
 func (c *cocktailUsecase) Store(ctx context.Context, co *domain.Cocktail, ingredients []domain.CocktailIngredient,

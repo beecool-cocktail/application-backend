@@ -17,7 +17,6 @@ type swaggerPopularCocktailListResponse struct {
 	Body viewmodels.GetPopularCocktailListResponse
 }
 
-
 // swagger:parameters googleAuthenticateRequest
 type swaggerGoogleAuthenticateRequest struct {
 	// in: body
@@ -58,4 +57,16 @@ type swaggerUpdateUserPhotoResponse struct {
 type swaggerPostArticleRequest struct {
 	// in: body
 	Body viewmodels.PostArticleRequest
+}
+
+// swagger:parameters getCocktailByIDRequest
+type swaggerGetCocktailByIDRequest struct {
+	// in: body
+	Body viewmodels.GetCocktailByIDRequest
+}
+
+// swagger:response getCocktailByIDResponse
+type swaggerGetCocktailByIDResponse struct {
+	// in: body
+	Body viewmodels.GetCocktailByIDResponse
 }

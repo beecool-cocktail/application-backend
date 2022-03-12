@@ -17,6 +17,7 @@ type CocktailPhoto struct {
 type CocktailPhotoMySQLRepository interface {
 	StoreTx(ctx context.Context, tx *gorm.DB, c *CocktailPhoto) error
 	QueryCoverPhotoByCocktailId(ctx context.Context, id int64) (string, error)
+	QueryPhotosByCocktailId(ctx context.Context, id int64) ([]string, error)
 }
 
 type CocktailPhotoUsecase interface {
