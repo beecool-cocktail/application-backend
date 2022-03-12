@@ -79,6 +79,17 @@ KEY `idx_cocktail_id` (`cocktail_id`),
 KEY `idx_date` (`created_date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+LOCK TABLES `cocktail_ingredients` WRITE;
+/*!40000 ALTER TABLE `cocktail_ingredients` DISABLE KEYS */;
+
+INSERT INTO `cocktail_ingredients` (`id`, `cocktail_id`, `ingredient_name`, `ingredient_amount`, `ingredient_unit`, `created_date`)
+VALUES
+(1, 123456, 'gin tonic', 1, 'liter', '2022-03-12 13:36:24'),
+(2, 123456, 'cherry', 2, 'basket', '2022-03-12 13:36:24');
+
+/*!40000 ALTER TABLE `cocktail_ingredients` ENABLE KEYS */;
+UNLOCK TABLES;
+
 
 # Dump of table cocktail_steps
 # ------------------------------------------------------------
@@ -93,6 +104,18 @@ PRIMARY KEY (`id`),
 KEY `idx_cocktail_id` (`cocktail_id`),
 KEY `idx_date` (`created_date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+LOCK TABLES `cocktail_steps` WRITE;
+/*!40000 ALTER TABLE `cocktail_steps` DISABLE KEYS */;
+
+INSERT INTO `cocktail_steps` (`id`, `cocktail_id`, `step_number`, `step_description`, `created_date`)
+VALUES
+(1, 123456, 1, 'mix', '2022-03-12 13:34:56'),
+(2, 123456, 2, 'shack', '2022-03-12 13:35:13'),
+(3, 123456, 3, 'drink', '2022-03-12 13:44:06');
+
+/*!40000 ALTER TABLE `cocktail_steps` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table cocktail_steps

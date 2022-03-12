@@ -25,6 +25,50 @@ definitions:
         x-go-name: Description
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  GetCocktailByIDRequest:
+    properties:
+      id:
+        description: |-
+          ID of an cocktail item
+
+          In: path
+        format: int64
+        type: integer
+        x-go-name: ID
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  GetCocktailByIDResponse:
+    properties:
+      cocktail_id:
+        format: int64
+        type: integer
+        x-go-name: CocktailID
+      created_date:
+        type: string
+        x-go-name: CreatedDate
+      description:
+        type: string
+        x-go-name: Description
+      ingredient_list:
+        items:
+          $ref: '#/definitions/CocktailIngredient'
+        type: array
+        x-go-name: IngredientList
+      photos:
+        items:
+          type: string
+        type: array
+        x-go-name: Photos
+      step_list:
+        items:
+          $ref: '#/definitions/CocktailStep'
+        type: array
+        x-go-name: StepList
+      title:
+        type: string
+        x-go-name: Title
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   GetPopularCocktailListRequest:
     properties:
       page:
@@ -200,9 +244,7 @@ info:
 paths:
   /cocktails:
     get:
-      description: |-
-        summary: Get popular cocktail list
-        description: Get popular cocktail list order by create date.
+      description: Get popular cocktail list order by create date.
       operationId: noRequest
       parameters:
       - example: 1
@@ -218,6 +260,7 @@ paths:
       responses:
         "200":
           $ref: '#/responses/popularCocktailListResponse'
+      summary: Get popular cocktail list
       tags:
       - cocktail
     post:
@@ -233,6 +276,24 @@ paths:
       - Bearer:
         - apiKey
       summary: Post cocktail article.
+      tags:
+      - cocktail
+  /cocktails/{id}:
+    get:
+      description: Get cocktail photo, steps and ingredient.
+      operationId: getCocktailByIDRequest
+      parameters:
+      - example: 123456
+        in: path
+        name: id
+        required: true
+        schema:
+          $ref: '#/definitions/GetCocktailByIDRequest'
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/getCocktailByIDResponse'
+      summary: Get cocktail detail information
       tags:
       - cocktail
   /google-authenticate:
@@ -306,6 +367,10 @@ paths:
       tags:
       - user
 responses:
+  getCocktailByIDResponse:
+    description: ""
+    schema:
+      $ref: '#/definitions/GetCocktailByIDResponse'
   getUserInfoResponse:
     description: ""
     schema:

@@ -3,6 +3,7 @@ package mysql
 import (
 	"context"
 	"github.com/beecool-cocktail/application-backend/domain"
+	"github.com/beecool-cocktail/application-backend/enum/sortbydir"
 	"gorm.io/gorm"
 )
 
@@ -25,3 +26,18 @@ func (s *cocktailStepMySQLRepository) StoreTx(ctx context.Context, tx *gorm.DB, 
 	return nil
 }
 
+func (s *cocktailStepMySQLRepository) QueryByCocktailId(ctx context.Context, id int64) ([]domain.CocktailStep, error) {
+
+	var steps []domain.CocktailStep
+	order := sortbydir.MakeSortAndDir("step_number", sortbydir.ParseStringBySortByDir(sortbydir.ASC))
+	err := s.db.Select(  "step_description").
+		Where("cocktail_id = ?", id).
+		Order(order).
+		Find(&steps).Error
+
+	if err != nil {
+		return []domain.CocktailStep{}, err
+	}
+
+	return steps, nil
+}

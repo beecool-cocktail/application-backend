@@ -17,6 +17,7 @@ type CocktailIngredient struct {
 
 type CocktailIngredientMySQLRepository interface {
 	StoreTx(ctx context.Context, tx *gorm.DB, c *CocktailIngredient) error
+	QueryByCocktailId(ctx context.Context, id int64) ([]CocktailIngredient, error)
 }
 
 type CocktailIngredientUsecase interface {

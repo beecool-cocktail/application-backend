@@ -20,7 +20,10 @@ type APICocktail struct {
 	UserID      int64
 	Title       string
 	Description string
-	Photo       string
+	CoverPhoto  string
+	Photos      []string
+	Ingredients []CocktailIngredient
+	Steps       []CocktailStep
 	CreatedDate string
 }
 
@@ -35,11 +38,13 @@ type Cocktail struct {
 
 type CocktailMySQLRepository interface {
 	GetAllWithFilter(ctx context.Context, filter map[string]interface{}, pagination PaginationMySQLRepository) ([]Cocktail, int64, error)
+	QueryByCocktailID(ctx context.Context, id int64) (Cocktail, error)
 	StoreTx(ctx context.Context, tx *gorm.DB, c *Cocktail) error
 }
 
 type CocktailUsecase interface {
 	GetAllWithFilter(ctx context.Context, filter map[string]interface{}, pagination PaginationUsecase) ([]APICocktail, int64, error)
+	QueryByCocktailID(ctx context.Context, id int64) (APICocktail, error)
 	Store(ctx context.Context, c *Cocktail, cig []CocktailIngredient, cs []CocktailStep, ci []CocktailImage) error
 }
 
