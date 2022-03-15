@@ -17,6 +17,18 @@ type swaggerPopularCocktailListResponse struct {
 	Body viewmodels.GetPopularCocktailListResponse
 }
 
+// swagger:parameters getDraftCocktailListRequest
+type swaggerGetDraftCocktailListRequest struct {
+	// in: body
+	Body viewmodels.GetDraftCocktailListRequest
+}
+
+// swagger:response getPopularCocktailListResponse
+type swaggerGetPopularCocktailListResponse struct {
+	// in: body
+	Body viewmodels.GetPopularCocktailListResponse
+}
+
 // swagger:parameters googleAuthenticateRequest
 type swaggerGoogleAuthenticateRequest struct {
 	// in: body
@@ -59,6 +71,12 @@ type swaggerPostArticleRequest struct {
 	Body viewmodels.PostArticleRequest
 }
 
+// swagger:parameters postDraftArticleRequest
+type swaggerPostDraftArticleRequest struct {
+	// in: body
+	Body viewmodels.PostDraftArticleRequest
+}
+
 // swagger:parameters getCocktailByIDRequest
 type swaggerGetCocktailByIDRequest struct {
 	// in: body
@@ -69,4 +87,16 @@ type swaggerGetCocktailByIDRequest struct {
 type swaggerGetCocktailByIDResponse struct {
 	// in: body
 	Body viewmodels.GetCocktailByIDResponse
+}
+
+// swagger:parameters getCocktailDraftByIDRequest
+type swaggerGetCocktailDraftByIDRequest struct {
+	// in: body
+	Body viewmodels.GetCocktailDraftByIDRequest
+}
+
+// swagger:response getCocktailDraftByIDResponse
+type swaggerGetCocktailDraftByIDResponse struct {
+	// in: body
+	Body viewmodels.GetCocktailDraftByIDResponse
 }

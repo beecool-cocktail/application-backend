@@ -49,7 +49,7 @@ func (c *cocktailMySQLRepository) QueryByCocktailID(ctx context.Context, id int6
 
 func (c *cocktailMySQLRepository) StoreTx(ctx context.Context, tx *gorm.DB, co *domain.Cocktail) error {
 
-	res := tx.Select("cocktail_id", "user_id", "title", "description").Create(co)
+	res := tx.Select("cocktail_id", "user_id", "title", "description", "category").Create(co)
 
 	return res.Error
 }
