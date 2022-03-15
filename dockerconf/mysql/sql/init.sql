@@ -162,6 +162,7 @@ CREATE TABLE `cocktails` (
  `user_id` bigint(64) NOT NULL COMMENT ' 作者id',
  `title` varchar(16) COLLATE utf8mb4_general_ci NOT NULL COMMENT ' 調酒名稱',
  `description` varchar(512) COLLATE utf8mb4_general_ci NOT NULL COMMENT ' 調酒介紹',
+ `category` tinyint(1) NOT NULL DEFAULT '0' COMMENT ' 類型 0=草稿, 1=正式',
  `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
  PRIMARY KEY (`id`),
  UNIQUE KEY `idx_cocktail_id` (`cocktail_id`),
@@ -172,19 +173,19 @@ CREATE TABLE `cocktails` (
 LOCK TABLES `cocktails` WRITE;
 /*!40000 ALTER TABLE `cocktails` DISABLE KEYS */;
 
-INSERT INTO `cocktails` (`id`, `cocktail_id`, `title`, `description`, `user_id`, `created_date`)
+INSERT INTO `cocktails` (`id`, `cocktail_id`, `title`, `description`, `user_id`, `category`, `created_date`)
 VALUES
-(1, 123456, 'Side Car', 'Good to drink', 1, '2021-01-15 18:38:30'),
-(2, 1111111, 'Old Fashion', 'Good to drink', 1, '2021-02-15 18:38:30'),
-(3, 222222, 'Gin tonic', 'Good to drink', 1, '2021-03-15 18:38:30'),
-(4, 333333, 'Very Impressive', 'Good to drink', 2, '2021-04-15 18:38:30'),
-(5, 444444, 'Pathetic', 'Good to drink', 2, '2021-05-15 18:38:30'),
-(6, 555555, 'Old Fashion', 'Good to drink', 3, '2021-12-10 18:38:30'),
-(7, 666666, 'Old Fashion', 'Good to drink', 3, '2021-12-11 18:38:30'),
-(8, 777777, 'Old Fashion', 'Good to drink', 4, '2021-12-12 18:38:30'),
-(9, 888888, 'Old Fashion', 'Good to drink', 5, '2021-12-13 18:38:30'),
-(10, 999999, 'Old Fashion', 'Good to drink', 6, '2021-12-14 18:38:30'),
-(11, 12121212, 'Old Fashion', 'Good to drink', 6, '2021-12-15 18:38:30');
+(1, 123456, 'Side Car', 'Good to drink', 1, 1, '2021-01-15 18:38:30'),
+(2, 1111111, 'Old Fashion', 'Good to drink', 1, 1, '2021-02-15 18:38:30'),
+(3, 222222, 'Gin tonic', 'Good to drink', 1, 1, '2021-03-15 18:38:30'),
+(4, 333333, 'Very Impressive', 'Good to drink', 2, 1, '2021-04-15 18:38:30'),
+(5, 444444, 'Pathetic', 'Good to drink', 2, 1, '2021-05-15 18:38:30'),
+(6, 555555, 'Old Fashion', 'Good to drink', 3, 1, '2021-12-10 18:38:30'),
+(7, 666666, 'Old Fashion', 'Good to drink', 3, 1, '2021-12-11 18:38:30'),
+(8, 777777, 'Old Fashion', 'Good to drink', 4, 1, '2021-12-12 18:38:30'),
+(9, 888888, 'Old Fashion', 'Good to drink', 5, 1, '2021-12-13 18:38:30'),
+(10, 999999, 'Old Fashion', 'Good to drink', 6, 1, '2021-12-14 18:38:30'),
+(11, 12121212, 'Old Fashion', 'Good to drink', 6, 1, '2021-12-15 18:38:30');
 
 /*!40000 ALTER TABLE `cocktails` ENABLE KEYS */;
 UNLOCK TABLES;
