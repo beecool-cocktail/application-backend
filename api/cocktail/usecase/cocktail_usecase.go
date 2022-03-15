@@ -143,6 +143,35 @@ func (c *cocktailUsecase) QueryByCocktailID(ctx context.Context, id int64) (doma
 	return apiCocktail, nil
 }
 
+func (c *cocktailUsecase) QueryDraftByCocktailID(ctx context.Context, cocktailID, userID int64) (domain.APICocktail, error) {
+
+	cocktail, err := c.cocktailMySQLRepo.QueryByCocktailID(ctx, cocktailID)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return domain.APICocktail{}, domain.ErrCocktailNotFound
+	} else if err != nil {
+		return domain.APICocktail{}, err
+	}
+
+	if cocktail.UserID != userID {
+		return domain.APICocktail{}, domain.ErrItemDoesNotBelongToUser
+	}
+
+	apiCocktail := domain.APICocktail{
+		CocktailID:  cocktail.CocktailID,
+		UserID:      cocktail.UserID,
+		Title:       cocktail.Title,
+		Description: cocktail.Description,
+		CreatedDate: util.GetFormatTime(cocktail.CreatedDate, "UTC"),
+	}
+
+	apiCocktail, err = c.fillCocktailDetails(ctx, apiCocktail)
+	if err != nil {
+		return domain.APICocktail{}, err
+	}
+
+	return apiCocktail, nil
+}
+
 func (c *cocktailUsecase) Store(ctx context.Context, co *domain.Cocktail, ingredients []domain.CocktailIngredient,
 	steps []domain.CocktailStep, images []domain.CocktailImage) error {
 

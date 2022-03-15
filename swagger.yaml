@@ -69,6 +69,67 @@ definitions:
         x-go-name: Title
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  GetCocktailDraftByIDRequest:
+    properties:
+      id:
+        description: |-
+          ID of an cocktail item
+
+          In: path
+        format: int64
+        type: integer
+        x-go-name: ID
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  GetCocktailDraftByIDResponse:
+    properties:
+      cocktail_id:
+        format: int64
+        type: integer
+        x-go-name: CocktailID
+      created_date:
+        type: string
+        x-go-name: CreatedDate
+      description:
+        type: string
+        x-go-name: Description
+      ingredient_list:
+        items:
+          $ref: '#/definitions/CocktailIngredient'
+        type: array
+        x-go-name: IngredientList
+      photos:
+        items:
+          type: string
+        type: array
+        x-go-name: Photos
+      step_list:
+        items:
+          $ref: '#/definitions/CocktailStep'
+        type: array
+        x-go-name: StepList
+      title:
+        type: string
+        x-go-name: Title
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  GetDraftCocktailListRequest:
+    properties:
+      page:
+        example: 1
+        format: int64
+        type: integer
+        x-go-name: Page
+      page_size:
+        example: 10
+        format: int64
+        type: integer
+        x-go-name: PageSize
+    required:
+    - page
+    - page_size
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   GetPopularCocktailListRequest:
     properties:
       page:
@@ -196,6 +257,35 @@ definitions:
     - name
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  PostDraftArticleRequest:
+    properties:
+      description:
+        example: Very good to drink
+        type: string
+        x-go-name: Description
+      files:
+        items:
+          type: string
+        type: array
+        x-go-name: Files
+      ingredient_list:
+        items:
+          $ref: '#/definitions/CocktailIngredient'
+        type: array
+        x-go-name: IngredientList
+      name:
+        example: Gin Tonic
+        type: string
+        x-go-name: Name
+      step_list:
+        items:
+          $ref: '#/definitions/CocktailStep'
+        type: array
+        x-go-name: StepList
+    required:
+    - name
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   ResponseData:
     properties:
       data:
@@ -242,6 +332,66 @@ info:
   title: api server
   version: "0.1"
 paths:
+  /cocktail-drafts:
+    get:
+      description: Get draft cocktail list order by create date.
+      operationId: noRequest
+      parameters:
+      - example: 1
+        in: query
+        name: page
+        required: true
+        type: integer
+      - example: 10
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/getPopularCocktailListResponse'
+      security:
+      - Bearer:
+        - apiKey
+      summary: Get draft cocktail list
+      tags:
+      - cocktail
+    post:
+      description: Post cocktail draft article.
+      operationId: postDraftArticleRequest
+      parameters:
+      - in: body
+        name: Body
+        schema:
+          $ref: '#/definitions/PostDraftArticleRequest'
+      responses: {}
+      security:
+      - Bearer:
+        - apiKey
+      summary: Post cocktail draft article.
+      tags:
+      - cocktail
+  /cocktail-drafts/{id}:
+    get:
+      description: Get cocktail draft photo, steps and ingredient.
+      operationId: getCocktailDraftByIDRequest
+      parameters:
+      - example: 123456
+        in: path
+        name: id
+        required: true
+        schema:
+          $ref: '#/definitions/GetCocktailDraftByIDRequest'
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/getCocktailDraftByIDResponse'
+      security:
+      - Bearer:
+        - apiKey
+      summary: Get cocktail draft detail information
+      tags:
+      - cocktail
   /cocktails:
     get:
       description: Get popular cocktail list order by create date.
@@ -371,6 +521,14 @@ responses:
     description: ""
     schema:
       $ref: '#/definitions/GetCocktailByIDResponse'
+  getCocktailDraftByIDResponse:
+    description: ""
+    schema:
+      $ref: '#/definitions/GetCocktailDraftByIDResponse'
+  getPopularCocktailListResponse:
+    description: ""
+    schema:
+      $ref: '#/definitions/GetPopularCocktailListResponse'
   getUserInfoResponse:
     description: ""
     schema:
