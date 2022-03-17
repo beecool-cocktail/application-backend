@@ -85,6 +85,8 @@ func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 
 	response = viewmodels.GetCocktailByIDResponse{
 		CocktailID:     cocktail.CocktailID,
+		UserID:         cocktail.UserID,
+		UserName:       cocktail.UserName,
 		Photos:         cocktail.Photos,
 		Title:          cocktail.Title,
 		Description:    cocktail.Description,
@@ -214,11 +216,24 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 
 	cocktailList := make([]viewmodels.PopularCocktailList, 0)
 	for _, cocktail := range cocktails {
+		ingredients := make([]viewmodels.CocktailIngredient, 0)
+		for _, ingredient := range cocktail.Ingredients {
+			out := viewmodels.CocktailIngredient{
+				Name:   ingredient.IngredientName,
+				Amount: ingredient.IngredientAmount,
+				Unit:   ingredient.IngredientUnit,
+			}
+			ingredients = append(ingredients, out)
+		}
+
 		out := viewmodels.PopularCocktailList{
-			CocktailID:  cocktail.CocktailID,
-			Title:       cocktail.Title,
-			Photo:       cocktail.CoverPhoto,
-			CreatedDate: cocktail.CreatedDate,
+			CocktailID:     cocktail.CocktailID,
+			UserID:         cocktail.UserID,
+			UserName:       cocktail.UserName,
+			Title:          cocktail.Title,
+			Photos:         cocktail.Photos,
+			IngredientList: ingredients,
+			CreatedDate:    cocktail.CreatedDate,
 		}
 
 		cocktailList = append(cocktailList, out)

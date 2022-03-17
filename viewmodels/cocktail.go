@@ -16,10 +16,13 @@ type GetPopularCocktailListResponse struct {
 }
 
 type PopularCocktailList struct {
-	CocktailID  int64  `json:"cocktail_id"`
-	Photo       string `json:"photo"`
-	Title       string `json:"title"`
-	CreatedDate string `json:"created_date"`
+	CocktailID     int64                `json:"cocktail_id"`
+	UserID         int64                `json:"user_id"`
+	UserName       string               `json:"user_name"`
+	Title          string               `json:"title"`
+	Photos         []string             `json:"photos"`
+	IngredientList []CocktailIngredient `json:"ingredient_list"`
+	CreatedDate    string               `json:"created_date"`
 }
 
 type GetDraftCocktailListRequest struct {
@@ -33,7 +36,7 @@ type GetDraftCocktailListRequest struct {
 }
 
 type GetDraftCocktailListResponse struct {
-	Total               int64                 `json:"total"`
+	Total             int64               `json:"total"`
 	DraftCocktailList []DraftCocktailList `json:"draft_cocktail_list"`
 }
 
@@ -99,6 +102,8 @@ type GetCocktailByIDRequest struct {
 
 type GetCocktailByIDResponse struct {
 	CocktailID     int64                `json:"cocktail_id"`
+	UserID         int64                `json:"user_id"`
+	UserName       string               `json:"user_name"`
 	Photos         []string             `json:"photos"`
 	Title          string               `json:"title"`
 	Description    string               `json:"description"`

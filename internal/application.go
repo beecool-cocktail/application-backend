@@ -74,7 +74,7 @@ func initializeRoutes(s *service.Service) {
 	socialAccountUsecase := _socialAccountUsecase.NewSocialAccountUsecase(userMySQLRepo, userRedisRepo,
 		socialAccountMySQLRepo, socialAccountGoogleOAuthRepo)
 	cocktailUsecase := _cocktailUsecase.NewCocktailUsecase(cocktailMySQLRepo, cocktailFileMySQL, cocktailPhotoMySQLRepo,
-		cocktailIngredientMySQLRepo, cocktailStepMySQLRepo, transactionRepo)
+		cocktailIngredientMySQLRepo, cocktailStepMySQLRepo, userMySQLRepo, transactionRepo)
 
 	// Delivery dependency injection
 	_userHandlerHttpDelivery.NewUserHandler(s, userUsecase, socialAccountUsecase, *middlewareHandler)

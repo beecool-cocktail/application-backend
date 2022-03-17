@@ -16,6 +16,7 @@ type cocktailUsecase struct {
 	cocktailPhotoMySQLRepo      domain.CocktailPhotoMySQLRepository
 	cocktailIngredientMySQLRepo domain.CocktailIngredientMySQLRepository
 	cocktailStepMySQLRepo       domain.CocktailStepMySQLRepository
+	userMySQLRepo               domain.UserMySQLRepository
 	transactionRepo             domain.DBTransactionRepository
 }
 
@@ -26,6 +27,7 @@ func NewCocktailUsecase(
 	cocktailPhotoMySQLRepo domain.CocktailPhotoMySQLRepository,
 	cocktailIngredientMySQLRepo domain.CocktailIngredientMySQLRepository,
 	cocktailStepMySQLRepo domain.CocktailStepMySQLRepository,
+	userMySQLRepo domain.UserMySQLRepository,
 	transactionRepo domain.DBTransactionRepository) domain.CocktailUsecase {
 	return &cocktailUsecase{
 		cocktailMySQLRepo:           cocktailMySQLRepo,
@@ -33,23 +35,36 @@ func NewCocktailUsecase(
 		cocktailPhotoMySQLRepo:      cocktailPhotoMySQLRepo,
 		cocktailIngredientMySQLRepo: cocktailIngredientMySQLRepo,
 		cocktailStepMySQLRepo:       cocktailStepMySQLRepo,
+		userMySQLRepo:               userMySQLRepo,
 		transactionRepo:             transactionRepo,
 	}
 }
 
-func (c *cocktailUsecase) fillCocktailCoverPhoto(ctx context.Context, cocktails []domain.APICocktail) ([]domain.APICocktail, error) {
+func (c *cocktailUsecase) fillCocktailList(ctx context.Context, cocktails []domain.APICocktail) ([]domain.APICocktail, error) {
 
 	var apiCocktails []domain.APICocktail
 
 	for _, cocktail := range cocktails {
-		path, err := c.cocktailPhotoMySQLRepo.QueryCoverPhotoByCocktailId(ctx, cocktail.CocktailID)
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			apiCocktails = append(apiCocktails, cocktail)
-			continue
-		} else if err != nil {
+		paths, err := c.cocktailPhotoMySQLRepo.QueryPhotosByCocktailId(ctx, cocktail.CocktailID)
+		if err != nil {
 			return []domain.APICocktail{}, err
 		}
-		cocktail.CoverPhoto = path
+		for _, path := range paths {
+			cocktail.Photos = append(cocktail.Photos, path)
+		}
+
+		ingredients, err := c.cocktailIngredientMySQLRepo.QueryByCocktailId(ctx, cocktail.CocktailID)
+		if err != nil {
+			return []domain.APICocktail{}, err
+		}
+		cocktail.Ingredients = ingredients
+
+		user, err := c.userMySQLRepo.QueryById(ctx, cocktail.UserID)
+		if err != nil {
+			return []domain.APICocktail{}, err
+		}
+		cocktail.UserName = user.Name
+
 		apiCocktails = append(apiCocktails, cocktail)
 	}
 
@@ -77,6 +92,12 @@ func (c *cocktailUsecase) fillCocktailDetails(ctx context.Context, cocktail doma
 		return domain.APICocktail{}, err
 	}
 	cocktail.Steps = steps
+
+	user, err := c.userMySQLRepo.QueryById(ctx, cocktail.UserID)
+	if err != nil {
+		return domain.APICocktail{}, err
+	}
+	cocktail.UserName = user.Name
 
 	return cocktail, nil
 }
@@ -110,7 +131,7 @@ func (c *cocktailUsecase) GetAllWithFilter(ctx context.Context, filter map[strin
 		apiCocktails = append(apiCocktails, out)
 	}
 
-	apiCocktails, err = c.fillCocktailCoverPhoto(ctx, apiCocktails)
+	apiCocktails, err = c.fillCocktailList(ctx, apiCocktails)
 	if err != nil {
 		return []domain.APICocktail{}, 0, err
 	}
