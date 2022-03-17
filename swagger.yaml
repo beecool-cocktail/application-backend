@@ -67,6 +67,13 @@ definitions:
       title:
         type: string
         x-go-name: Title
+      user_id:
+        format: int64
+        type: integer
+        x-go-name: UserID
+      user_name:
+        type: string
+        x-go-name: UserName
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   GetCocktailDraftByIDRequest:
@@ -220,12 +227,26 @@ definitions:
       created_date:
         type: string
         x-go-name: CreatedDate
-      photo:
-        type: string
-        x-go-name: Photo
+      ingredient_list:
+        items:
+          $ref: '#/definitions/CocktailIngredient'
+        type: array
+        x-go-name: IngredientList
+      photos:
+        items:
+          type: string
+        type: array
+        x-go-name: Photos
       title:
         type: string
         x-go-name: Title
+      user_id:
+        format: int64
+        type: integer
+        x-go-name: UserID
+      user_name:
+        type: string
+        x-go-name: UserName
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   PostArticleRequest:
