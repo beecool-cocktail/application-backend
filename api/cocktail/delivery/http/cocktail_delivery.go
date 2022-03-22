@@ -65,7 +65,7 @@ func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 		return
 	}
 
-	var ingredients []viewmodels.CocktailIngredient
+	ingredients := make([]viewmodels.CocktailIngredient, 0)
 	for _, ingredient := range cocktail.Ingredients {
 		out := viewmodels.CocktailIngredient{
 			Name:   ingredient.IngredientName,
@@ -75,7 +75,7 @@ func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 		ingredients = append(ingredients, out)
 	}
 
-	var steps []viewmodels.CocktailStep
+	steps := make([]viewmodels.CocktailStep, 0)
 	for _, step := range cocktail.Steps {
 		out := viewmodels.CocktailStep{
 			Description: step.StepDescription,
@@ -254,17 +254,6 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 // - Bearer: [apiKey]
 //
 // parameters:
-// - name: page
-//   in: query
-//   required: true
-//   type: integer
-//   example: 1
-//
-// - name: page_size
-//   in: query
-//   required: true
-//   type: integer
-//   example: 10
 //
 // responses:
 //  "200":
@@ -273,26 +262,11 @@ func (co *CocktailHandler) CocktailDraftList(c *gin.Context) {
 	api := "/cocktails"
 	var response viewmodels.GetDraftCocktailListResponse
 	userId := c.GetInt64("user_id")
-	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
-	if err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("parameter illegal - %s", err)
-		util.PackResponseWithError(c, err, err.Error())
-		return
-	}
-	pageSize, err := strconv.Atoi(c.DefaultQuery("page_size", "10"))
-	if err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("parameter illegal - %s", err)
-		util.PackResponseWithError(c, err, err.Error())
-		return
-	}
 
 	filter := make(map[string]interface{})
 	filter["user_id"] = userId
 	filter["category"] = cockarticletype.Draft
-	cocktails, total, err := co.CocktailUsecase.GetAllWithFilter(c, filter, domain.PaginationUsecase{
-		Page:     page,
-		PageSize: pageSize,
-	})
+	cocktails, total, err := co.CocktailUsecase.GetAllWithFilter(c, filter, domain.PaginationUsecase{})
 	if err != nil {
 		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("get cocktails with filter failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
