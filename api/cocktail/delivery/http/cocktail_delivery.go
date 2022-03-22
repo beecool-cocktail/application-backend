@@ -136,7 +136,7 @@ func (co *CocktailHandler) GetCocktailDraftByCocktailID(c *gin.Context) {
 		return
 	}
 
-	var ingredients []viewmodels.CocktailIngredient
+	ingredients := make([]viewmodels.CocktailIngredient, 0)
 	for _, ingredient := range cocktail.Ingredients {
 		out := viewmodels.CocktailIngredient{
 			Name:   ingredient.IngredientName,
@@ -146,7 +146,7 @@ func (co *CocktailHandler) GetCocktailDraftByCocktailID(c *gin.Context) {
 		ingredients = append(ingredients, out)
 	}
 
-	var steps []viewmodels.CocktailStep
+	steps := make([]viewmodels.CocktailStep, 0)
 	for _, step := range cocktail.Steps {
 		out := viewmodels.CocktailStep{
 			Description: step.StepDescription,
