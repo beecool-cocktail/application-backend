@@ -303,8 +303,6 @@ definitions:
           $ref: '#/definitions/CocktailStep'
         type: array
         x-go-name: StepList
-    required:
-    - name
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   ResponseData:

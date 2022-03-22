@@ -65,9 +65,8 @@ type PostArticleRequest struct {
 type PostDraftArticleRequest struct {
 	Files []string `json:"files" binding:"lte=5"`
 
-	//required: true
 	//example: Gin Tonic
-	Name string `json:"name" binding:"required"`
+	Name string `json:"name"`
 
 	IngredientList []CocktailIngredient `json:"ingredient_list"`
 
