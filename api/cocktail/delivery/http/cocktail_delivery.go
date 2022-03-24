@@ -154,9 +154,14 @@ func (co *CocktailHandler) GetCocktailDraftByCocktailID(c *gin.Context) {
 		steps = append(steps, out)
 	}
 
+	photos := make([]string, 0)
+	for _, path := range cocktail.Photos {
+		photos = append(photos, path)
+	}
+
 	response = viewmodels.GetCocktailDraftByIDResponse{
 		CocktailID:     cocktail.CocktailID,
-		Photos:         cocktail.Photos,
+		Photos:         photos,
 		Title:          cocktail.Title,
 		Description:    cocktail.Description,
 		IngredientList: ingredients,
