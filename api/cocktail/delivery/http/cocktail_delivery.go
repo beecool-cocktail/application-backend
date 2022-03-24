@@ -209,7 +209,9 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 		return
 	}
 
-	cocktails, total, err := co.CocktailUsecase.GetAllWithFilter(c, nil, domain.PaginationUsecase{
+	filter := make(map[string]interface{})
+	filter["category"] = cockarticletype.Normal
+	cocktails, total, err := co.CocktailUsecase.GetAllWithFilter(c, filter, domain.PaginationUsecase{
 		Page:     page,
 		PageSize: pageSize,
 	})
