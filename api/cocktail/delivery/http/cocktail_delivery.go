@@ -257,7 +257,7 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 //
 // responses:
 //  "200":
-//    "$ref": "#/responses/getPopularCocktailListResponse"
+//    "$ref": "#/responses/getDraftCocktailListResponse"
 func (co *CocktailHandler) CocktailDraftList(c *gin.Context) {
 	api := "/cocktails"
 	var response viewmodels.GetDraftCocktailListResponse

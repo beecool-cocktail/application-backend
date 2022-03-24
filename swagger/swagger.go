@@ -4,7 +4,6 @@ import (
 	"github.com/beecool-cocktail/application-backend/viewmodels"
 )
 
-
 // swagger:parameters popularCocktailListRequest
 type swaggerPopularCocktailListRequest struct {
 	// in: body
@@ -23,10 +22,10 @@ type swaggerGetDraftCocktailListRequest struct {
 	Body viewmodels.GetDraftCocktailListRequest
 }
 
-// swagger:response getPopularCocktailListResponse
-type swaggerGetPopularCocktailListResponse struct {
+// swagger:response getDraftCocktailListResponse
+type swaggerGetDraftCocktailListResponse struct {
 	// in: body
-	Body viewmodels.GetPopularCocktailListResponse
+	Body viewmodels.GetDraftCocktailListResponse
 }
 
 // swagger:parameters googleAuthenticateRequest

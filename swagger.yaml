@@ -25,6 +25,23 @@ definitions:
         x-go-name: Description
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  DraftCocktailList:
+    properties:
+      cocktail_id:
+        format: int64
+        type: integer
+        x-go-name: CocktailID
+      created_date:
+        type: string
+        x-go-name: CreatedDate
+      photo:
+        type: string
+        x-go-name: Photo
+      title:
+        type: string
+        x-go-name: Title
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   GetCocktailByIDRequest:
     properties:
       id:
@@ -135,6 +152,19 @@ definitions:
     required:
     - page
     - page_size
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  GetDraftCocktailListResponse:
+    properties:
+      draft_cocktail_list:
+        items:
+          $ref: '#/definitions/DraftCocktailList'
+        type: array
+        x-go-name: DraftCocktailList
+      total:
+        format: int64
+        type: integer
+        x-go-name: Total
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   GetPopularCocktailListRequest:
@@ -357,7 +387,7 @@ paths:
       operationId: noRequest
       responses:
         "200":
-          $ref: '#/responses/getPopularCocktailListResponse'
+          $ref: '#/responses/getDraftCocktailListResponse'
       security:
       - Bearer:
         - apiKey
@@ -533,10 +563,10 @@ responses:
     description: ""
     schema:
       $ref: '#/definitions/GetCocktailDraftByIDResponse'
-  getPopularCocktailListResponse:
+  getDraftCocktailListResponse:
     description: ""
     schema:
-      $ref: '#/definitions/GetPopularCocktailListResponse'
+      $ref: '#/definitions/GetDraftCocktailListResponse'
   getUserInfoResponse:
     description: ""
     schema:
