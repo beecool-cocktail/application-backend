@@ -45,12 +45,15 @@ func (c *cocktailUsecase) fillCocktailList(ctx context.Context, cocktails []doma
 	var apiCocktails []domain.APICocktail
 
 	for _, cocktail := range cocktails {
-		paths, err := c.cocktailPhotoMySQLRepo.QueryPhotosByCocktailId(ctx, cocktail.CocktailID)
+		photos, err := c.cocktailPhotoMySQLRepo.QueryPhotosByCocktailId(ctx, cocktail.CocktailID)
 		if err != nil {
 			return []domain.APICocktail{}, err
 		}
-		for _, path := range paths {
-			cocktail.Photos = append(cocktail.Photos, path)
+		for _, photo := range photos {
+			cocktail.Photos = append(cocktail.Photos, photo.Photo)
+			if photo.IsCoverPhoto == true {
+				cocktail.CoverPhoto = photo.Photo
+			}
 		}
 
 		ingredients, err := c.cocktailIngredientMySQLRepo.QueryByCocktailId(ctx, cocktail.CocktailID)
@@ -73,12 +76,12 @@ func (c *cocktailUsecase) fillCocktailList(ctx context.Context, cocktails []doma
 
 func (c *cocktailUsecase) fillCocktailDetails(ctx context.Context, cocktail domain.APICocktail) (domain.APICocktail, error) {
 
-	paths, err := c.cocktailPhotoMySQLRepo.QueryPhotosByCocktailId(ctx, cocktail.CocktailID)
+	photos, err := c.cocktailPhotoMySQLRepo.QueryPhotosByCocktailId(ctx, cocktail.CocktailID)
 	if err != nil {
 		return domain.APICocktail{}, err
 	}
-	for _, path := range paths {
-		cocktail.Photos = append(cocktail.Photos, path)
+	for _, photo := range photos {
+		cocktail.Photos = append(cocktail.Photos, photo.Photo)
 	}
 
 	ingredients, err := c.cocktailIngredientMySQLRepo.QueryByCocktailId(ctx, cocktail.CocktailID)
