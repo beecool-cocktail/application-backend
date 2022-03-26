@@ -1,6 +1,24 @@
 basePath: /api
 definitions:
-  CocktailIngredient:
+  CocktailIngredientWithID:
+    properties:
+      amount:
+        format: float
+        type: number
+        x-go-name: Amount
+      id:
+        format: int64
+        type: integer
+        x-go-name: ID
+      name:
+        type: string
+        x-go-name: Name
+      unit:
+        type: string
+        x-go-name: Unit
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  CocktailIngredientWithoutID:
     properties:
       amount:
         example: 1
@@ -17,7 +35,29 @@ definitions:
         x-go-name: Unit
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  CocktailStep:
+  CocktailPhotoWithID:
+    properties:
+      id:
+        format: int64
+        type: integer
+        x-go-name: ID
+      path:
+        type: string
+        x-go-name: Photo
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  CocktailStepWithID:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: ID
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  CocktailStepWithoutID:
     properties:
       description:
         example: shake
@@ -68,17 +108,17 @@ definitions:
         x-go-name: Description
       ingredient_list:
         items:
-          $ref: '#/definitions/CocktailIngredient'
+          $ref: '#/definitions/CocktailIngredientWithID'
         type: array
         x-go-name: IngredientList
       photos:
         items:
-          type: string
+          $ref: '#/definitions/CocktailPhotoWithID'
         type: array
         x-go-name: Photos
       step_list:
         items:
-          $ref: '#/definitions/CocktailStep'
+          $ref: '#/definitions/CocktailStepWithID'
         type: array
         x-go-name: StepList
       title:
@@ -119,17 +159,17 @@ definitions:
         x-go-name: Description
       ingredient_list:
         items:
-          $ref: '#/definitions/CocktailIngredient'
+          $ref: '#/definitions/CocktailIngredientWithID'
         type: array
         x-go-name: IngredientList
       photos:
         items:
-          type: string
+          $ref: '#/definitions/CocktailPhotoWithID'
         type: array
         x-go-name: Photos
       step_list:
         items:
-          $ref: '#/definitions/CocktailStep'
+          $ref: '#/definitions/CocktailStepWithID'
         type: array
         x-go-name: StepList
       title:
@@ -259,7 +299,7 @@ definitions:
         x-go-name: CreatedDate
       ingredient_list:
         items:
-          $ref: '#/definitions/CocktailIngredient'
+          $ref: '#/definitions/CocktailIngredientWithoutID'
         type: array
         x-go-name: IngredientList
       photos:
@@ -292,7 +332,7 @@ definitions:
         x-go-name: Files
       ingredient_list:
         items:
-          $ref: '#/definitions/CocktailIngredient'
+          $ref: '#/definitions/CocktailIngredientWithoutID'
         type: array
         x-go-name: IngredientList
       name:
@@ -301,7 +341,7 @@ definitions:
         x-go-name: Name
       step_list:
         items:
-          $ref: '#/definitions/CocktailStep'
+          $ref: '#/definitions/CocktailStepWithoutID'
         type: array
         x-go-name: StepList
     required:
@@ -321,7 +361,7 @@ definitions:
         x-go-name: Files
       ingredient_list:
         items:
-          $ref: '#/definitions/CocktailIngredient'
+          $ref: '#/definitions/CocktailIngredientWithoutID'
         type: array
         x-go-name: IngredientList
       name:
@@ -330,7 +370,7 @@ definitions:
         x-go-name: Name
       step_list:
         items:
-          $ref: '#/definitions/CocktailStep'
+          $ref: '#/definitions/CocktailStepWithoutID'
         type: array
         x-go-name: StepList
     type: object

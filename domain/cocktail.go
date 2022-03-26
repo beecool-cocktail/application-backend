@@ -21,8 +21,8 @@ type APICocktail struct {
 	UserName    string
 	Title       string
 	Description string
-	CoverPhoto  string
-	Photos      []string
+	CoverPhoto  CocktailPhoto
+	Photos      []CocktailPhoto
 	Ingredients []CocktailIngredient
 	Steps       []CocktailStep
 	CreatedDate string

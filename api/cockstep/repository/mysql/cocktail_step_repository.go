@@ -30,7 +30,7 @@ func (s *cocktailStepMySQLRepository) QueryByCocktailId(ctx context.Context, id 
 
 	var steps []domain.CocktailStep
 	order := sortbydir.MakeSortAndDir("step_number", sortbydir.ParseStringBySortByDir(sortbydir.ASC))
-	err := s.db.Select(  "step_description").
+	err := s.db.Select("id", "step_description").
 		Where("cocktail_id = ?", id).
 		Order(order).
 		Find(&steps).Error

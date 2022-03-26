@@ -16,13 +16,13 @@ type GetPopularCocktailListResponse struct {
 }
 
 type PopularCocktailList struct {
-	CocktailID     int64                `json:"cocktail_id"`
-	UserID         int64                `json:"user_id"`
-	UserName       string               `json:"user_name"`
-	Title          string               `json:"title"`
-	Photos         []string             `json:"photos"`
-	IngredientList []CocktailIngredient `json:"ingredient_list"`
-	CreatedDate    string               `json:"created_date"`
+	CocktailID     int64                         `json:"cocktail_id"`
+	UserID         int64                         `json:"user_id"`
+	UserName       string                        `json:"user_name"`
+	Title          string                        `json:"title"`
+	Photos         []string                      `json:"photos"`
+	IngredientList []CocktailIngredientWithoutID `json:"ingredient_list"`
+	CreatedDate    string                        `json:"created_date"`
 }
 
 type GetDraftCocktailListRequest struct {
@@ -54,9 +54,9 @@ type PostArticleRequest struct {
 	//example: Gin Tonic
 	Name string `json:"name" binding:"required"`
 
-	IngredientList []CocktailIngredient `json:"ingredient_list"`
+	IngredientList []CocktailIngredientWithoutID `json:"ingredient_list"`
 
-	StepList []CocktailStep `json:"step_list"`
+	StepList []CocktailStepWithoutID `json:"step_list"`
 
 	//example: Very good to drink
 	Description string `json:"description"`
@@ -68,15 +68,15 @@ type PostDraftArticleRequest struct {
 	//example: Gin Tonic
 	Name string `json:"name"`
 
-	IngredientList []CocktailIngredient `json:"ingredient_list"`
+	IngredientList []CocktailIngredientWithoutID `json:"ingredient_list"`
 
-	StepList []CocktailStep `json:"step_list"`
+	StepList []CocktailStepWithoutID `json:"step_list"`
 
 	//example: Very good to drink
 	Description string `json:"description"`
 }
 
-type CocktailIngredient struct {
+type CocktailIngredientWithoutID struct {
 	//example: Gin Tonic
 	Name string `json:"name"`
 
@@ -87,9 +87,26 @@ type CocktailIngredient struct {
 	Unit string `json:"unit"`
 }
 
-type CocktailStep struct {
+type CocktailIngredientWithID struct {
+	ID     int64   `json:"id"`
+	Name   string  `json:"name"`
+	Amount float32 `json:"amount"`
+	Unit   string  `json:"unit"`
+}
+
+type CocktailStepWithoutID struct {
 	//example: shake
 	Description string `json:"description"`
+}
+
+type CocktailStepWithID struct {
+	ID          int64  `json:"id"`
+	Description string `json:"description"`
+}
+
+type CocktailPhotoWithID struct {
+	ID    int64  `json:"id"`
+	Photo string `json:"path"`
 }
 
 type GetCocktailByIDRequest struct {
@@ -100,15 +117,15 @@ type GetCocktailByIDRequest struct {
 }
 
 type GetCocktailByIDResponse struct {
-	CocktailID     int64                `json:"cocktail_id"`
-	UserID         int64                `json:"user_id"`
-	UserName       string               `json:"user_name"`
-	Photos         []string             `json:"photos"`
-	Title          string               `json:"title"`
-	Description    string               `json:"description"`
-	IngredientList []CocktailIngredient `json:"ingredient_list"`
-	StepList       []CocktailStep       `json:"step_list"`
-	CreatedDate    string               `json:"created_date"`
+	CocktailID     int64                      `json:"cocktail_id"`
+	UserID         int64                      `json:"user_id"`
+	UserName       string                     `json:"user_name"`
+	Photos         []CocktailPhotoWithID      `json:"photos"`
+	Title          string                     `json:"title"`
+	Description    string                     `json:"description"`
+	IngredientList []CocktailIngredientWithID `json:"ingredient_list"`
+	StepList       []CocktailStepWithID       `json:"step_list"`
+	CreatedDate    string                     `json:"created_date"`
 }
 
 type GetCocktailDraftByIDRequest struct {
@@ -119,11 +136,11 @@ type GetCocktailDraftByIDRequest struct {
 }
 
 type GetCocktailDraftByIDResponse struct {
-	CocktailID     int64                `json:"cocktail_id"`
-	Photos         []string             `json:"photos"`
-	Title          string               `json:"title"`
-	Description    string               `json:"description"`
-	IngredientList []CocktailIngredient `json:"ingredient_list"`
-	StepList       []CocktailStep       `json:"step_list"`
-	CreatedDate    string               `json:"created_date"`
+	CocktailID     int64                      `json:"cocktail_id"`
+	Photos         []CocktailPhotoWithID      `json:"photos"`
+	Title          string                     `json:"title"`
+	Description    string                     `json:"description"`
+	IngredientList []CocktailIngredientWithID `json:"ingredient_list"`
+	StepList       []CocktailStepWithID       `json:"step_list"`
+	CreatedDate    string                     `json:"created_date"`
 }

@@ -49,10 +49,10 @@ func (c *cocktailUsecase) fillCocktailList(ctx context.Context, cocktails []doma
 		if err != nil {
 			return []domain.APICocktail{}, err
 		}
+		cocktail.Photos = photos
 		for _, photo := range photos {
-			cocktail.Photos = append(cocktail.Photos, photo.Photo)
 			if photo.IsCoverPhoto == true {
-				cocktail.CoverPhoto = photo.Photo
+				cocktail.CoverPhoto = photo
 			}
 		}
 
@@ -80,9 +80,7 @@ func (c *cocktailUsecase) fillCocktailDetails(ctx context.Context, cocktail doma
 	if err != nil {
 		return domain.APICocktail{}, err
 	}
-	for _, photo := range photos {
-		cocktail.Photos = append(cocktail.Photos, photo.Photo)
-	}
+	cocktail.Photos = photos
 
 	ingredients, err := c.cocktailIngredientMySQLRepo.QueryByCocktailId(ctx, cocktail.CocktailID)
 	if err != nil {

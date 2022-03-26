@@ -65,9 +65,10 @@ func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 		return
 	}
 
-	ingredients := make([]viewmodels.CocktailIngredient, 0)
+	ingredients := make([]viewmodels.CocktailIngredientWithID, 0)
 	for _, ingredient := range cocktail.Ingredients {
-		out := viewmodels.CocktailIngredient{
+		out := viewmodels.CocktailIngredientWithID{
+			ID:     ingredient.ID,
 			Name:   ingredient.IngredientName,
 			Amount: ingredient.IngredientAmount,
 			Unit:   ingredient.IngredientUnit,
@@ -75,23 +76,33 @@ func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 		ingredients = append(ingredients, out)
 	}
 
-	steps := make([]viewmodels.CocktailStep, 0)
+	steps := make([]viewmodels.CocktailStepWithID, 0)
 	for _, step := range cocktail.Steps {
-		out := viewmodels.CocktailStep{
+		out := viewmodels.CocktailStepWithID{
+			ID:          step.ID,
 			Description: step.StepDescription,
 		}
 		steps = append(steps, out)
+	}
+
+	photos := make([]viewmodels.CocktailPhotoWithID, 0)
+	for _, photo := range cocktail.Photos {
+		out := viewmodels.CocktailPhotoWithID{
+			ID:    photo.ID,
+			Photo: photo.Photo,
+		}
+		photos = append(photos, out)
 	}
 
 	response = viewmodels.GetCocktailByIDResponse{
 		CocktailID:     cocktail.CocktailID,
 		UserID:         cocktail.UserID,
 		UserName:       cocktail.UserName,
-		Photos:         cocktail.Photos,
 		Title:          cocktail.Title,
 		Description:    cocktail.Description,
 		IngredientList: ingredients,
 		StepList:       steps,
+		Photos:         photos,
 		CreatedDate:    cocktail.CreatedDate,
 	}
 
@@ -136,9 +147,10 @@ func (co *CocktailHandler) GetCocktailDraftByCocktailID(c *gin.Context) {
 		return
 	}
 
-	ingredients := make([]viewmodels.CocktailIngredient, 0)
+	ingredients := make([]viewmodels.CocktailIngredientWithID, 0)
 	for _, ingredient := range cocktail.Ingredients {
-		out := viewmodels.CocktailIngredient{
+		out := viewmodels.CocktailIngredientWithID{
+			ID:     ingredient.ID,
 			Name:   ingredient.IngredientName,
 			Amount: ingredient.IngredientAmount,
 			Unit:   ingredient.IngredientUnit,
@@ -146,26 +158,31 @@ func (co *CocktailHandler) GetCocktailDraftByCocktailID(c *gin.Context) {
 		ingredients = append(ingredients, out)
 	}
 
-	steps := make([]viewmodels.CocktailStep, 0)
+	steps := make([]viewmodels.CocktailStepWithID, 0)
 	for _, step := range cocktail.Steps {
-		out := viewmodels.CocktailStep{
+		out := viewmodels.CocktailStepWithID{
+			ID:          step.ID,
 			Description: step.StepDescription,
 		}
 		steps = append(steps, out)
 	}
 
-	photos := make([]string, 0)
-	for _, path := range cocktail.Photos {
-		photos = append(photos, path)
+	photos := make([]viewmodels.CocktailPhotoWithID, 0)
+	for _, photo := range cocktail.Photos {
+		out := viewmodels.CocktailPhotoWithID{
+			ID:    photo.ID,
+			Photo: photo.Photo,
+		}
+		photos = append(photos, out)
 	}
 
 	response = viewmodels.GetCocktailDraftByIDResponse{
 		CocktailID:     cocktail.CocktailID,
-		Photos:         photos,
 		Title:          cocktail.Title,
 		Description:    cocktail.Description,
 		IngredientList: ingredients,
 		StepList:       steps,
+		Photos:         photos,
 		CreatedDate:    cocktail.CreatedDate,
 	}
 
@@ -223,9 +240,9 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 
 	cocktailList := make([]viewmodels.PopularCocktailList, 0)
 	for _, cocktail := range cocktails {
-		ingredients := make([]viewmodels.CocktailIngredient, 0)
+		ingredients := make([]viewmodels.CocktailIngredientWithoutID, 0)
 		for _, ingredient := range cocktail.Ingredients {
-			out := viewmodels.CocktailIngredient{
+			out := viewmodels.CocktailIngredientWithoutID{
 				Name:   ingredient.IngredientName,
 				Amount: ingredient.IngredientAmount,
 				Unit:   ingredient.IngredientUnit,
@@ -233,12 +250,17 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 			ingredients = append(ingredients, out)
 		}
 
+		photos := make([]string, 0)
+		for _, photo := range cocktail.Photos {
+			photos = append(photos, photo.Photo)
+		}
+
 		out := viewmodels.PopularCocktailList{
 			CocktailID:     cocktail.CocktailID,
 			UserID:         cocktail.UserID,
 			UserName:       cocktail.UserName,
 			Title:          cocktail.Title,
-			Photos:         cocktail.Photos,
+			Photos:         photos,
 			IngredientList: ingredients,
 			CreatedDate:    cocktail.CreatedDate,
 		}
@@ -285,7 +307,7 @@ func (co *CocktailHandler) CocktailDraftList(c *gin.Context) {
 		out := viewmodels.DraftCocktailList{
 			CocktailID:  cocktail.CocktailID,
 			Title:       cocktail.Title,
-			Photo:       cocktail.CoverPhoto,
+			Photo:       cocktail.CoverPhoto.Photo,
 			CreatedDate: cocktail.CreatedDate,
 		}
 
