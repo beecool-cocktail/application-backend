@@ -71,7 +71,6 @@ func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 			ID:     ingredient.ID,
 			Name:   ingredient.IngredientName,
 			Amount: ingredient.IngredientAmount,
-			Unit:   ingredient.IngredientUnit,
 		}
 		ingredients = append(ingredients, out)
 	}
@@ -153,7 +152,6 @@ func (co *CocktailHandler) GetCocktailDraftByCocktailID(c *gin.Context) {
 			ID:     ingredient.ID,
 			Name:   ingredient.IngredientName,
 			Amount: ingredient.IngredientAmount,
-			Unit:   ingredient.IngredientUnit,
 		}
 		ingredients = append(ingredients, out)
 	}
@@ -245,7 +243,6 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 			out := viewmodels.CocktailIngredientWithoutID{
 				Name:   ingredient.IngredientName,
 				Amount: ingredient.IngredientAmount,
-				Unit:   ingredient.IngredientUnit,
 			}
 			ingredients = append(ingredients, out)
 		}
@@ -353,7 +350,6 @@ func (co *CocktailHandler) PostArticle(c *gin.Context) {
 		out := domain.CocktailIngredient{
 			IngredientName:   ingredient.Name,
 			IngredientAmount: ingredient.Amount,
-			IngredientUnit:   ingredient.Unit,
 		}
 		ingredients = append(ingredients, out)
 	}
@@ -434,7 +430,6 @@ func (co *CocktailHandler) PostDraftArticle(c *gin.Context) {
 		out := domain.CocktailIngredient{
 			IngredientName:   ingredient.Name,
 			IngredientAmount: ingredient.Amount,
-			IngredientUnit:   ingredient.Unit,
 		}
 		ingredients = append(ingredients, out)
 	}

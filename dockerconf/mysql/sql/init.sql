@@ -87,8 +87,7 @@ CREATE TABLE `cocktail_ingredients` (
 `id` bigint(64) NOT NULL AUTO_INCREMENT,
 `cocktail_id` bigint(64) NOT NULL,
 `ingredient_name` varchar(16) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT ' 成分名稱',
-`ingredient_amount` float NOT NULL DEFAULT '0' COMMENT '成分數量',
-`ingredient_unit` varchar(16) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT ' 成分單位',
+`ingredient_amount` varchar(16) NOT NULL DEFAULT '' COMMENT '成分數量',
 `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 PRIMARY KEY (`id`),
 KEY `idx_cocktail_id` (`cocktail_id`),
@@ -98,30 +97,30 @@ KEY `idx_date` (`created_date`)
 LOCK TABLES `cocktail_ingredients` WRITE;
 /*!40000 ALTER TABLE `cocktail_ingredients` DISABLE KEYS */;
 
-INSERT INTO `cocktail_ingredients` (`id`, `cocktail_id`, `ingredient_name`, `ingredient_amount`, `ingredient_unit`, `created_date`)
+INSERT INTO `cocktail_ingredients` (`id`, `cocktail_id`, `ingredient_name`, `ingredient_amount`, `created_date`)
 VALUES
-(1, 123456, 'gin tonic', 1, 'liter', '2022-03-12 13:36:24'),
-(2, 123456, 'cherry', 2, 'basket', '2022-03-12 13:36:24'),
-(3, 1111111, 'gin tonic', 1, 'liter', '2022-03-12 13:36:24'),
-(4, 1111111, 'cherry', 2, 'basket', '2022-03-12 13:36:24'),
-(5, 222222, 'gin tonic', 1, 'liter', '2022-03-12 13:36:24'),
-(6, 222222, 'cherry', 2, 'basket', '2022-03-12 13:36:24'),
-(7, 333333, 'gin tonic', 1, 'liter', '2022-03-12 13:36:24'),
-(8, 333333, 'cherry', 2, 'basket', '2022-03-12 13:36:24'),
-(9, 444444, 'gin tonic', 1, 'liter', '2022-03-12 13:36:24'),
-(10, 444444, 'cherry', 2, 'basket', '2022-03-12 13:36:24'),
-(11, 555555, 'gin tonic', 1, 'liter', '2022-03-12 13:36:24'),
-(12, 555555, 'cherry', 2, 'basket', '2022-03-12 13:36:24'),
-(13, 666666, 'gin tonic', 1, 'liter', '2022-03-12 13:36:24'),
-(14, 666666, 'cherry', 2, 'basket', '2022-03-12 13:36:24'),
-(15, 777777, 'gin tonic', 1, 'liter', '2022-03-12 13:36:24'),
-(16, 777777, 'cherry', 2, 'basket', '2022-03-12 13:36:24'),
-(17, 888888, 'gin tonic', 1, 'liter', '2022-03-12 13:36:24'),
-(18, 888888, 'cherry', 2, 'basket', '2022-03-12 13:36:24'),
-(19, 999999, 'gin tonic', 1, 'liter', '2022-03-12 13:36:24'),
-(20, 999999, 'cherry', 2, 'basket', '2022-03-12 13:36:24'),
-(21, 12121212, 'gin tonic', 1, 'liter', '2022-03-12 13:36:24'),
-(22, 12121212, 'cherry', 2, 'basket', '2022-03-12 13:36:24');
+(1, 123456, 'gin tonic', '1 liter', '2022-03-12 13:36:24'),
+(2, 123456, 'cherry', '2 basket', '2022-03-12 13:36:24'),
+(3, 1111111, 'gin tonic', '1 liter', '2022-03-12 13:36:24'),
+(4, 1111111, 'cherry', '2 basket', '2022-03-12 13:36:24'),
+(5, 222222, 'gin tonic', '1 liter', '2022-03-12 13:36:24'),
+(6, 222222, 'cherry', '2 basket', '2022-03-12 13:36:24'),
+(7, 333333, 'gin tonic', '1 liter', '2022-03-12 13:36:24'),
+(8, 333333, 'cherry', '2 basket', '2022-03-12 13:36:24'),
+(9, 444444, 'gin tonic', '1 liter', '2022-03-12 13:36:24'),
+(10, 444444, 'cherry', '2 basket', '2022-03-12 13:36:24'),
+(11, 555555, 'gin tonic', '1 liter', '2022-03-12 13:36:24'),
+(12, 555555, 'cherry', '2 basket', '2022-03-12 13:36:24'),
+(13, 666666, 'gin tonic', '1 liter', '2022-03-12 13:36:24'),
+(14, 666666, 'cherry', '2 basket', '2022-03-12 13:36:24'),
+(15, 777777, 'gin tonic', '1 liter', '2022-03-12 13:36:24'),
+(16, 777777, 'cherry', '2 basket', '2022-03-12 13:36:24'),
+(17, 888888, 'gin tonic', '1 liter', '2022-03-12 13:36:24'),
+(18, 888888, 'cherry', '2 basket', '2022-03-12 13:36:24'),
+(19, 999999, 'gin tonic', '1 liter', '2022-03-12 13:36:24'),
+(20, 999999, 'cherry', '2 basket', '2022-03-12 13:36:24'),
+(21, 12121212, 'gin tonic', '1 liter', '2022-03-12 13:36:24'),
+(22, 12121212, 'cherry', '2 basket', '2022-03-12 13:36:24');
 
 /*!40000 ALTER TABLE `cocktail_ingredients` ENABLE KEYS */;
 UNLOCK TABLES;

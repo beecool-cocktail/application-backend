@@ -3,8 +3,7 @@ definitions:
   CocktailIngredientWithID:
     properties:
       amount:
-        format: float
-        type: number
+        type: string
         x-go-name: Amount
       id:
         format: int64
@@ -21,18 +20,13 @@ definitions:
   CocktailIngredientWithoutID:
     properties:
       amount:
-        example: 1
-        format: float
-        type: number
+        example: 1 cup
+        type: string
         x-go-name: Amount
       name:
         example: Gin Tonic
         type: string
         x-go-name: Name
-      unit:
-        example: cup
-        type: string
-        x-go-name: Unit
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   CocktailPhotoWithID:

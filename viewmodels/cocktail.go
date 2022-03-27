@@ -80,18 +80,15 @@ type CocktailIngredientWithoutID struct {
 	//example: Gin Tonic
 	Name string `json:"name"`
 
-	//example: 1
-	Amount float32 `json:"amount"`
-
-	//example: cup
-	Unit string `json:"unit"`
+	//example: 1 cup
+	Amount string `json:"amount"`
 }
 
 type CocktailIngredientWithID struct {
-	ID     int64   `json:"id"`
-	Name   string  `json:"name"`
-	Amount float32 `json:"amount"`
-	Unit   string  `json:"unit"`
+	ID     int64  `json:"id"`
+	Name   string `json:"name"`
+	Amount string `json:"amount"`
+	Unit   string `json:"unit"`
 }
 
 type CocktailStepWithoutID struct {

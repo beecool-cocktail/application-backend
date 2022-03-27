@@ -17,7 +17,7 @@ func NewMySQLCocktailIngredientRepository(db *gorm.DB) domain.CocktailIngredient
 func (s *cocktailIngredientMySQLRepository) StoreTx(ctx context.Context, tx *gorm.DB, c *domain.CocktailIngredient) error {
 
 	err := tx.Select("cocktail_id", "ingredient_name",
-		"ingredient_amount", "ingredient_unit").Create(c).Error
+		"ingredient_amount").Create(c).Error
 
 	if err != nil {
 		return err
@@ -29,7 +29,7 @@ func (s *cocktailIngredientMySQLRepository) StoreTx(ctx context.Context, tx *gor
 func (s *cocktailIngredientMySQLRepository) QueryByCocktailId(ctx context.Context, id int64) ([]domain.CocktailIngredient, error) {
 
 	var ingredients []domain.CocktailIngredient
-	err := s.db.Select("id", "ingredient_name", "ingredient_amount", "ingredient_unit").
+	err := s.db.Select("id", "ingredient_name", "ingredient_amount").
 		Where("cocktail_id = ?", id).
 		Find(&ingredients).Error
 
