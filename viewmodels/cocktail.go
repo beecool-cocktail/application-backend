@@ -141,3 +141,17 @@ type GetCocktailDraftByIDResponse struct {
 	StepList       []CocktailStepWithID       `json:"step_list"`
 	CreatedDate    string                     `json:"created_date"`
 }
+
+type UpdateDraftArticleRequest struct {
+	Photos []CocktailPhotoWithID `json:"photos"`
+
+	//example: Gin Tonic
+	Name string `json:"name"`
+
+	IngredientList []CocktailIngredientWithoutID `json:"ingredient_list"`
+
+	StepList []CocktailStepWithoutID `json:"step_list"`
+
+	//example: Very good to drink
+	Description string `json:"description"`
+}

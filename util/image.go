@@ -2,6 +2,7 @@ package util
 
 import (
 	"bytes"
+	"github.com/beecool-cocktail/application-backend/domain"
 	"github.com/kolesa-team/go-webp/encoder"
 	"github.com/kolesa-team/go-webp/webp"
 	"image"
@@ -50,4 +51,38 @@ func DecodeBase64AndSaveAsWebp(base64EncodedData string, dst string) error {
 	}
 
 	return nil
+}
+
+func DecodeBase64AndUpdateAsWebp(base64EncodedData string, dst string) error {
+	options, err := encoder.NewLossyEncoderOptions(encoder.PresetDefault, 75)
+	if err != nil {
+		return err
+	}
+
+	img, _, err := image.Decode(bytes.NewReader([]byte(base64EncodedData)))
+	if err != nil {
+		return err
+	}
+
+	out, err := os.OpenFile(dst, os.O_RDWR|os.O_TRUNC, 0666)
+	if err != nil {
+		return err
+	}
+
+	if err := webp.Encode(out, img, options); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetFileNameByPath(path string) (string, error) {
+	pathSplitArray := strings.Split(path, "/")
+
+	//目前db的path為 static/fileName
+	if len(pathSplitArray) == 2 {
+		return pathSplitArray[1], nil
+	} else {
+		return "", domain.ErrFilePathIllegal
+	}
 }

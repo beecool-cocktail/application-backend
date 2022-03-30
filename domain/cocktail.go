@@ -7,7 +7,8 @@ import (
 )
 
 type CocktailImage struct {
-	ID           int64
+	ImageID      int64
+	CocktailID   int64
 	Data         string
 	Name         string
 	Type         string
@@ -42,6 +43,8 @@ type CocktailMySQLRepository interface {
 	GetAllWithFilter(ctx context.Context, filter map[string]interface{}, pagination PaginationMySQLRepository) ([]Cocktail, int64, error)
 	QueryByCocktailID(ctx context.Context, id int64) (Cocktail, error)
 	StoreTx(ctx context.Context, tx *gorm.DB, c *Cocktail) error
+	DeleteTx(ctx context.Context, tx *gorm.DB, id int64) error
+	UpdateTx(ctx context.Context, tx *gorm.DB, c *Cocktail) (int64, error)
 }
 
 type CocktailUsecase interface {
@@ -49,8 +52,11 @@ type CocktailUsecase interface {
 	QueryByCocktailID(ctx context.Context, id int64) (APICocktail, error)
 	QueryDraftByCocktailID(ctx context.Context, cocktailID, userID int64) (APICocktail, error)
 	Store(ctx context.Context, c *Cocktail, cig []CocktailIngredient, cs []CocktailStep, ci []CocktailImage) error
+	Delete(ctx context.Context, cocktailID, userID int64) error
+	Update(ctx context.Context, c *Cocktail, cig []CocktailIngredient, cs []CocktailStep, ci []CocktailImage, userID int64) error
 }
 
 type CocktailFileRepository interface {
 	SaveAsWebp(ctx context.Context, ci *CocktailImage) error
+	UpdateAsWebp(ctx context.Context, ci *CocktailImage) error
 }

@@ -18,6 +18,10 @@ type CocktailPhotoMySQLRepository interface {
 	StoreTx(ctx context.Context, tx *gorm.DB, c *CocktailPhoto) error
 	QueryCoverPhotoByCocktailId(ctx context.Context, id int64) (string, error)
 	QueryPhotosByCocktailId(ctx context.Context, id int64) ([]CocktailPhoto, error)
+	QueryPhotoById(ctx context.Context, id int64) (CocktailPhoto, error)
+	UpdateTx(ctx context.Context, tx *gorm.DB, c *CocktailPhoto) (int64, error)
+	DeleteByCocktailIDTx(ctx context.Context, tx *gorm.DB, id int64) error
+	DeleteByIDTx(ctx context.Context, tx *gorm.DB, id int64) error
 }
 
 type CocktailPhotoUsecase interface {

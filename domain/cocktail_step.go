@@ -17,6 +17,8 @@ type CocktailStep struct {
 type CocktailStepMySQLRepository interface {
 	StoreTx(ctx context.Context, tx *gorm.DB, c *CocktailStep) error
 	QueryByCocktailId(ctx context.Context, id int64) ([]CocktailStep, error)
+	DeleteByCocktailIDTx(ctx context.Context, tx *gorm.DB, id int64) error
+	UpdateTx(ctx context.Context, tx *gorm.DB, c *CocktailStep) (int64, error)
 }
 
 type CocktailStepUsecase interface {

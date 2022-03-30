@@ -99,3 +99,9 @@ type swaggerGetCocktailDraftByIDResponse struct {
 	// in: body
 	Body viewmodels.GetCocktailDraftByIDResponse
 }
+
+// swagger:model updateDraftArticleRequest
+type swaggerUpdateDraftArticleRequest struct {
+	// in: body
+	viewmodels.UpdateDraftArticleRequest
+}

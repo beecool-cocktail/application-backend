@@ -4,8 +4,14 @@ import (
 	"context"
 	"github.com/beecool-cocktail/application-backend/domain"
 	"github.com/beecool-cocktail/application-backend/enum/sortbydir"
+	"github.com/fatih/structs"
 	"gorm.io/gorm"
 )
+
+type cocktailInfo struct {
+	Title       string `structs:"title"`
+	Description string `structs:"description"`
+}
 
 type cocktailMySQLRepository struct {
 	db *gorm.DB
@@ -31,7 +37,7 @@ func (c *cocktailMySQLRepository) GetAllWithFilter(ctx context.Context, filter m
 	orm.Count(&total)
 
 	if pagination.PageSize != 0 {
-		orm.Limit(pagination.PageSize).Offset((pagination.Page - 1)* pagination.PageSize)
+		orm.Limit(pagination.PageSize).Offset((pagination.Page - 1) * pagination.PageSize)
 	}
 
 	res := orm.Find(&cocktail)
@@ -50,6 +56,26 @@ func (c *cocktailMySQLRepository) QueryByCocktailID(ctx context.Context, id int6
 func (c *cocktailMySQLRepository) StoreTx(ctx context.Context, tx *gorm.DB, co *domain.Cocktail) error {
 
 	res := tx.Select("cocktail_id", "user_id", "title", "description", "category").Create(co)
+
+	return res.Error
+}
+
+func (c *cocktailMySQLRepository) UpdateTx(ctx context.Context, tx *gorm.DB, co *domain.Cocktail) (int64, error) {
+	var cocktail domain.Cocktail
+	updateColumn := cocktailInfo{
+		Title:       co.Title,
+		Description: co.Description,
+	}
+
+	res := tx.Model(&cocktail).Where("cocktail_id = ?", co.CocktailID).Updates(structs.Map(updateColumn))
+
+	return res.RowsAffected, res.Error
+}
+
+func (c *cocktailMySQLRepository) DeleteTx(ctx context.Context, tx *gorm.DB, id int64) error {
+	var cocktail domain.Cocktail
+
+	res := tx.Where("cocktail_id = ?", id).Delete(&cocktail)
 
 	return res.Error
 }

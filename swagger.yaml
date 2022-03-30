@@ -382,6 +382,33 @@ definitions:
         x-go-name: ErrorMessage
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  UpdateDraftArticleRequest:
+    properties:
+      description:
+        example: Very good to drink
+        type: string
+        x-go-name: Description
+      ingredient_list:
+        items:
+          $ref: '#/definitions/CocktailIngredientWithoutID'
+        type: array
+        x-go-name: IngredientList
+      name:
+        example: Gin Tonic
+        type: string
+        x-go-name: Name
+      photos:
+        items:
+          $ref: '#/definitions/CocktailPhotoWithID'
+        type: array
+        x-go-name: Photos
+      step_list:
+        items:
+          $ref: '#/definitions/CocktailStepWithoutID'
+        type: array
+        x-go-name: StepList
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   UpdateUserInfoRequest:
     properties:
       file:
@@ -409,6 +436,34 @@ definitions:
         x-go-name: Photo
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  updateDraftArticleRequest:
+    properties:
+      description:
+        example: Very good to drink
+        type: string
+        x-go-name: Description
+      ingredient_list:
+        items:
+          $ref: '#/definitions/CocktailIngredientWithoutID'
+        type: array
+        x-go-name: IngredientList
+      name:
+        example: Gin Tonic
+        type: string
+        x-go-name: Name
+      photos:
+        items:
+          $ref: '#/definitions/CocktailPhotoWithID'
+        type: array
+        x-go-name: Photos
+      step_list:
+        items:
+          $ref: '#/definitions/CocktailStepWithoutID'
+        type: array
+        x-go-name: StepList
+    type: object
+    x-go-name: swaggerUpdateDraftArticleRequest
+    x-go-package: github.com/beecool-cocktail/application-backend/swagger
 host: localhost:6969
 info:
   description: This is api server
@@ -418,7 +473,7 @@ paths:
   /cocktail-drafts:
     get:
       description: Get draft cocktail list order by create date.
-      operationId: noRequest
+      operationId: getCocktailDraft
       responses:
         "200":
           $ref: '#/responses/getDraftCocktailListResponse'
@@ -444,6 +499,22 @@ paths:
       tags:
       - cocktail
   /cocktail-drafts/{id}:
+    delete:
+      description: DELETE cocktail draft article.
+      operationId: deleteCocktailDraft
+      parameters:
+      - example: 123456
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses: {}
+      security:
+      - Bearer:
+        - apiKey
+      summary: DELETE cocktail draft article.
+      tags:
+      - cocktail
     get:
       description: Get cocktail draft photo, steps and ingredient.
       operationId: getCocktailDraftByIDRequest
@@ -464,10 +535,31 @@ paths:
       summary: Get cocktail draft detail information
       tags:
       - cocktail
+    put:
+      description: Edit cocktail draft article.
+      operationId: updateCocktailDraft
+      parameters:
+      - example: 123456
+        in: path
+        name: id
+        required: true
+        type: integer
+      - in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/updateDraftArticleRequest'
+      responses: {}
+      security:
+      - Bearer:
+        - apiKey
+      summary: Edit cocktail draft article.
+      tags:
+      - cocktail
   /cocktails:
     get:
       description: Get popular cocktail list order by create date.
-      operationId: noRequest
+      operationId: getCocktail
       parameters:
       - example: 1
         in: query

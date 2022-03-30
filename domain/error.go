@@ -9,7 +9,9 @@ import (
 const (
 	CodeSuccess                 = "00000"
 	CodeRequestDecodeFailed     = "P0001"
+	CodeCanNotSpecifyHttpAction = "P0002"
 	CodeParameterIllegal        = "P0003"
+	CodePermissionDenied        = "P0004"
 	CodeItemDoesNotBelongToUser = "N0001"
 	CodeUserAlreadyExist        = "A0001"
 	CodeUserNotFound            = "A0002"
@@ -25,7 +27,9 @@ const (
 var (
 	ErrRequestDecodeFailed     = errors.New("request decode failed")
 	ErrResponseEncodedFailed   = errors.New("response encoded failed")
+	ErrCanNotSpecifyHttpAction = errors.New("can't specify action through request parameter")
 	ErrParameterIllegal        = errors.New("parameter illegal")
+	ErrPermissionDenied        = errors.New("permission denied")
 	ErrItemDoesNotBelongToUser = errors.New("item doesn't belong to user")
 	ErrUserAlreadyExist        = errors.New("user already exist")
 	ErrUserNotFound            = errors.New("user not found")
@@ -34,6 +38,7 @@ var (
 	ErrTokenExpired            = errors.New("token expired")
 	ErrCodeFileTypeIllegal     = errors.New("illegal file type")
 	ErrCodeFileSizeIllegal     = errors.New("illegal file size")
+	ErrFilePathIllegal         = errors.New("illegal file path")
 )
 
 func GetErrorCode(err error) string {
@@ -50,8 +55,12 @@ func GetErrorCode(err error) string {
 		return CodeResponseEncodedFailed
 	case ErrItemDoesNotBelongToUser:
 		return CodeItemDoesNotBelongToUser
+	case ErrCanNotSpecifyHttpAction:
+		return CodeParameterIllegal
 	case ErrParameterIllegal:
 		return CodeParameterIllegal
+	case ErrPermissionDenied:
+		return CodePermissionDenied
 	case ErrUserAlreadyExist:
 		return CodeUserAlreadyExist
 	case ErrUserNotFound:
@@ -83,8 +92,12 @@ func GetStatusCode(err error) int {
 		return http.StatusInternalServerError
 	case ErrItemDoesNotBelongToUser:
 		return http.StatusForbidden
+	case ErrCanNotSpecifyHttpAction:
+		return http.StatusBadRequest
 	case ErrParameterIllegal:
 		return http.StatusBadRequest
+	case ErrPermissionDenied:
+		return http.StatusForbidden
 	case ErrUserAlreadyExist:
 		return http.StatusBadRequest
 	case ErrUserNotFound:

@@ -7,7 +7,6 @@ import (
 )
 
 type cocktailFileRepository struct {
-
 }
 
 func NewFileUserRepository() domain.CocktailFileRepository {
@@ -17,7 +16,17 @@ func NewFileUserRepository() domain.CocktailFileRepository {
 func (u *cocktailFileRepository) SaveAsWebp(ctx context.Context, ci *domain.CocktailImage) error {
 
 	ci.Destination = ci.Destination + ".webp"
-	err := util.DecodeBase64AndSaveAsWebp(ci.Data, "/" + ci.Destination)
+	err := util.DecodeBase64AndSaveAsWebp(ci.Data, "/"+ci.Destination)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u *cocktailFileRepository) UpdateAsWebp(ctx context.Context, ci *domain.CocktailImage) error {
+
+	err := util.DecodeBase64AndUpdateAsWebp(ci.Data, "/"+ci.Destination)
 	if err != nil {
 		return err
 	}

@@ -4,9 +4,12 @@ import (
 	"context"
 	"errors"
 	"github.com/beecool-cocktail/application-backend/domain"
+	"github.com/beecool-cocktail/application-backend/enum/cockarticletype"
+	"github.com/beecool-cocktail/application-backend/enum/httpaction"
 	"github.com/beecool-cocktail/application-backend/enum/sortbydir"
 	"github.com/beecool-cocktail/application-backend/util"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -101,6 +104,106 @@ func (c *cocktailUsecase) fillCocktailDetails(ctx context.Context, cocktail doma
 	cocktail.UserName = user.Name
 
 	return cocktail, nil
+}
+
+func (c *cocktailUsecase) getNeedDeletedPhoto(oldPhotos []domain.CocktailPhoto,
+	newImages []domain.CocktailImage) []int64 {
+
+	var deletedPhotoID []int64
+	for _, oldPhoto := range oldPhotos {
+		var needDeleted = true
+		for _, newImage := range newImages {
+			if oldPhoto.ID == newImage.ImageID {
+				needDeleted = false
+			}
+		}
+		if needDeleted {
+			deletedPhotoID = append(deletedPhotoID, oldPhoto.ID)
+		}
+	}
+
+	return deletedPhotoID
+}
+
+func (c *cocktailUsecase) getAction(id int64, data string) (httpaction.HttpAction, error) {
+
+	if id > 0 && data != "" {
+		return httpaction.Edit, nil
+	} else if id > 0 && data == "" {
+		return httpaction.Keep, nil
+	} else if id == 0 && data != "" {
+		return httpaction.Add, nil
+	} else {
+		return httpaction.Keep, domain.ErrCanNotSpecifyHttpAction
+	}
+}
+
+func (c *cocktailUsecase) addPhoto(ctx context.Context, tx *gorm.DB, image *domain.CocktailImage) error {
+	//Todo move to config
+	savePath := "static/images/"
+	urlPath := "static/"
+
+	newFileName := uuid.New().String()
+	image.Name = newFileName
+
+	if !util.ValidateImageType(image.Type) {
+		return domain.ErrCodeFileTypeIllegal
+	}
+
+	image.Destination = savePath + newFileName
+	err := c.cocktailFileRepo.SaveAsWebp(ctx, image)
+	if err != nil {
+		return err
+	}
+
+	image.Destination = urlPath + newFileName + ".webp"
+	err = c.cocktailPhotoMySQLRepo.StoreTx(ctx, tx,
+		&domain.CocktailPhoto{
+			CocktailID:   image.CocktailID,
+			Photo:        image.Destination,
+			IsCoverPhoto: image.IsCoverPhoto,
+		})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *cocktailUsecase) editPhoto(ctx context.Context, tx *gorm.DB, image *domain.CocktailImage) error {
+	//Todo move to config
+	savePath := "static/images/"
+	urlPath := "static/"
+
+	photo, err := c.cocktailPhotoMySQLRepo.QueryPhotoById(ctx, image.ImageID)
+	if err != nil {
+		return err
+	}
+
+	fileName, err := util.GetFileNameByPath(photo.Photo)
+	if err != nil {
+		return err
+	}
+
+	image.Destination = savePath + fileName
+	err = c.cocktailFileRepo.UpdateAsWebp(ctx, image)
+	if err != nil {
+		return err
+	}
+
+	//this file already have type
+	image.Destination = urlPath + fileName
+	_, err = c.cocktailPhotoMySQLRepo.UpdateTx(ctx, tx,
+		&domain.CocktailPhoto{
+			ID:           image.ImageID,
+			Photo:        image.Destination,
+			IsCoverPhoto: image.IsCoverPhoto,
+		})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (c *cocktailUsecase) GetAllWithFilter(ctx context.Context, filter map[string]interface{}, pagination domain.PaginationUsecase) ([]domain.APICocktail, int64, error) {
@@ -259,6 +362,156 @@ func (c *cocktailUsecase) Store(ctx context.Context, co *domain.Cocktail, ingred
 	})
 
 	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *cocktailUsecase) Update(ctx context.Context, co *domain.Cocktail, ingredients []domain.CocktailIngredient,
+	steps []domain.CocktailStep, images []domain.CocktailImage, userID int64) error {
+
+	if co.CocktailID <= 0 {
+		return domain.ErrParameterIllegal
+	}
+
+	cocktail, err := c.cocktailMySQLRepo.QueryByCocktailID(ctx, co.CocktailID)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return domain.ErrCocktailNotFound
+	} else if err != nil {
+		return err
+	}
+
+	// cocktail isn't belong to user
+	if cocktail.UserID != userID {
+		return domain.ErrItemDoesNotBelongToUser
+	}
+
+	// can't update non-draft article
+	if cocktail.Category != cockarticletype.Draft.Int() {
+		return domain.ErrPermissionDenied
+	}
+
+	oldPhoto, err := c.cocktailPhotoMySQLRepo.QueryPhotosByCocktailId(ctx, co.CocktailID)
+	if err != nil {
+		return err
+	}
+
+	deletedPhoto := c.getNeedDeletedPhoto(oldPhoto, images)
+
+	if err := c.transactionRepo.Transaction(func(i interface{}) error {
+		tx := i.(*gorm.DB)
+
+		// update cocktail basic info
+		_, err := c.cocktailMySQLRepo.UpdateTx(ctx, tx, co)
+		if err != nil {
+			return err
+		}
+
+		// update cocktail photo
+		for _, image := range images {
+			action, err := c.getAction(image.ImageID, image.Data)
+			if err != nil {
+				return err
+			}
+
+			logrus.Debugf("update photo id: %d", image.ImageID)
+			logrus.Debugf("update photo action: %s", action.String())
+
+			if action == httpaction.Add {
+				err = c.addPhoto(ctx, tx, &image)
+				if err != nil {
+					return err
+				}
+			} else if action == httpaction.Edit {
+				err = c.editPhoto(ctx, tx, &image)
+				if err != nil {
+					return err
+				}
+			} else {
+				//keep photo
+			}
+		}
+
+		for _, id := range deletedPhoto {
+			err := c.cocktailPhotoMySQLRepo.DeleteByIDTx(ctx, tx, id)
+			if err != nil {
+				return err
+			}
+		}
+
+		//update cocktail ingredient
+		err = c.cocktailIngredientMySQLRepo.DeleteByCocktailIDTx(ctx, tx, co.CocktailID)
+		if err != nil {
+			return err
+		}
+
+		for _, ingredient := range ingredients {
+			err = c.cocktailIngredientMySQLRepo.StoreTx(ctx, tx, &ingredient)
+			if err != nil {
+				return err
+			}
+		}
+
+		//update cocktail step
+		err = c.cocktailStepMySQLRepo.DeleteByCocktailIDTx(ctx, tx, co.CocktailID)
+		if err != nil {
+			return err
+		}
+
+		for _, step := range steps {
+			err = c.cocktailStepMySQLRepo.StoreTx(ctx, tx, &step)
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *cocktailUsecase) Delete(ctx context.Context, cocktailID, userID int64) error {
+
+	cocktail, err := c.cocktailMySQLRepo.QueryByCocktailID(ctx, cocktailID)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return domain.ErrCocktailNotFound
+	} else if err != nil {
+		return err
+	}
+
+	if cocktail.UserID != userID {
+		return domain.ErrItemDoesNotBelongToUser
+	}
+
+	if err := c.transactionRepo.Transaction(func(i interface{}) error {
+		tx := i.(*gorm.DB)
+
+		err := c.cocktailMySQLRepo.DeleteTx(ctx, tx, cocktailID)
+		if err != nil {
+			return err
+		}
+
+		err = c.cocktailIngredientMySQLRepo.DeleteByCocktailIDTx(ctx, tx, cocktailID)
+		if err != nil {
+			return err
+		}
+
+		err = c.cocktailStepMySQLRepo.DeleteByCocktailIDTx(ctx, tx, cocktailID)
+		if err != nil {
+			return err
+		}
+
+		err = c.cocktailPhotoMySQLRepo.DeleteByCocktailIDTx(ctx, tx, cocktailID)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}); err != nil {
 		return err
 	}
 

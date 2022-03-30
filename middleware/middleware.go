@@ -39,7 +39,7 @@ func (h *Handler) CORSMiddleware() gin.HandlerFunc {
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Content-OrderType", "application/json")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", " Content-Type,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Authorization")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
 
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
@@ -49,13 +49,13 @@ func (h *Handler) CORSMiddleware() gin.HandlerFunc {
 	}
 }
 
-func GenToken( data PayloadData) (string, error) {
+func GenToken(data PayloadData) (string, error) {
 	c := MyClaims{
 		PayloadData: data,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(2 * time.Hour).Unix(),
-			Issuer: "GiftForm69King",
-			Audience: data.Account,
+			Issuer:    "GiftForm69King",
+			Audience:  data.Account,
 		},
 	}
 	// Choose specific algorithm
@@ -84,20 +84,20 @@ func (h *Handler) JWTAuthMiddleware() func(c *gin.Context) {
 		// Get token from Header.Authorization field.
 		authHeader := c.Request.Header.Get("Authorization")
 		if authHeader == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, viewmodels.ResponseData{ErrorCode:domain.GetErrorCode(domain.ErrTokenExpired), ErrorMessage:domain.ErrTokenExpired.Error()})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, viewmodels.ResponseData{ErrorCode: domain.GetErrorCode(domain.ErrTokenExpired), ErrorMessage: domain.ErrTokenExpired.Error()})
 			return
 		}
 
 		parts := strings.SplitN(authHeader, " ", 2)
 		if !(len(parts) == 2 && parts[0] == "Bearer") {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, viewmodels.ResponseData{ErrorCode:domain.GetErrorCode(domain.ErrTokenExpired), ErrorMessage:domain.ErrTokenExpired.Error()})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, viewmodels.ResponseData{ErrorCode: domain.GetErrorCode(domain.ErrTokenExpired), ErrorMessage: domain.ErrTokenExpired.Error()})
 			return
 		}
 		// parts[0] is Bearer, parts is token.
 		token := parts[1]
 		mc, err := parseToken(token)
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, viewmodels.ResponseData{ErrorCode:domain.GetErrorCode(domain.ErrTokenExpired), ErrorMessage:domain.ErrTokenExpired.Error()})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, viewmodels.ResponseData{ErrorCode: domain.GetErrorCode(domain.ErrTokenExpired), ErrorMessage: domain.ErrTokenExpired.Error()})
 			return
 		}
 

@@ -30,6 +30,8 @@ func NewCocktailHandler(s *service.Service, cocktailUsecase domain.CocktailUseca
 	s.HTTP.GET("/api/cocktail-drafts", middlewareHandler.JWTAuthMiddleware(), handler.CocktailDraftList)
 	s.HTTP.POST("/api/cocktails", middlewareHandler.JWTAuthMiddleware(), handler.PostArticle)
 	s.HTTP.POST("/api/cocktail-drafts", middlewareHandler.JWTAuthMiddleware(), handler.PostDraftArticle)
+	s.HTTP.PUT("/api/cocktail-drafts/:cocktailID", middlewareHandler.JWTAuthMiddleware(), handler.UpdateDraftArticle)
+	s.HTTP.DELETE("/api/cocktail-drafts/:cocktailID", middlewareHandler.JWTAuthMiddleware(), handler.DeleteDraftArticle)
 }
 
 // swagger:operation GET /cocktails/{id} cocktail getCocktailByIDRequest
@@ -187,7 +189,7 @@ func (co *CocktailHandler) GetCocktailDraftByCocktailID(c *gin.Context) {
 	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
 }
 
-// swagger:operation GET /cocktails cocktail noRequest
+// swagger:operation GET /cocktails cocktail getCocktail
 // ---
 // summary: Get popular cocktail list
 // description: Get popular cocktail list order by create date.
@@ -271,7 +273,7 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
 }
 
-// swagger:operation GET /cocktail-drafts cocktail noRequest
+// swagger:operation GET /cocktail-drafts cocktail getCocktailDraft
 // ---
 // summary: Get draft cocktail list
 // description: Get draft cocktail list order by create date.
@@ -470,6 +472,157 @@ func (co *CocktailHandler) PostDraftArticle(c *gin.Context) {
 	err := co.CocktailUsecase.Store(c, &cocktail, ingredients, steps, images)
 	if err != nil {
 		service.GetLoggerEntry(co.Service.Logger, api, request).Errorf("store article failed - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
+	util.PackResponseWithData(c, http.StatusCreated, nil, domain.GetErrorCode(nil), "")
+}
+
+// swagger:operation PUT /cocktail-drafts/{id} cocktail updateCocktailDraft
+// ---
+// summary: Edit cocktail draft article.
+// description: Edit cocktail draft article.
+//
+// security:
+// - Bearer: [apiKey]
+//
+// parameters:
+// - name: id
+//   in: path
+//   required: true
+//   type: integer
+//   example: 123456
+// - name: Body
+//   in: body
+//   schema:
+//     "$ref": "#/definitions/updateDraftArticleRequest"
+//   required: true
+//
+// responses:
+//  "200": success
+func (co *CocktailHandler) UpdateDraftArticle(c *gin.Context) {
+	userId := c.GetInt64("user_id")
+	cocktailID := c.Param("cocktailID")
+	api := "PUT /cocktail-drafts/" + cocktailID
+
+	cocktailIDNumber, err := strconv.ParseInt(cocktailID, 10, 64)
+	if err != nil {
+		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("parameter illegal - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
+	var request viewmodels.UpdateDraftArticleRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		service.GetLoggerEntry(co.Service.Logger, api, request).Errorf("parameter illegal - %s", err)
+		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
+		return
+	}
+
+	var cocktail = domain.Cocktail{
+		CocktailID:  cocktailIDNumber,
+		Title:       request.Name,
+		Description: request.Description,
+	}
+
+	var ingredients []domain.CocktailIngredient
+	for _, ingredient := range request.IngredientList {
+		out := domain.CocktailIngredient{
+			CocktailID:       cocktailIDNumber,
+			IngredientName:   ingredient.Name,
+			IngredientAmount: ingredient.Amount,
+		}
+		ingredients = append(ingredients, out)
+	}
+
+	var steps []domain.CocktailStep
+	for stepNumber, step := range request.StepList {
+		out := domain.CocktailStep{
+			CocktailID:      cocktailIDNumber,
+			StepNumber:      stepNumber,
+			StepDescription: step.Description,
+		}
+		steps = append(steps, out)
+	}
+
+	var images []domain.CocktailImage
+	for idx, photo := range request.Photos {
+		var isCoverPhoto bool
+		if idx == 0 {
+			isCoverPhoto = true
+		} else {
+			isCoverPhoto = false
+		}
+
+		if photo.Photo != "" {
+			dataURL, err := dataurl.DecodeString(photo.Photo)
+			if err != nil {
+				service.GetLoggerEntry(co.Service.Logger, api, request).Errorf("decode data url failed - %s", err)
+				util.PackResponseWithError(c, err, err.Error())
+				return
+			}
+
+			out := domain.CocktailImage{
+				ImageID:      photo.ID,
+				CocktailID:   cocktailIDNumber,
+				Data:         string(dataURL.Data),
+				Type:         dataURL.MediaType.ContentType(),
+				IsCoverPhoto: isCoverPhoto,
+			}
+			images = append(images, out)
+		} else {
+			out := domain.CocktailImage{
+				ImageID:      photo.ID,
+				CocktailID:   cocktailIDNumber,
+				IsCoverPhoto: isCoverPhoto,
+			}
+			images = append(images, out)
+		}
+	}
+
+	err = co.CocktailUsecase.Update(c, &cocktail, ingredients, steps, images, userId)
+	if err != nil {
+		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("update draft cocktail failed - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
+	util.PackResponseWithData(c, http.StatusCreated, nil, domain.GetErrorCode(nil), "")
+}
+
+// swagger:operation DELETE /cocktail-drafts/{id} cocktail deleteCocktailDraft
+// ---
+// summary: DELETE cocktail draft article.
+// description: DELETE cocktail draft article.
+//
+// security:
+// - Bearer: [apiKey]
+//
+// parameters:
+// - name: id
+//   in: path
+//   required: true
+//   type: integer
+//   example: 123456
+//
+// responses:
+//  "200": success
+func (co *CocktailHandler) DeleteDraftArticle(c *gin.Context) {
+	userId := c.GetInt64("user_id")
+	cocktailID := c.Param("cocktailID")
+	api := "DELETE /cocktail-drafts/" + cocktailID
+
+	cocktailIDNumber, err := strconv.ParseInt(cocktailID, 10, 64)
+	if err != nil {
+		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("parameter illegal - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
+	err = co.CocktailUsecase.Delete(c, cocktailIDNumber, userId)
+	if err != nil {
+		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("delete draft cocktail failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
