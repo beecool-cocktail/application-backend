@@ -55,6 +55,7 @@ CREATE TABLE `users` (
 `photo` varchar(128) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
 `number_of_post` int(10) unsigned NOT NULL DEFAULT '0' COMMENT ' 貼文數',
 `number_of_collection` int(10) unsigned NOT NULL DEFAULT '0' COMMENT ' 收藏數',
+`number_of_draft` int(10) unsigned NOT NULL DEFAULT '0' COMMENT ' 草稿數',
 `is_collection_public` tinyint(1) NOT NULL DEFAULT '0' COMMENT ' 是否公開收藏 0=不公開, 1=公開',
 `remark` varchar(64) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
 `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -67,14 +68,14 @@ LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
 
 INSERT INTO `users` (`id`, `account`, `password`, `status`, `name`, `email`, `photo`, `number_of_post`,
-                     `number_of_collection`, `is_collection_public`, `remark`, `created_date`)
+                     `number_of_collection`, `number_of_draft`, `is_collection_public`, `remark`, `created_date`)
 VALUES
-(1, 'mockAccount1', '', 1, 'mockUser1', '', '', 0, 0, 1, '', '2022-03-12 13:36:24'),
-(2, 'mockAccount2', '', 1, 'mockUser2', '', '', 0, 0, 1, '', '2022-03-12 13:36:24'),
-(3, 'mockAccount3', '', 1, 'mockUser3', '', '', 0, 0, 1, '', '2022-03-12 13:36:24'),
-(4, 'mockAccount4', '', 1, 'mockUser4', '', '', 0, 0, 1, '', '2022-03-12 13:36:24'),
-(5, 'mockAccount5', '', 1, 'mockUser5', '', '', 0, 0, 1, '', '2022-03-12 13:36:24'),
-(6, 'mockAccount6', '', 1, 'mockUser6', '', '', 0, 0, 1, '', '2022-03-12 13:36:24');
+(1, 'mockAccount1', '', 1, 'mockUser1', '', '', 0, 0, 0, 1, '', '2022-03-12 13:36:24'),
+(2, 'mockAccount2', '', 1, 'mockUser2', '', '', 0, 0, 0, 1, '', '2022-03-12 13:36:24'),
+(3, 'mockAccount3', '', 1, 'mockUser3', '', '', 0, 0, 0, 1, '', '2022-03-12 13:36:24'),
+(4, 'mockAccount4', '', 1, 'mockUser4', '', '', 0, 0, 0, 1, '', '2022-03-12 13:36:24'),
+(5, 'mockAccount5', '', 1, 'mockUser5', '', '', 0, 0, 0, 1, '', '2022-03-12 13:36:24'),
+(6, 'mockAccount6', '', 1, 'mockUser6', '', '', 0, 0, 0, 1, '', '2022-03-12 13:36:24');
 
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
