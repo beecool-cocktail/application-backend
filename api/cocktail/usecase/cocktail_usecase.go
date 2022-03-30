@@ -298,7 +298,7 @@ func (c *cocktailUsecase) QueryDraftByCocktailID(ctx context.Context, cocktailID
 }
 
 func (c *cocktailUsecase) Store(ctx context.Context, co *domain.Cocktail, ingredients []domain.CocktailIngredient,
-	steps []domain.CocktailStep, images []domain.CocktailImage) error {
+	steps []domain.CocktailStep, images []domain.CocktailImage, userID int64) error {
 
 	//Todo move to config
 	savePath := "static/images/"
@@ -306,8 +306,36 @@ func (c *cocktailUsecase) Store(ctx context.Context, co *domain.Cocktail, ingred
 
 	newCocktailID := util.GetID(util.IdGenerator)
 
-	err := c.transactionRepo.Transaction(func(i interface{}) error {
+	user, err := c.userMySQLRepo.QueryById(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	err = c.transactionRepo.Transaction(func(i interface{}) error {
 		tx := i.(*gorm.DB)
+
+		if co.Category == cockarticletype.Draft.Int() {
+			if user.NumberOfDraft == 30 {
+				return domain.ErrorCocktailDraftIsMaximum
+			}
+			numberOfDraft := user.NumberOfDraft + 1
+			_, err = c.userMySQLRepo.UpdateNumberOfDraftTx(ctx, tx, &domain.User{
+				ID:            user.ID,
+				NumberOfDraft: numberOfDraft,
+			})
+			if err != nil {
+				return err
+			}
+		} else {
+			numberOfPost := user.NumberOfPost + 1
+			_, err = c.userMySQLRepo.UpdateNumberOfPostTx(ctx, tx, &domain.User{
+				ID:           user.ID,
+				NumberOfPost: numberOfPost,
+			})
+			if err != nil {
+				return err
+			}
+		}
 
 		co.CocktailID = newCocktailID
 		err := c.cocktailMySQLRepo.StoreTx(ctx, tx, co)
@@ -487,8 +515,36 @@ func (c *cocktailUsecase) Delete(ctx context.Context, cocktailID, userID int64) 
 		return domain.ErrItemDoesNotBelongToUser
 	}
 
+	user, err := c.userMySQLRepo.QueryById(ctx, userID)
+	if err != nil {
+		return err
+	}
+
 	if err := c.transactionRepo.Transaction(func(i interface{}) error {
 		tx := i.(*gorm.DB)
+
+		if cocktail.Category == cockarticletype.Draft.Int() {
+			if user.NumberOfDraft == 30 {
+				return domain.ErrorCocktailDraftIsMaximum
+			}
+			numberOfDraft := user.NumberOfDraft - 1
+			_, err = c.userMySQLRepo.UpdateNumberOfDraftTx(ctx, tx, &domain.User{
+				ID:            user.ID,
+				NumberOfDraft: numberOfDraft,
+			})
+			if err != nil {
+				return err
+			}
+		} else {
+			numberOfPost := user.NumberOfPost - 1
+			_, err = c.userMySQLRepo.UpdateNumberOfPostTx(ctx, tx, &domain.User{
+				ID:           user.ID,
+				NumberOfPost: numberOfPost,
+			})
+			if err != nil {
+				return err
+			}
+		}
 
 		err := c.cocktailMySQLRepo.DeleteTx(ctx, tx, cocktailID)
 		if err != nil {

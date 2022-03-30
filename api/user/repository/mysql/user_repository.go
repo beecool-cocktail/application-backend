@@ -16,6 +16,14 @@ type photo struct {
 	Photo string `structs:"photo"`
 }
 
+type postNumbers struct {
+	NumberOfPost int `structs:"number_of_post"`
+}
+
+type draftNumbers struct {
+	NumberOfDraft int `structs:"number_of_draft"`
+}
+
 type userMySQLRepository struct {
 	db *gorm.DB
 }
@@ -43,7 +51,7 @@ func (u *userMySQLRepository) QueryById(ctx context.Context, id int64) (*domain.
 func (u *userMySQLRepository) UpdateBasicInfo(ctx context.Context, d *domain.User) (int64, error) {
 	var user domain.User
 	updateColumn := basicInfo{
-		Name: d.Name,
+		Name:               d.Name,
 		IsCollectionPublic: d.IsCollectionPublic,
 	}
 
@@ -66,7 +74,7 @@ func (u *userMySQLRepository) UpdateImage(ctx context.Context, d *domain.UserIma
 func (u *userMySQLRepository) UpdateBasicInfoTx(ctx context.Context, tx *gorm.DB, d *domain.User) (int64, error) {
 	var user domain.User
 	updateColumn := basicInfo{
-		Name: d.Name,
+		Name:               d.Name,
 		IsCollectionPublic: d.IsCollectionPublic,
 	}
 
@@ -79,6 +87,28 @@ func (u *userMySQLRepository) UpdateImageTx(ctx context.Context, tx *gorm.DB, d 
 	var user domain.User
 	updateColumn := photo{
 		Photo: d.Destination,
+	}
+
+	res := tx.Model(&user).Where("id = ?", d.ID).Updates(structs.Map(updateColumn))
+
+	return res.RowsAffected, res.Error
+}
+
+func (u *userMySQLRepository) UpdateNumberOfPostTx(ctx context.Context, tx *gorm.DB, d *domain.User) (int64, error) {
+	var user domain.User
+	updateColumn := postNumbers{
+		NumberOfPost: d.NumberOfPost,
+	}
+
+	res := tx.Model(&user).Where("id = ?", d.ID).Updates(structs.Map(updateColumn))
+
+	return res.RowsAffected, res.Error
+}
+
+func (u *userMySQLRepository) UpdateNumberOfDraftTx(ctx context.Context, tx *gorm.DB, d *domain.User) (int64, error) {
+	var user domain.User
+	updateColumn := draftNumbers{
+		NumberOfDraft: d.NumberOfDraft,
 	}
 
 	res := tx.Model(&user).Where("id = ?", d.ID).Updates(structs.Map(updateColumn))

@@ -389,7 +389,7 @@ func (co *CocktailHandler) PostArticle(c *gin.Context) {
 		images = append(images, out)
 	}
 
-	err := co.CocktailUsecase.Store(c, &cocktail, ingredients, steps, images)
+	err := co.CocktailUsecase.Store(c, &cocktail, ingredients, steps, images, userId)
 	if err != nil {
 		service.GetLoggerEntry(co.Service.Logger, api, request).Errorf("store article failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
@@ -469,7 +469,7 @@ func (co *CocktailHandler) PostDraftArticle(c *gin.Context) {
 		images = append(images, out)
 	}
 
-	err := co.CocktailUsecase.Store(c, &cocktail, ingredients, steps, images)
+	err := co.CocktailUsecase.Store(c, &cocktail, ingredients, steps, images, userId)
 	if err != nil {
 		service.GetLoggerEntry(co.Service.Logger, api, request).Errorf("store article failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())

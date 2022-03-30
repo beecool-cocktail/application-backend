@@ -18,6 +18,7 @@ const (
 	CodePasswordNotMatch        = "A0003"
 	CodeTokenExpired            = "A0004"
 	CodeCocktailNotFound        = "B0001"
+	CodeCocktailDraftIsMaximum  = "B0002"
 	CodeFileTypeIllegal         = "F0001"
 	CodeFileSizeIllegal         = "F0002"
 	CodeInternalError           = "S0001"
@@ -25,20 +26,21 @@ const (
 )
 
 var (
-	ErrRequestDecodeFailed     = errors.New("request decode failed")
-	ErrResponseEncodedFailed   = errors.New("response encoded failed")
-	ErrCanNotSpecifyHttpAction = errors.New("can't specify action through request parameter")
-	ErrParameterIllegal        = errors.New("parameter illegal")
-	ErrPermissionDenied        = errors.New("permission denied")
-	ErrItemDoesNotBelongToUser = errors.New("item doesn't belong to user")
-	ErrUserAlreadyExist        = errors.New("user already exist")
-	ErrUserNotFound            = errors.New("user not found")
-	ErrPasswordNotMatch        = errors.New("password not match")
-	ErrCocktailNotFound        = errors.New("cocktail not found")
-	ErrTokenExpired            = errors.New("token expired")
-	ErrCodeFileTypeIllegal     = errors.New("illegal file type")
-	ErrCodeFileSizeIllegal     = errors.New("illegal file size")
-	ErrFilePathIllegal         = errors.New("illegal file path")
+	ErrRequestDecodeFailed      = errors.New("request decode failed")
+	ErrResponseEncodedFailed    = errors.New("response encoded failed")
+	ErrCanNotSpecifyHttpAction  = errors.New("can't specify action through request parameter")
+	ErrParameterIllegal         = errors.New("parameter illegal")
+	ErrPermissionDenied         = errors.New("permission denied")
+	ErrItemDoesNotBelongToUser  = errors.New("item doesn't belong to user")
+	ErrUserAlreadyExist         = errors.New("user already exist")
+	ErrUserNotFound             = errors.New("user not found")
+	ErrPasswordNotMatch         = errors.New("password not match")
+	ErrCocktailNotFound         = errors.New("cocktail not found")
+	ErrorCocktailDraftIsMaximum = errors.New("cocktail draft is maximum")
+	ErrTokenExpired             = errors.New("token expired")
+	ErrCodeFileTypeIllegal      = errors.New("illegal file type")
+	ErrCodeFileSizeIllegal      = errors.New("illegal file size")
+	ErrFilePathIllegal          = errors.New("illegal file path")
 )
 
 func GetErrorCode(err error) string {
@@ -71,6 +73,8 @@ func GetErrorCode(err error) string {
 		return CodeTokenExpired
 	case ErrCocktailNotFound:
 		return CodeCocktailNotFound
+	case ErrorCocktailDraftIsMaximum:
+		return CodeCocktailDraftIsMaximum
 	case ErrCodeFileTypeIllegal:
 		return CodeFileTypeIllegal
 	case ErrCodeFileSizeIllegal:
@@ -108,6 +112,8 @@ func GetStatusCode(err error) int {
 		return http.StatusUnauthorized
 	case ErrCocktailNotFound:
 		return http.StatusNotFound
+	case ErrorCocktailDraftIsMaximum:
+		return http.StatusBadRequest
 	case ErrCodeFileTypeIllegal:
 		return http.StatusForbidden
 	case ErrCodeFileSizeIllegal:

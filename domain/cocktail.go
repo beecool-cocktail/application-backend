@@ -51,7 +51,7 @@ type CocktailUsecase interface {
 	GetAllWithFilter(ctx context.Context, filter map[string]interface{}, pagination PaginationUsecase) ([]APICocktail, int64, error)
 	QueryByCocktailID(ctx context.Context, id int64) (APICocktail, error)
 	QueryDraftByCocktailID(ctx context.Context, cocktailID, userID int64) (APICocktail, error)
-	Store(ctx context.Context, c *Cocktail, cig []CocktailIngredient, cs []CocktailStep, ci []CocktailImage) error
+	Store(ctx context.Context, c *Cocktail, cig []CocktailIngredient, cs []CocktailStep, ci []CocktailImage, userID int64) error
 	Delete(ctx context.Context, cocktailID, userID int64) error
 	Update(ctx context.Context, c *Cocktail, cig []CocktailIngredient, cs []CocktailStep, ci []CocktailImage, userID int64) error
 }

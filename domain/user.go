@@ -16,6 +16,7 @@ type User struct {
 	Photo              string    `gorm:"type:varchar(128) NOT NULL"`
 	NumberOfPost       int       `gorm:"type:int unsigned NOT NULL DEFAULT 0; comment: 貼文數"`
 	NumberOfCollection int       `gorm:"type:int unsigned NOT NULL DEFAULT 0; comment: 收藏數"`
+	NumberOfDraft      int       `gorm:"type:int unsigned NOT NULL DEFAULT 0; comment: 草稿數"`
 	IsCollectionPublic bool      `gorm:"type:tinyint(1) NOT NULL DEFAULT 0; comment: 公開收藏 0=不公開, 1=公開"`
 	Remark             string    `gorm:"type:varchar(64) NOT NULL DEFAULT ''"`
 	CreatedDate        time.Time `gorm:"type:timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;index:idx_date"`
@@ -45,6 +46,8 @@ type UserMySQLRepository interface {
 	UpdateImage(ctx context.Context, d *UserImage) (int64, error)
 	UpdateBasicInfoTx(ctx context.Context, tx *gorm.DB, d *User) (int64, error)
 	UpdateImageTx(ctx context.Context, tx *gorm.DB, d *UserImage) (int64, error)
+	UpdateNumberOfPostTx(ctx context.Context, tx *gorm.DB, d *User) (int64, error)
+	UpdateNumberOfDraftTx(ctx context.Context, tx *gorm.DB, d *User) (int64, error)
 }
 
 type UserRedisRepository interface {
