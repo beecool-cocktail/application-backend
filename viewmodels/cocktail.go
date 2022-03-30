@@ -114,15 +114,15 @@ type GetCocktailByIDRequest struct {
 }
 
 type GetCocktailByIDResponse struct {
-	CocktailID     int64                      `json:"cocktail_id"`
-	UserID         int64                      `json:"user_id"`
-	UserName       string                     `json:"user_name"`
-	Photos         []CocktailPhotoWithID      `json:"photos"`
-	Title          string                     `json:"title"`
-	Description    string                     `json:"description"`
-	IngredientList []CocktailIngredientWithID `json:"ingredient_list"`
-	StepList       []CocktailStepWithID       `json:"step_list"`
-	CreatedDate    string                     `json:"created_date"`
+	CocktailID     int64                         `json:"cocktail_id"`
+	UserID         int64                         `json:"user_id"`
+	UserName       string                        `json:"user_name"`
+	Photos         []CocktailPhotoWithID         `json:"photos"`
+	Title          string                        `json:"title"`
+	Description    string                        `json:"description"`
+	IngredientList []CocktailIngredientWithoutID `json:"ingredient_list"`
+	StepList       []CocktailStepWithoutID       `json:"step_list"`
+	CreatedDate    string                        `json:"created_date"`
 }
 
 type GetCocktailDraftByIDRequest struct {
@@ -133,13 +133,13 @@ type GetCocktailDraftByIDRequest struct {
 }
 
 type GetCocktailDraftByIDResponse struct {
-	CocktailID     int64                      `json:"cocktail_id"`
-	Photos         []CocktailPhotoWithID      `json:"photos"`
-	Title          string                     `json:"title"`
-	Description    string                     `json:"description"`
-	IngredientList []CocktailIngredientWithID `json:"ingredient_list"`
-	StepList       []CocktailStepWithID       `json:"step_list"`
-	CreatedDate    string                     `json:"created_date"`
+	CocktailID     int64                         `json:"cocktail_id"`
+	Photos         []CocktailPhotoWithID         `json:"photos"`
+	Title          string                        `json:"title"`
+	Description    string                        `json:"description"`
+	IngredientList []CocktailIngredientWithoutID `json:"ingredient_list"`
+	StepList       []CocktailStepWithoutID       `json:"step_list"`
+	CreatedDate    string                        `json:"created_date"`
 }
 
 type UpdateDraftArticleRequest struct {

@@ -1,22 +1,5 @@
 basePath: /api
 definitions:
-  CocktailIngredientWithID:
-    properties:
-      amount:
-        type: string
-        x-go-name: Amount
-      id:
-        format: int64
-        type: integer
-        x-go-name: ID
-      name:
-        type: string
-        x-go-name: Name
-      unit:
-        type: string
-        x-go-name: Unit
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   CocktailIngredientWithoutID:
     properties:
       amount:
@@ -38,17 +21,6 @@ definitions:
       path:
         type: string
         x-go-name: Photo
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  CocktailStepWithID:
-    properties:
-      description:
-        type: string
-        x-go-name: Description
-      id:
-        format: int64
-        type: integer
-        x-go-name: ID
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   CocktailStepWithoutID:
@@ -102,7 +74,7 @@ definitions:
         x-go-name: Description
       ingredient_list:
         items:
-          $ref: '#/definitions/CocktailIngredientWithID'
+          $ref: '#/definitions/CocktailIngredientWithoutID'
         type: array
         x-go-name: IngredientList
       photos:
@@ -112,7 +84,7 @@ definitions:
         x-go-name: Photos
       step_list:
         items:
-          $ref: '#/definitions/CocktailStepWithID'
+          $ref: '#/definitions/CocktailStepWithoutID'
         type: array
         x-go-name: StepList
       title:
@@ -153,7 +125,7 @@ definitions:
         x-go-name: Description
       ingredient_list:
         items:
-          $ref: '#/definitions/CocktailIngredientWithID'
+          $ref: '#/definitions/CocktailIngredientWithoutID'
         type: array
         x-go-name: IngredientList
       photos:
@@ -163,7 +135,7 @@ definitions:
         x-go-name: Photos
       step_list:
         items:
-          $ref: '#/definitions/CocktailStepWithID'
+          $ref: '#/definitions/CocktailStepWithoutID'
         type: array
         x-go-name: StepList
       title:

@@ -67,20 +67,18 @@ func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 		return
 	}
 
-	ingredients := make([]viewmodels.CocktailIngredientWithID, 0)
+	ingredients := make([]viewmodels.CocktailIngredientWithoutID, 0)
 	for _, ingredient := range cocktail.Ingredients {
-		out := viewmodels.CocktailIngredientWithID{
-			ID:     ingredient.ID,
+		out := viewmodels.CocktailIngredientWithoutID{
 			Name:   ingredient.IngredientName,
 			Amount: ingredient.IngredientAmount,
 		}
 		ingredients = append(ingredients, out)
 	}
 
-	steps := make([]viewmodels.CocktailStepWithID, 0)
+	steps := make([]viewmodels.CocktailStepWithoutID, 0)
 	for _, step := range cocktail.Steps {
-		out := viewmodels.CocktailStepWithID{
-			ID:          step.ID,
+		out := viewmodels.CocktailStepWithoutID{
 			Description: step.StepDescription,
 		}
 		steps = append(steps, out)
@@ -148,20 +146,18 @@ func (co *CocktailHandler) GetCocktailDraftByCocktailID(c *gin.Context) {
 		return
 	}
 
-	ingredients := make([]viewmodels.CocktailIngredientWithID, 0)
+	ingredients := make([]viewmodels.CocktailIngredientWithoutID, 0)
 	for _, ingredient := range cocktail.Ingredients {
-		out := viewmodels.CocktailIngredientWithID{
-			ID:     ingredient.ID,
+		out := viewmodels.CocktailIngredientWithoutID{
 			Name:   ingredient.IngredientName,
 			Amount: ingredient.IngredientAmount,
 		}
 		ingredients = append(ingredients, out)
 	}
 
-	steps := make([]viewmodels.CocktailStepWithID, 0)
+	steps := make([]viewmodels.CocktailStepWithoutID, 0)
 	for _, step := range cocktail.Steps {
-		out := viewmodels.CocktailStepWithID{
-			ID:          step.ID,
+		out := viewmodels.CocktailStepWithoutID{
 			Description: step.StepDescription,
 		}
 		steps = append(steps, out)
