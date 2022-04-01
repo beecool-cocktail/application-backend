@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/beecool-cocktail/application-backend/domain"
+	"github.com/beecool-cocktail/application-backend/service"
 	"github.com/beecool-cocktail/application-backend/util"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
@@ -11,15 +12,17 @@ import (
 )
 
 type userUsecase struct {
+	service         *service.Service
 	userMySQLRepo   domain.UserMySQLRepository
 	userRedisRepo   domain.UserRedisRepository
 	userFileRepo    domain.UserFileRepository
 	transactionRepo domain.DBTransactionRepository
 }
 
-func NewUserUsecase(clientMySQLRepo domain.UserMySQLRepository, clientRedisRepo domain.UserRedisRepository,
+func NewUserUsecase(s *service.Service, clientMySQLRepo domain.UserMySQLRepository, clientRedisRepo domain.UserRedisRepository,
 	userFileRepo domain.UserFileRepository, transaction domain.DBTransactionRepository) domain.UserUsecase {
 	return &userUsecase{
+		service:         s,
 		userMySQLRepo:   clientMySQLRepo,
 		userRedisRepo:   clientRedisRepo,
 		userFileRepo:    userFileRepo,
@@ -60,9 +63,8 @@ func (u *userUsecase) UpdateUserInfo(ctx context.Context, d *domain.User, ui *do
 
 	newFileName := uuid.New().String()
 
-	//Todo move to config
-	savePath := "static/images/"
-	urlPath := "static/"
+	savePath := u.service.Configure.Others.File.Image.PathInDB
+	urlPath := u.service.Configure.Others.File.Image.PathInURL
 
 	ui.Name = newFileName
 
@@ -72,7 +74,6 @@ func (u *userUsecase) UpdateUserInfo(ctx context.Context, d *domain.User, ui *do
 
 	err := u.transactionRepo.Transaction(func(i interface{}) error {
 		tx := i.(*gorm.DB)
-
 
 		if ui.Data != "" {
 			ui.Destination = savePath + newFileName
@@ -107,7 +108,6 @@ func (u *userUsecase) UpdateUserInfo(ctx context.Context, d *domain.User, ui *do
 	if err != nil {
 		return err
 	}
-
 
 	return nil
 }

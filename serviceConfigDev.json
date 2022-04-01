@@ -42,6 +42,12 @@
         "https://www.googleapis.com/auth/userinfo.profile",
         "https://www.googleapis.com/auth/userinfo.email"
       ]
+    },
+    "File": {
+      "Image": {
+        "PathInDB" : "static/images/",
+        "PathInURL": "static/"
+      }
     }
   }
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/beecool-cocktail/application-backend/enum/cockarticletype"
 	"github.com/beecool-cocktail/application-backend/enum/httpaction"
 	"github.com/beecool-cocktail/application-backend/enum/sortbydir"
+	"github.com/beecool-cocktail/application-backend/service"
 	"github.com/beecool-cocktail/application-backend/util"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
@@ -14,6 +15,7 @@ import (
 )
 
 type cocktailUsecase struct {
+	service                     *service.Service
 	cocktailMySQLRepo           domain.CocktailMySQLRepository
 	cocktailFileRepo            domain.CocktailFileRepository
 	cocktailPhotoMySQLRepo      domain.CocktailPhotoMySQLRepository
@@ -25,6 +27,7 @@ type cocktailUsecase struct {
 
 // NewDietUsecase ...
 func NewCocktailUsecase(
+	s *service.Service,
 	cocktailMySQLRepo domain.CocktailMySQLRepository,
 	cocktailFileRepo domain.CocktailFileRepository,
 	cocktailPhotoMySQLRepo domain.CocktailPhotoMySQLRepository,
@@ -33,6 +36,7 @@ func NewCocktailUsecase(
 	userMySQLRepo domain.UserMySQLRepository,
 	transactionRepo domain.DBTransactionRepository) domain.CocktailUsecase {
 	return &cocktailUsecase{
+		service:                     s,
 		cocktailMySQLRepo:           cocktailMySQLRepo,
 		cocktailFileRepo:            cocktailFileRepo,
 		cocktailPhotoMySQLRepo:      cocktailPhotoMySQLRepo,
@@ -139,9 +143,8 @@ func (c *cocktailUsecase) getAction(id int64, data string) (httpaction.HttpActio
 }
 
 func (c *cocktailUsecase) addPhoto(ctx context.Context, tx *gorm.DB, image *domain.CocktailImage) error {
-	//Todo move to config
-	savePath := "static/images/"
-	urlPath := "static/"
+	savePath := c.service.Configure.Others.File.Image.PathInDB
+	urlPath := c.service.Configure.Others.File.Image.PathInURL
 
 	newFileName := uuid.New().String()
 	image.Name = newFileName
@@ -171,9 +174,8 @@ func (c *cocktailUsecase) addPhoto(ctx context.Context, tx *gorm.DB, image *doma
 }
 
 func (c *cocktailUsecase) editPhoto(ctx context.Context, tx *gorm.DB, image *domain.CocktailImage) error {
-	//Todo move to config
-	savePath := "static/images/"
-	urlPath := "static/"
+	savePath := c.service.Configure.Others.File.Image.PathInDB
+	urlPath := c.service.Configure.Others.File.Image.PathInURL
 
 	photo, err := c.cocktailPhotoMySQLRepo.QueryPhotoById(ctx, image.ImageID)
 	if err != nil {
@@ -300,9 +302,8 @@ func (c *cocktailUsecase) QueryDraftByCocktailID(ctx context.Context, cocktailID
 func (c *cocktailUsecase) Store(ctx context.Context, co *domain.Cocktail, ingredients []domain.CocktailIngredient,
 	steps []domain.CocktailStep, images []domain.CocktailImage, userID int64) error {
 
-	//Todo move to config
-	savePath := "static/images/"
-	urlPath := "static/"
+	savePath := c.service.Configure.Others.File.Image.PathInDB
+	urlPath := c.service.Configure.Others.File.Image.PathInURL
 
 	newCocktailID := util.GetID(util.IdGenerator)
 

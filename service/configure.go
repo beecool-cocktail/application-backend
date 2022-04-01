@@ -58,6 +58,7 @@ type redisConfig struct {
 
 type otherConfig struct {
 	GoogleOAuth2 *GoogleOAuth2
+	File         *File
 }
 
 type GoogleOAuth2 struct {
@@ -65,6 +66,15 @@ type GoogleOAuth2 struct {
 	ClientSecret string
 	RedirectURL  string
 	Scopes       []string
+}
+
+type File struct {
+	Image *Image
+}
+
+type Image struct {
+	PathInDB  string
+	PathInURL string
 }
 
 func newConfigure(fileName string) (*Configure, error) {
