@@ -13,6 +13,10 @@ type cocktailInfo struct {
 	Description string `structs:"description"`
 }
 
+type cocktailCategory struct {
+	Category int `structs:"category"`
+}
+
 type cocktailMySQLRepository struct {
 	db *gorm.DB
 }
@@ -65,6 +69,17 @@ func (c *cocktailMySQLRepository) UpdateTx(ctx context.Context, tx *gorm.DB, co 
 	updateColumn := cocktailInfo{
 		Title:       co.Title,
 		Description: co.Description,
+	}
+
+	res := tx.Model(&cocktail).Where("cocktail_id = ?", co.CocktailID).Updates(structs.Map(updateColumn))
+
+	return res.RowsAffected, res.Error
+}
+
+func (c *cocktailMySQLRepository) UpdateCategoryTx(ctx context.Context, tx *gorm.DB, co *domain.Cocktail) (int64, error) {
+	var cocktail domain.Cocktail
+	updateColumn := cocktailCategory{
+		Category: co.Category,
 	}
 
 	res := tx.Model(&cocktail).Where("cocktail_id = ?", co.CocktailID).Updates(structs.Map(updateColumn))

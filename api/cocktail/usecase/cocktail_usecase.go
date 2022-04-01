@@ -573,3 +573,83 @@ func (c *cocktailUsecase) Delete(ctx context.Context, cocktailID, userID int64) 
 
 	return nil
 }
+
+func (c *cocktailUsecase) MakeDraftToFormal(ctx context.Context, cocktailID, userID int64) error {
+
+	cocktail, err := c.cocktailMySQLRepo.QueryByCocktailID(ctx, cocktailID)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return domain.ErrCocktailNotFound
+	} else if err != nil {
+		return err
+	}
+
+	if cocktail.UserID != userID {
+		return domain.ErrItemDoesNotBelongToUser
+	}
+
+	if cocktail.Category != cockarticletype.Draft.Int() {
+		return domain.ErrCocktailNotFound
+	}
+
+	apiCocktail := domain.APICocktail{
+		CocktailID:  cocktail.CocktailID,
+		UserID:      cocktail.UserID,
+		Title:       cocktail.Title,
+		Description: cocktail.Description,
+		CreatedDate: util.GetFormatTime(cocktail.CreatedDate, "UTC"),
+	}
+
+	apiCocktail, err = c.fillCocktailDetails(ctx, apiCocktail)
+	if err != nil {
+		return err
+	}
+
+	if apiCocktail.Title == "" || apiCocktail.Description == "" || len(apiCocktail.Ingredients) <= 0 ||
+		len(apiCocktail.Steps) <= 0 || len(apiCocktail.Photos) <= 0 || len(apiCocktail.Photos) > 5 {
+		return domain.ErrorCocktailNotFinished
+	}
+
+	user, err := c.userMySQLRepo.QueryById(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	if err := c.transactionRepo.Transaction(func(i interface{}) error {
+		tx := i.(*gorm.DB)
+
+		_, err := c.cocktailMySQLRepo.UpdateCategoryTx(ctx, tx,
+			&domain.Cocktail{
+				CocktailID: cocktail.CocktailID,
+				Category:   cockarticletype.Normal.Int(),
+			})
+		if err != nil {
+			return err
+		}
+
+		numberOfDraft := user.NumberOfDraft - 1
+		_, err = c.userMySQLRepo.UpdateNumberOfDraftTx(ctx, tx,
+			&domain.User{
+				ID:            user.ID,
+				NumberOfDraft: numberOfDraft,
+			})
+		if err != nil {
+			return err
+		}
+
+		numberOfPost := user.NumberOfPost + 1
+		_, err = c.userMySQLRepo.UpdateNumberOfPostTx(ctx, tx,
+			&domain.User{
+				ID:           user.ID,
+				NumberOfPost: numberOfPost,
+			})
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}

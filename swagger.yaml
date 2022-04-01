@@ -507,6 +507,22 @@ paths:
       summary: Get cocktail draft detail information
       tags:
       - cocktail
+    post:
+      description: Make cocktail draft article to formal article.
+      operationId: makeCocktailDraftToFormal
+      parameters:
+      - example: 123456
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses: {}
+      security:
+      - Bearer:
+        - apiKey
+      summary: Make cocktail draft article to formal article.
+      tags:
+      - cocktail
     put:
       description: Edit cocktail draft article.
       operationId: updateCocktailDraft

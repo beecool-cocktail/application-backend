@@ -45,6 +45,7 @@ type CocktailMySQLRepository interface {
 	StoreTx(ctx context.Context, tx *gorm.DB, c *Cocktail) error
 	DeleteTx(ctx context.Context, tx *gorm.DB, id int64) error
 	UpdateTx(ctx context.Context, tx *gorm.DB, c *Cocktail) (int64, error)
+	UpdateCategoryTx(ctx context.Context, tx *gorm.DB, c *Cocktail) (int64, error)
 }
 
 type CocktailUsecase interface {
@@ -54,6 +55,7 @@ type CocktailUsecase interface {
 	Store(ctx context.Context, c *Cocktail, cig []CocktailIngredient, cs []CocktailStep, ci []CocktailImage, userID int64) error
 	Delete(ctx context.Context, cocktailID, userID int64) error
 	Update(ctx context.Context, c *Cocktail, cig []CocktailIngredient, cs []CocktailStep, ci []CocktailImage, userID int64) error
+	MakeDraftToFormal(ctx context.Context, cocktailID, userID int64) error
 }
 
 type CocktailFileRepository interface {

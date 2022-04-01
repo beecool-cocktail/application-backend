@@ -30,6 +30,7 @@ func NewCocktailHandler(s *service.Service, cocktailUsecase domain.CocktailUseca
 	s.HTTP.GET("/api/cocktail-drafts", middlewareHandler.JWTAuthMiddleware(), handler.CocktailDraftList)
 	s.HTTP.POST("/api/cocktails", middlewareHandler.JWTAuthMiddleware(), handler.PostArticle)
 	s.HTTP.POST("/api/cocktail-drafts", middlewareHandler.JWTAuthMiddleware(), handler.PostDraftArticle)
+	s.HTTP.POST("/api/cocktail-drafts/:cocktailID", middlewareHandler.JWTAuthMiddleware(), handler.MakeDraftArticleToFormalArticle)
 	s.HTTP.PUT("/api/cocktail-drafts/:cocktailID", middlewareHandler.JWTAuthMiddleware(), handler.UpdateDraftArticle)
 	s.HTTP.DELETE("/api/cocktail-drafts/:cocktailID", middlewareHandler.JWTAuthMiddleware(), handler.DeleteDraftArticle)
 }
@@ -468,6 +469,45 @@ func (co *CocktailHandler) PostDraftArticle(c *gin.Context) {
 	err := co.CocktailUsecase.Store(c, &cocktail, ingredients, steps, images, userId)
 	if err != nil {
 		service.GetLoggerEntry(co.Service.Logger, api, request).Errorf("store article failed - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
+	util.PackResponseWithData(c, http.StatusCreated, nil, domain.GetErrorCode(nil), "")
+}
+
+// swagger:operation POST /cocktail-drafts/{id} cocktail makeCocktailDraftToFormal
+// ---
+// summary: Make cocktail draft article to formal article.
+// description: Make cocktail draft article to formal article.
+//
+// security:
+// - Bearer: [apiKey]
+//
+// parameters:
+// - name: id
+//   in: path
+//   required: true
+//   type: integer
+//   example: 123456
+//
+// responses:
+//  "200": success
+func (co *CocktailHandler) MakeDraftArticleToFormalArticle(c *gin.Context) {
+	userId := c.GetInt64("user_id")
+	cocktailID := c.Param("cocktailID")
+	api := "POST /cocktail-drafts/" + cocktailID
+
+	cocktailIDNumber, err := strconv.ParseInt(cocktailID, 10, 64)
+	if err != nil {
+		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("parameter illegal - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
+	err = co.CocktailUsecase.MakeDraftToFormal(c, cocktailIDNumber, userId)
+	if err != nil {
+		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("make draft to formal failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}

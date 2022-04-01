@@ -19,6 +19,7 @@ const (
 	CodeTokenExpired            = "A0004"
 	CodeCocktailNotFound        = "B0001"
 	CodeCocktailDraftIsMaximum  = "B0002"
+	CodeCocktailNotFinished     = "B0003"
 	CodeFileTypeIllegal         = "F0001"
 	CodeFileSizeIllegal         = "F0002"
 	CodeInternalError           = "S0001"
@@ -37,6 +38,7 @@ var (
 	ErrPasswordNotMatch         = errors.New("password not match")
 	ErrCocktailNotFound         = errors.New("cocktail not found")
 	ErrorCocktailDraftIsMaximum = errors.New("cocktail draft is maximum")
+	ErrorCocktailNotFinished    = errors.New("cocktail not finished")
 	ErrTokenExpired             = errors.New("token expired")
 	ErrCodeFileTypeIllegal      = errors.New("illegal file type")
 	ErrCodeFileSizeIllegal      = errors.New("illegal file size")
@@ -75,6 +77,8 @@ func GetErrorCode(err error) string {
 		return CodeCocktailNotFound
 	case ErrorCocktailDraftIsMaximum:
 		return CodeCocktailDraftIsMaximum
+	case ErrorCocktailNotFinished:
+		return CodeCocktailNotFinished
 	case ErrCodeFileTypeIllegal:
 		return CodeFileTypeIllegal
 	case ErrCodeFileSizeIllegal:
@@ -113,6 +117,8 @@ func GetStatusCode(err error) int {
 	case ErrCocktailNotFound:
 		return http.StatusNotFound
 	case ErrorCocktailDraftIsMaximum:
+		return http.StatusBadRequest
+	case ErrorCocktailNotFinished:
 		return http.StatusBadRequest
 	case ErrCodeFileTypeIllegal:
 		return http.StatusForbidden
