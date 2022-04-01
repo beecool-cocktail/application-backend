@@ -14,7 +14,7 @@ type Configure struct {
 	DB      *mysqlConfig
 	HTTP    *httpConfig
 	Redis   *redisConfig
-	Others  *otherConfig
+	Others  *OtherConfig
 }
 
 type loggerConfig struct {
@@ -56,7 +56,7 @@ type redisConfig struct {
 	PoolSize           int
 }
 
-type otherConfig struct {
+type OtherConfig struct {
 	GoogleOAuth2 *GoogleOAuth2
 	File         *File
 }

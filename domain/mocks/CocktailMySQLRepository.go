@@ -95,6 +95,27 @@ func (_m *CocktailMySQLRepository) StoreTx(ctx context.Context, tx *gorm.DB, c *
 	return r0
 }
 
+// UpdateCategoryTx provides a mock function with given fields: ctx, tx, c
+func (_m *CocktailMySQLRepository) UpdateCategoryTx(ctx context.Context, tx *gorm.DB, c *domain.Cocktail) (int64, error) {
+	ret := _m.Called(ctx, tx, c)
+
+	var r0 int64
+	if rf, ok := ret.Get(0).(func(context.Context, *gorm.DB, *domain.Cocktail) int64); ok {
+		r0 = rf(ctx, tx, c)
+	} else {
+		r0 = ret.Get(0).(int64)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, *gorm.DB, *domain.Cocktail) error); ok {
+		r1 = rf(ctx, tx, c)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // UpdateTx provides a mock function with given fields: ctx, tx, c
 func (_m *CocktailMySQLRepository) UpdateTx(ctx context.Context, tx *gorm.DB, c *domain.Cocktail) (int64, error) {
 	ret := _m.Called(ctx, tx, c)

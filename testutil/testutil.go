@@ -2,6 +2,7 @@ package testutil
 
 import (
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/beecool-cocktail/application-backend/service"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
@@ -12,6 +13,24 @@ const (
 	UserID  int64  = 1
 	Account string = "Andy"
 )
+
+func GetService() *service.Service {
+
+	mockService := &service.Service{
+		Configure: &service.Configure{
+			Others: &service.OtherConfig{
+				File: &service.File{
+					Image: &service.Image{
+						PathInDB:  "mock/images",
+						PathInURL: "mock/",
+					},
+				},
+			},
+		},
+	}
+
+	return mockService
+}
 
 func GetLogger() *logrus.Logger {
 	log := logrus.New()
@@ -45,7 +64,7 @@ func BeforeEach() (*gorm.DB, sqlmock.Sqlmock, error) {
 	}
 
 	gormDB, err := gorm.Open(mysql.New(mysql.Config{
-		Conn: db,
+		Conn:                      db,
 		SkipInitializeWithVersion: true,
 	}), &gorm.Config{})
 	if err != nil {

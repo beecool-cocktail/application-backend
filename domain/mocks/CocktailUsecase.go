@@ -58,6 +58,20 @@ func (_m *CocktailUsecase) GetAllWithFilter(ctx context.Context, filter map[stri
 	return r0, r1, r2
 }
 
+// MakeDraftToFormal provides a mock function with given fields: ctx, cocktailID, userID
+func (_m *CocktailUsecase) MakeDraftToFormal(ctx context.Context, cocktailID int64, userID int64) error {
+	ret := _m.Called(ctx, cocktailID, userID)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64, int64) error); ok {
+		r0 = rf(ctx, cocktailID, userID)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // QueryByCocktailID provides a mock function with given fields: ctx, id
 func (_m *CocktailUsecase) QueryByCocktailID(ctx context.Context, id int64) (domain.APICocktail, error) {
 	ret := _m.Called(ctx, id)
