@@ -31,14 +31,14 @@ func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase, socialAc
 		SocialAccountUsecase: socialAccountUsecase,
 	}
 
-	s.HTTP.GET("/api/google-login", handler.SocialLogin)
-	s.HTTP.POST("/api/google-authenticate", handler.GoogleAuthenticate)
-	s.HTTP.POST("/api/user/logout", handler.Logout)
-	s.HTTP.GET("/api/user/info", middlewareHandler.JWTAuthMiddleware(), handler.GetUserInfo)
-	s.HTTP.POST("/api/user/edit-info", middlewareHandler.JWTAuthMiddleware(), handler.UpdateUserInfo)
+	s.HTTP.GET("/api/auth/google-login", handler.SocialLogin)
+	s.HTTP.POST("/api/auth/google-authenticate", handler.GoogleAuthenticate)
+	s.HTTP.POST("/api/auth/logout", handler.Logout)
+	s.HTTP.GET("/api/user/current", middlewareHandler.JWTAuthMiddleware(), handler.GetUserInfo)
+	s.HTTP.PUT("/api/user/current", middlewareHandler.JWTAuthMiddleware(), handler.UpdateUserInfo)
 }
 
-// swagger:route GET /google-login login googleLogin
+// swagger:route GET /auth/google-login login googleLogin
 //
 // Login with google OAuth2
 //
@@ -61,7 +61,7 @@ func (u *UserHandler) SocialLogin(c *gin.Context) {
 	c.Redirect(http.StatusTemporaryRedirect, url)
 }
 
-// swagger:operation POST /google-authenticate login googleAuthenticateRequest
+// swagger:operation POST /auth/google-authenticate login googleAuthenticateRequest
 // ---
 // summary: Get access token.
 // description: Use Code to exchange access token.
@@ -99,7 +99,7 @@ func (u *UserHandler) GoogleAuthenticate(c *gin.Context) {
 	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
 }
 
-// swagger:operation POST /user/logout user logoutRequest
+// swagger:operation POST /auth/logout user logoutRequest
 // ---
 // summary: User logout.
 // description: make token invalid.
@@ -125,7 +125,7 @@ func (u *UserHandler) Logout(c *gin.Context) {
 	util.PackResponseWithData(c, http.StatusOK, nil, domain.GetErrorCode(nil), "")
 }
 
-// swagger:operation GET /user/info user info
+// swagger:operation GET /user/current user info
 // ---
 // summary: Get user information.
 // description: Get user id, name, email, numberOfPost, numberOfCollection and photo.
@@ -161,7 +161,7 @@ func (u *UserHandler) GetUserInfo(c *gin.Context) {
 	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
 }
 
-// swagger:operation POST /user/edit-info user updateUserInfoRequest
+// swagger:operation PUT /user/current user updateUserInfoRequest
 // ---
 // summary: Edit user information.
 // description: Edit user name and collection of publicity status.
@@ -205,9 +205,9 @@ func (u *UserHandler) UpdateUserInfo(c *gin.Context) {
 
 	err := u.UserUsecase.UpdateUserInfo(c,
 		&domain.User{
-		ID:                 userId,
-		Name:               request.Name,
-		IsCollectionPublic: request.IsCollectionPublic,
+			ID:                 userId,
+			Name:               request.Name,
+			IsCollectionPublic: request.IsCollectionPublic,
 		},
 		&userImage)
 	if err != nil {
