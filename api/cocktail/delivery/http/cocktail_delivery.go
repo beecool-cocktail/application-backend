@@ -32,7 +32,7 @@ func NewCocktailHandler(s *service.Service, cocktailUsecase domain.CocktailUseca
 	s.HTTP.POST("/api/cocktail-drafts", middlewareHandler.JWTAuthMiddleware(), handler.PostDraftArticle)
 	s.HTTP.POST("/api/cocktail-drafts/:cocktailID", middlewareHandler.JWTAuthMiddleware(), handler.MakeDraftArticleToFormalArticle)
 	s.HTTP.PUT("/api/cocktail-drafts/:cocktailID", middlewareHandler.JWTAuthMiddleware(), handler.UpdateDraftArticle)
-	s.HTTP.DELETE("/api/cocktail-drafts/:cocktailID", middlewareHandler.JWTAuthMiddleware(), handler.DeleteDraftArticle)
+	s.HTTP.PATCH("/api/cocktail-drafts", middlewareHandler.JWTAuthMiddleware(), handler.DeleteDraftArticle)
 }
 
 // swagger:operation GET /cocktails/{id} cocktail getCocktailByIDRequest
@@ -627,20 +627,13 @@ func (co *CocktailHandler) UpdateDraftArticle(c *gin.Context) {
 	util.PackResponseWithData(c, http.StatusCreated, nil, domain.GetErrorCode(nil), "")
 }
 
-// swagger:operation DELETE /cocktail-drafts/{id} cocktail deleteCocktailDraft
+// swagger:operation PATCH /cocktail-drafts cocktail deleteDraftArticleRequest
 // ---
 // summary: DELETE cocktail draft article.
 // description: DELETE cocktail draft article.
 //
 // security:
 // - Bearer: [apiKey]
-//
-// parameters:
-// - name: id
-//   in: path
-//   required: true
-//   type: integer
-//   example: 123456
 //
 // responses:
 //  "200": success
@@ -649,18 +642,20 @@ func (co *CocktailHandler) DeleteDraftArticle(c *gin.Context) {
 	cocktailID := c.Param("cocktailID")
 	api := "DELETE /cocktail-drafts/" + cocktailID
 
-	cocktailIDNumber, err := strconv.ParseInt(cocktailID, 10, 64)
-	if err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("parameter illegal - %s", err)
-		util.PackResponseWithError(c, err, err.Error())
+	var request viewmodels.DeleteDraftArticleRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		service.GetLoggerEntry(co.Service.Logger, api, request).Errorf("parameter illegal - %s", err)
+		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
 		return
 	}
 
-	err = co.CocktailUsecase.Delete(c, cocktailIDNumber, userId)
-	if err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("delete draft cocktail failed - %s", err)
-		util.PackResponseWithError(c, err, err.Error())
-		return
+	for _, ids := range request.DeletedIds {
+		err := co.CocktailUsecase.Delete(c, ids, userId)
+		if err != nil {
+			service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("delete draft cocktail failed - %s", err)
+			util.PackResponseWithError(c, err, err.Error())
+			return
+		}
 	}
 
 	util.PackResponseWithData(c, http.StatusCreated, nil, domain.GetErrorCode(nil), "")

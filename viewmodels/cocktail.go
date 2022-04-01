@@ -155,3 +155,7 @@ type UpdateDraftArticleRequest struct {
 	//example: Very good to drink
 	Description string `json:"description"`
 }
+
+type DeleteDraftArticleRequest struct {
+	DeletedIds []int64 `json:"deleted_ids"`
+}

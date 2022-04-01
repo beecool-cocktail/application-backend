@@ -39,7 +39,7 @@ func (h *Handler) CORSMiddleware() gin.HandlerFunc {
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Content-OrderType", "application/json")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", " Content-Type,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Authorization")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE, PATCH")
 
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)

@@ -105,3 +105,9 @@ type swaggerUpdateDraftArticleRequest struct {
 	// in: body
 	viewmodels.UpdateDraftArticleRequest
 }
+
+// swagger:parameters deleteDraftArticleRequest
+type swaggerDeleteDraftArticleRequest struct {
+	// in: body
+	Body viewmodels.DeleteDraftArticleRequest
+}
