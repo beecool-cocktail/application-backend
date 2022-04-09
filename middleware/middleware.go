@@ -124,6 +124,54 @@ func (h *Handler) JWTAuthMiddleware() func(c *gin.Context) {
 	}
 }
 
+// JWTAuthMiddlewareIfExist Middleware of JWT if exist
+// some api needs to authenticate specific resource status if they are login
+func (h *Handler) JWTAuthMiddlewareIfExist() func(c *gin.Context) {
+	return func(c *gin.Context) {
+		// Get token from Header.Authorization field.
+		authHeader := c.Request.Header.Get("Authorization")
+		if authHeader == "" {
+			c.Set("auth", false)
+			return
+		}
+
+		parts := strings.SplitN(authHeader, " ", 2)
+		if !(len(parts) == 2 && parts[0] == "Bearer") {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, viewmodels.ResponseData{ErrorCode: domain.GetErrorCode(domain.ErrTokenExpired), ErrorMessage: domain.ErrTokenExpired.Error()})
+			return
+		}
+		// parts[0] is Bearer, parts is token.
+		token := parts[1]
+		mc, err := parseToken(token)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, viewmodels.ResponseData{ErrorCode: domain.GetErrorCode(domain.ErrTokenExpired), ErrorMessage: domain.ErrTokenExpired.Error()})
+			return
+		}
+
+		//key := "admin:admin_id:" + strconv.FormatInt(mc.UserID, 10)
+		//user, err := h.service.Redis.HMGet(key, "access_token").Result()
+		//if err != nil {
+		//	c.AbortWithStatusJSON(http.StatusUnauthorized, viewmodels.ResponseData{ErrorCode: domain.GetErrorCode(domain.ErrTokenExpired), ErrorMessage: domain.ErrTokenExpired.Error()})
+		//	return
+		//}
+		//
+		//serverAccessToken, ok := user[0].(string)
+		//if !ok {
+		//	c.AbortWithStatusJSON(domain.GetStatusCode(domain.ErrTokenExpired), viewmodels.ResponseData{ErrorCode: domain.GetErrorCode(domain.ErrTokenExpired), ErrorMessage: domain.ErrTokenExpired.Error()})
+		//}
+		//
+		//if !isTokenValid(token, serverAccessToken) {
+		//	c.AbortWithStatusJSON(domain.GetStatusCode(domain.ErrTokenExpired), viewmodels.ResponseData{ErrorCode: domain.GetErrorCode(domain.ErrTokenExpired), ErrorMessage: domain.ErrTokenExpired.Error()})
+		//}
+
+		// Store info into Context
+		c.Set("auth", true)
+		c.Set("account", mc.Account)
+		c.Set("user_id", mc.UserID)
+		c.Next()
+	}
+}
+
 func isTokenValid(requestToken string, serverToken string) bool {
 	if requestToken != serverToken {
 		return false
