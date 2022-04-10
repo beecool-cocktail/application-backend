@@ -158,6 +158,27 @@ func (_m *UserMySQLRepository) UpdateNumberOfDraftTx(ctx context.Context, tx *go
 	return r0, r1
 }
 
+// UpdateNumberOfNumberOfCollectionTx provides a mock function with given fields: ctx, tx, d
+func (_m *UserMySQLRepository) UpdateNumberOfNumberOfCollectionTx(ctx context.Context, tx *gorm.DB, d *domain.User) (int64, error) {
+	ret := _m.Called(ctx, tx, d)
+
+	var r0 int64
+	if rf, ok := ret.Get(0).(func(context.Context, *gorm.DB, *domain.User) int64); ok {
+		r0 = rf(ctx, tx, d)
+	} else {
+		r0 = ret.Get(0).(int64)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, *gorm.DB, *domain.User) error); ok {
+		r1 = rf(ctx, tx, d)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // UpdateNumberOfPostTx provides a mock function with given fields: ctx, tx, d
 func (_m *UserMySQLRepository) UpdateNumberOfPostTx(ctx context.Context, tx *gorm.DB, d *domain.User) (int64, error) {
 	ret := _m.Called(ctx, tx, d)

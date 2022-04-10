@@ -14,6 +14,27 @@ type UserRedisRepository struct {
 	mock.Mock
 }
 
+// QueryUserNameByID provides a mock function with given fields: ctx, id
+func (_m *UserRedisRepository) QueryUserNameByID(ctx context.Context, id int64) (string, error) {
+	ret := _m.Called(ctx, id)
+
+	var r0 string
+	if rf, ok := ret.Get(0).(func(context.Context, int64) string); ok {
+		r0 = rf(ctx, id)
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
+		r1 = rf(ctx, id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // Store provides a mock function with given fields: ctx, r
 func (_m *UserRedisRepository) Store(ctx context.Context, r *domain.UserCache) error {
 	ret := _m.Called(ctx, r)
