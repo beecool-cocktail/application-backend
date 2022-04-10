@@ -52,6 +52,7 @@ func NewCocktailHandler(s *service.Service, cocktailUsecase domain.CocktailUseca
 //    "$ref": "#/responses/getCocktailByIDResponse"
 func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 	var response viewmodels.GetCocktailByIDResponse
+	userId := c.GetInt64("user_id")
 	cocktailID := c.Param("cocktailID")
 	api := "/cocktails" + cocktailID
 	cocktailIDNumber, err := strconv.ParseInt(cocktailID, 10, 64)
@@ -61,7 +62,7 @@ func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 		return
 	}
 
-	cocktail, err := co.CocktailUsecase.QueryByCocktailID(c, cocktailIDNumber)
+	cocktail, err := co.CocktailUsecase.QueryByCocktailID(c, cocktailIDNumber, userId)
 	if err != nil {
 		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("query by cocktail id failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
@@ -103,6 +104,7 @@ func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 		IngredientList: ingredients,
 		StepList:       steps,
 		Photos:         photos,
+		IsCollected:    cocktail.IsCollected,
 		CreatedDate:    cocktail.CreatedDate,
 	}
 
@@ -209,6 +211,8 @@ func (co *CocktailHandler) GetCocktailDraftByCocktailID(c *gin.Context) {
 //    "$ref": "#/responses/popularCocktailListResponse"
 func (co *CocktailHandler) CocktailList(c *gin.Context) {
 	api := "/cocktails"
+	userId := c.GetInt64("user_id")
+
 	var response viewmodels.GetPopularCocktailListResponse
 	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
 	if err != nil {
@@ -228,7 +232,8 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 	cocktails, total, err := co.CocktailUsecase.GetAllWithFilter(c, filter, domain.PaginationUsecase{
 		Page:     page,
 		PageSize: pageSize,
-	})
+	},
+		userId)
 	if err != nil {
 		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("get cocktails with filter failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
@@ -258,6 +263,7 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 			Title:          cocktail.Title,
 			Photos:         photos,
 			IngredientList: ingredients,
+			IsCollected:    cocktail.IsCollected,
 			CreatedDate:    cocktail.CreatedDate,
 		}
 
@@ -291,7 +297,8 @@ func (co *CocktailHandler) CocktailDraftList(c *gin.Context) {
 	filter := make(map[string]interface{})
 	filter["user_id"] = userId
 	filter["category"] = cockarticletype.Draft
-	cocktails, total, err := co.CocktailUsecase.GetAllWithFilter(c, filter, domain.PaginationUsecase{})
+	// 草稿沒有收藏功能，userID為0
+	cocktails, total, err := co.CocktailUsecase.GetAllWithFilter(c, filter, domain.PaginationUsecase{}, 0)
 	if err != nil {
 		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("get cocktails with filter failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())

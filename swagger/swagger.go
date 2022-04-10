@@ -111,3 +111,9 @@ type swaggerDeleteDraftArticleRequest struct {
 	// in: body
 	Body viewmodels.DeleteDraftArticleRequest
 }
+
+// swagger:parameters collectArticleRequest
+type swaggerCollectArticleRequest struct {
+	// in: body
+	Body viewmodels.CollectArticleRequest
+}

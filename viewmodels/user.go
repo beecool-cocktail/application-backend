@@ -29,15 +29,33 @@ type UpdateUserInfoRequest struct {
 	// name for this user
 	// required: true
 	// example: Feen Lin
-	Name               string `json:"name" binding:"required"`
+	Name string `json:"name" binding:"required"`
 
 	// public user collection post
 	// required: true
 	// example: false
-	IsCollectionPublic bool   `json:"is_collection_public"`
+	IsCollectionPublic bool `json:"is_collection_public"`
 }
-
 
 type UpdateUserInfoResponse struct {
 	Photo string `json:"photo"`
+}
+
+type CollectArticleRequest struct {
+	// cocktail id
+	// required: true
+	// example: 123456
+	ID int64 `json:"id" binding:"required"`
+}
+
+type GetUserFavoriteCocktailListResponse struct {
+	Total                int64              `json:"total"`
+	FavoriteCocktailList []FavoriteCocktail `json:"favorite_cocktail_list"`
+}
+
+type FavoriteCocktail struct {
+	CocktailID int64  `json:"cocktail_id"`
+	UserName   string `json:"user_name"`
+	Photo      string `json:"photo"`
+	Title      string `json:"title"`
 }

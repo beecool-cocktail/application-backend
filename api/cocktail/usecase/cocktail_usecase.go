@@ -22,6 +22,7 @@ type cocktailUsecase struct {
 	cocktailIngredientMySQLRepo domain.CocktailIngredientMySQLRepository
 	cocktailStepMySQLRepo       domain.CocktailStepMySQLRepository
 	userMySQLRepo               domain.UserMySQLRepository
+	favoriteCocktailMySQL       domain.FavoriteCocktailMySQLRepository
 	transactionRepo             domain.DBTransactionRepository
 }
 
@@ -34,6 +35,7 @@ func NewCocktailUsecase(
 	cocktailIngredientMySQLRepo domain.CocktailIngredientMySQLRepository,
 	cocktailStepMySQLRepo domain.CocktailStepMySQLRepository,
 	userMySQLRepo domain.UserMySQLRepository,
+	favoriteCocktailMySQL domain.FavoriteCocktailMySQLRepository,
 	transactionRepo domain.DBTransactionRepository) domain.CocktailUsecase {
 	return &cocktailUsecase{
 		service:                     s,
@@ -43,6 +45,7 @@ func NewCocktailUsecase(
 		cocktailIngredientMySQLRepo: cocktailIngredientMySQLRepo,
 		cocktailStepMySQLRepo:       cocktailStepMySQLRepo,
 		userMySQLRepo:               userMySQLRepo,
+		favoriteCocktailMySQL:       favoriteCocktailMySQL,
 		transactionRepo:             transactionRepo,
 	}
 }
@@ -108,6 +111,50 @@ func (c *cocktailUsecase) fillCocktailDetails(ctx context.Context, cocktail doma
 	cocktail.UserName = user.Name
 
 	return cocktail, nil
+}
+
+func (c *cocktailUsecase) fillCollectionStatusInDetails(ctx context.Context, cocktail domain.APICocktail, userID int64) (domain.APICocktail, error) {
+
+	favoriteCocktails, _, err := c.favoriteCocktailMySQL.QueryByUserID(ctx, userID, domain.PaginationMySQLRepository{})
+	if err != nil {
+		return domain.APICocktail{}, err
+	}
+
+	for _, favoriteCocktail := range favoriteCocktails {
+		if cocktail.CocktailID == favoriteCocktail.CocktailID {
+			cocktail.IsCollected = true
+		} else {
+			cocktail.IsCollected = false
+		}
+	}
+
+	return cocktail, nil
+}
+
+func (c *cocktailUsecase) fillCollectionStatusInList(ctx context.Context, cocktails []domain.APICocktail, userID int64) ([]domain.APICocktail, error) {
+
+	var apiCocktails []domain.APICocktail
+	favoriteCocktails, _, err := c.favoriteCocktailMySQL.QueryByUserID(ctx, userID, domain.PaginationMySQLRepository{})
+	if err != nil {
+		return []domain.APICocktail{}, err
+	}
+
+	favoriteCocktailsMap := make(map[int64]bool)
+	for _, favoriteCocktail := range favoriteCocktails {
+		favoriteCocktailsMap[favoriteCocktail.CocktailID] = true
+	}
+
+	for _, cocktail := range cocktails {
+		if _, ok := favoriteCocktailsMap[cocktail.CocktailID]; ok {
+			cocktail.IsCollected = true
+		} else {
+			cocktail.IsCollected = false
+		}
+
+		apiCocktails = append(apiCocktails, cocktail)
+	}
+
+	return apiCocktails, nil
 }
 
 func (c *cocktailUsecase) getNeedDeletedPhoto(oldPhotos []domain.CocktailPhoto,
@@ -208,7 +255,9 @@ func (c *cocktailUsecase) editPhoto(ctx context.Context, tx *gorm.DB, image *dom
 	return nil
 }
 
-func (c *cocktailUsecase) GetAllWithFilter(ctx context.Context, filter map[string]interface{}, pagination domain.PaginationUsecase) ([]domain.APICocktail, int64, error) {
+func (c *cocktailUsecase) GetAllWithFilter(ctx context.Context, filter map[string]interface{},
+	pagination domain.PaginationUsecase, userID int64) ([]domain.APICocktail, int64, error) {
+
 	sortByDir := make(map[string]sortbydir.SortByDir)
 	for sort, dir := range pagination.SortByDir {
 		sortByDir[sort] = sortbydir.ParseSortByDirByInt(dir)
@@ -242,12 +291,19 @@ func (c *cocktailUsecase) GetAllWithFilter(ctx context.Context, filter map[strin
 		return []domain.APICocktail{}, 0, err
 	}
 
+	if userID != 0 {
+		apiCocktails, err = c.fillCollectionStatusInList(ctx, apiCocktails, userID)
+		if err != nil {
+			return []domain.APICocktail{}, 0, err
+		}
+	}
+
 	return apiCocktails, total, nil
 }
 
-func (c *cocktailUsecase) QueryByCocktailID(ctx context.Context, id int64) (domain.APICocktail, error) {
+func (c *cocktailUsecase) QueryByCocktailID(ctx context.Context, cocktailID, userID int64) (domain.APICocktail, error) {
 
-	cocktail, err := c.cocktailMySQLRepo.QueryByCocktailID(ctx, id)
+	cocktail, err := c.cocktailMySQLRepo.QueryByCocktailID(ctx, cocktailID)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return domain.APICocktail{}, domain.ErrCocktailNotFound
 	} else if err != nil {
@@ -265,6 +321,13 @@ func (c *cocktailUsecase) QueryByCocktailID(ctx context.Context, id int64) (doma
 	apiCocktail, err = c.fillCocktailDetails(ctx, apiCocktail)
 	if err != nil {
 		return domain.APICocktail{}, err
+	}
+
+	if userID != 0 {
+		apiCocktail, err = c.fillCollectionStatusInDetails(ctx, apiCocktail, userID)
+		if err != nil {
+			return domain.APICocktail{}, err
+		}
 	}
 
 	return apiCocktail, nil

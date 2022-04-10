@@ -8,6 +8,8 @@ import (
 	_cocktailFileRepo "github.com/beecool-cocktail/application-backend/api/cocktail/repository/file"
 	_cocktailMySQLRepo "github.com/beecool-cocktail/application-backend/api/cocktail/repository/mysql"
 	_cocktailUsecase "github.com/beecool-cocktail/application-backend/api/cocktail/usecase"
+	_favoriteCocktailMySQLRepo "github.com/beecool-cocktail/application-backend/api/favoritecock/repository/mysql"
+	_favoriteCocktailUsecase "github.com/beecool-cocktail/application-backend/api/favoritecock/usecase"
 	_socialAccountGoogleOAuth "github.com/beecool-cocktail/application-backend/api/social-account/repository/google-oauth2"
 	_socialAccountMySQLRepo "github.com/beecool-cocktail/application-backend/api/social-account/repository/mysql"
 	_socialAccountUsecase "github.com/beecool-cocktail/application-backend/api/social-account/usecase"
@@ -60,6 +62,7 @@ func initializeRoutes(s *service.Service) {
 	cocktailIngredientMySQLRepo := _cocktailIngredientMySQLRepo.NewMySQLCocktailIngredientRepository(s.DB)
 	cocktailStepMySQLRepo := _cocktailStepMySQLRepo.NewMySQLCocktailStepRepository(s.DB)
 	cocktailPhotoMySQLRepo := _cocktailPhotoMySQLRepo.NewMySQLCocktailStepRepository(s.DB)
+	favoriteCocktailMySQLRepo := _favoriteCocktailMySQLRepo.NewMySQLFavoriteCocktailRepository(s.DB)
 
 	userRedisRepo := _userCache.NewRedisUserRepository(s.Redis)
 
@@ -72,10 +75,11 @@ func initializeRoutes(s *service.Service) {
 	userUsecase := _userUsecase.NewUserUsecase(s, userMySQLRepo, userRedisRepo, userFileRepo, transactionRepo)
 	socialAccountUsecase := _socialAccountUsecase.NewSocialAccountUsecase(userMySQLRepo, userRedisRepo,
 		socialAccountMySQLRepo, socialAccountGoogleOAuthRepo)
+	favoriteCocktailUsecase := _favoriteCocktailUsecase.NewFavoriteCocktailUsecase(favoriteCocktailMySQLRepo, cocktailMySQLRepo, cocktailPhotoMySQLRepo, userMySQLRepo, userRedisRepo, transactionRepo)
 	cocktailUsecase := _cocktailUsecase.NewCocktailUsecase(s, cocktailMySQLRepo, cocktailFileMySQL,
-		cocktailPhotoMySQLRepo, cocktailIngredientMySQLRepo, cocktailStepMySQLRepo, userMySQLRepo, transactionRepo)
+		cocktailPhotoMySQLRepo, cocktailIngredientMySQLRepo, cocktailStepMySQLRepo, userMySQLRepo, favoriteCocktailMySQLRepo, transactionRepo)
 
 	// Delivery dependency injection
-	_userHandlerHttpDelivery.NewUserHandler(s, userUsecase, socialAccountUsecase, *middlewareHandler)
+	_userHandlerHttpDelivery.NewUserHandler(s, userUsecase, socialAccountUsecase, favoriteCocktailUsecase, *middlewareHandler)
 	_cocktailHandlerHttpDelivery.NewCocktailHandler(s, cocktailUsecase, *middlewareHandler)
 }

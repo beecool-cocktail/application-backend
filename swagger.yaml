@@ -31,6 +31,18 @@ definitions:
         x-go-name: Description
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  CollectArticleRequest:
+    properties:
+      id:
+        description: cocktail id
+        example: 123456
+        format: int64
+        type: integer
+        x-go-name: ID
+    required:
+    - id
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   DeleteDraftArticleRequest:
     properties:
       deleted_ids:
@@ -87,6 +99,9 @@ definitions:
           $ref: '#/definitions/CocktailIngredientWithoutID'
         type: array
         x-go-name: IngredientList
+      is_collected:
+        type: boolean
+        x-go-name: IsCollected
       photos:
         items:
           $ref: '#/definitions/CocktailPhotoWithID'
@@ -278,6 +293,9 @@ definitions:
           $ref: '#/definitions/CocktailIngredientWithoutID'
         type: array
         x-go-name: IngredientList
+      is_collected:
+        type: boolean
+        x-go-name: IsCollected
       photos:
         items:
           type: string
@@ -675,6 +693,62 @@ paths:
           $ref: '#/definitions/LogoutRequest'
       responses: {}
       summary: User logout.
+      tags:
+      - user
+  /users/favorite-cocktails:
+    get:
+      description: Get user favorite cocktail article list.
+      operationId: getUserFavoriteList
+      parameters:
+      - example: 1
+        in: query
+        name: page
+        required: true
+        type: integer
+      - example: 10
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/getUserInfoResponse'
+      security:
+      - Bearer:
+        - apiKey
+      summary: Get user favorite cocktail article list.
+      tags:
+      - user
+    post:
+      description: Add cocktail article to favorite list.
+      operationId: collectArticleRequest
+      parameters:
+      - in: body
+        name: Body
+        schema:
+          $ref: '#/definitions/CollectArticleRequest'
+      responses: {}
+      security:
+      - Bearer:
+        - apiKey
+      summary: Add cocktail article to favorite list.
+      tags:
+      - user
+  /users/favorite-cocktails/{id}:
+    delete:
+      description: Remove cocktail article from favorite list.
+      operationId: removeCollectionArticle
+      parameters:
+      - example: 123456
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses: {}
+      security:
+      - Bearer:
+        - apiKey
+      summary: Remove cocktail article from favorite list.
       tags:
       - user
 responses:

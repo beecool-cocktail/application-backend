@@ -24,6 +24,10 @@ type draftNumbers struct {
 	NumberOfDraft int `structs:"number_of_draft"`
 }
 
+type collectionsNumbers struct {
+	NumberOfCollection int `structs:"number_of_collection"`
+}
+
 type userMySQLRepository struct {
 	db *gorm.DB
 }
@@ -109,6 +113,17 @@ func (u *userMySQLRepository) UpdateNumberOfDraftTx(ctx context.Context, tx *gor
 	var user domain.User
 	updateColumn := draftNumbers{
 		NumberOfDraft: d.NumberOfDraft,
+	}
+
+	res := tx.Model(&user).Where("id = ?", d.ID).Updates(structs.Map(updateColumn))
+
+	return res.RowsAffected, res.Error
+}
+
+func (u *userMySQLRepository) UpdateNumberOfNumberOfCollectionTx(ctx context.Context, tx *gorm.DB, d *domain.User) (int64, error) {
+	var user domain.User
+	updateColumn := collectionsNumbers{
+		NumberOfCollection: d.NumberOfCollection,
 	}
 
 	res := tx.Model(&user).Where("id = ?", d.ID).Updates(structs.Map(updateColumn))

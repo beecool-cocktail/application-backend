@@ -25,7 +25,7 @@ type User struct {
 type UserCache struct {
 	Id           int64  `structs:"id"`
 	Account      string `structs:"account"`
-	Name         string `structs:"Name"`
+	Name         string `structs:"name"`
 	AccessToken  string `structs:"access_token"`
 	RefreshToken string `structs:"refresh_token"`
 	TokenExpire  string `structs:"token_expire"`
@@ -48,12 +48,14 @@ type UserMySQLRepository interface {
 	UpdateImageTx(ctx context.Context, tx *gorm.DB, d *UserImage) (int64, error)
 	UpdateNumberOfPostTx(ctx context.Context, tx *gorm.DB, d *User) (int64, error)
 	UpdateNumberOfDraftTx(ctx context.Context, tx *gorm.DB, d *User) (int64, error)
+	UpdateNumberOfNumberOfCollectionTx(ctx context.Context, tx *gorm.DB, d *User) (int64, error)
 }
 
 type UserRedisRepository interface {
 	Store(ctx context.Context, r *UserCache) error
 	UpdateToken(ctx context.Context, r *UserCache) error
 	UpdateBasicInfo(ctx context.Context, r *UserCache) error
+	QueryUserNameByID(ctx context.Context, id int64) (string, error)
 }
 
 type UserFileRepository interface {

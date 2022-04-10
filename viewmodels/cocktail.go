@@ -22,6 +22,7 @@ type PopularCocktailList struct {
 	Title          string                        `json:"title"`
 	Photos         []string                      `json:"photos"`
 	IngredientList []CocktailIngredientWithoutID `json:"ingredient_list"`
+	IsCollected    bool                          `json:"is_collected"`
 	CreatedDate    string                        `json:"created_date"`
 }
 
@@ -122,6 +123,7 @@ type GetCocktailByIDResponse struct {
 	Description    string                        `json:"description"`
 	IngredientList []CocktailIngredientWithoutID `json:"ingredient_list"`
 	StepList       []CocktailStepWithoutID       `json:"step_list"`
+	IsCollected    bool                          `json:"is_collected"`
 	CreatedDate    string                        `json:"created_date"`
 }
 

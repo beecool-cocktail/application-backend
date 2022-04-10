@@ -26,17 +26,17 @@ func NewRedisUserRepository(redis *redis.Client) domain.UserRedisRepository {
 }
 
 func (u *userRedisRepository) Store(ctx context.Context, r *domain.UserCache) error {
-	key := "user:user_id" + strconv.FormatInt(r.Id, 10)
+	key := "user:user_id:" + strconv.FormatInt(r.Id, 10)
 	u.redis.HMSet(key, structs.Map(r))
 
 	return nil
 }
 
 func (u *userRedisRepository) UpdateToken(ctx context.Context, r *domain.UserCache) error {
-	key := "user:user_id" + strconv.FormatInt(r.Id, 10)
+	key := "user:user_id:" + strconv.FormatInt(r.Id, 10)
 
 	token := userToken{
-		AccessToken: r.AccessToken,
+		AccessToken:  r.AccessToken,
 		RefreshToken: r.RefreshToken,
 	}
 
@@ -46,7 +46,7 @@ func (u *userRedisRepository) UpdateToken(ctx context.Context, r *domain.UserCac
 }
 
 func (u *userRedisRepository) UpdateBasicInfo(ctx context.Context, r *domain.UserCache) error {
-	key := "user:user_id" + strconv.FormatInt(r.Id, 10)
+	key := "user:user_id:" + strconv.FormatInt(r.Id, 10)
 
 	token := userInfo{
 		Name: r.Name,
@@ -57,3 +57,14 @@ func (u *userRedisRepository) UpdateBasicInfo(ctx context.Context, r *domain.Use
 	return nil
 }
 
+func (u *userRedisRepository) QueryUserNameByID(ctx context.Context, id int64) (string, error) {
+	key := "user:user_id:" + strconv.FormatInt(id, 10)
+
+	value, err := u.redis.HGet(key, "name").Result()
+	if err == redis.Nil {
+		return value, err
+	} else if err != nil {
+		return value, err
+	}
+	return value, nil
+}
