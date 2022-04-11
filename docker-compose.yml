@@ -29,6 +29,17 @@ services:
     volumes:
 #      - ${DATA_DIR}/redis_data/redis:/data
       - ${REDIS_CONFIG}:/etc/redis.conf
+      - ./dockerconf/redis/redis_init.lua:/data/redis_init.lua
+    command:
+      - /bin/sh
+      - -c
+      - |
+        nohup redis-server /etc/redis.conf &
+        sleep 5
+        echo "adding default key value"
+        redis-cli --eval ./redis_init.lua
+        # this will keep container running
+        tail -f /dev/null
 
   server:
     image: blawhi2435/whispering-corner:${APPLICATION_VERSION}
