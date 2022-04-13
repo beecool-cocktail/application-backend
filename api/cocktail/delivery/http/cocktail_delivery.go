@@ -540,7 +540,6 @@ func (co *CocktailHandler) MakeDraftArticleToFormalArticle(c *gin.Context) {
 //   in: body
 //   schema:
 //     "$ref": "#/definitions/updateDraftArticleRequest"
-//   required: true
 //
 // responses:
 //  "200": success

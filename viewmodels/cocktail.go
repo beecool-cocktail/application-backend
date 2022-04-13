@@ -150,8 +150,10 @@ type UpdateDraftArticleRequest struct {
 	//example: Gin Tonic
 	Name string `json:"name"`
 
+	//required: true
 	IngredientList []CocktailIngredientWithoutID `json:"ingredient_list"`
 
+	//required: true
 	StepList []CocktailStepWithoutID `json:"step_list"`
 
 	//example: Very good to drink

@@ -1,6 +1,7 @@
 package viewmodels
 
 type GoogleAuthenticateRequest struct {
+	//required: true
 	Code string `json:"code"`
 }
 
@@ -9,6 +10,7 @@ type GoogleAuthenticateResponse struct {
 }
 
 type LogoutRequest struct {
+	//required: true
 	UserID int64 `json:"user_id"`
 }
 

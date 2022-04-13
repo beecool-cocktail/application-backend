@@ -13,7 +13,11 @@ type swaggerPopularCocktailListRequest struct {
 // swagger:response popularCocktailListResponse
 type swaggerPopularCocktailListResponse struct {
 	// in: body
-	Body viewmodels.GetPopularCocktailListResponse
+	Body struct {
+		ErrorCode    string                                    `json:"error_code"`
+		ErrorMessage string                                    `json:"error_message"`
+		Data         viewmodels.GetPopularCocktailListResponse `json:"data"`
+	}
 }
 
 // swagger:parameters getDraftCocktailListRequest
@@ -25,7 +29,11 @@ type swaggerGetDraftCocktailListRequest struct {
 // swagger:response getDraftCocktailListResponse
 type swaggerGetDraftCocktailListResponse struct {
 	// in: body
-	Body viewmodels.GetDraftCocktailListResponse
+	Body struct {
+		ErrorCode    string                                  `json:"error_code"`
+		ErrorMessage string                                  `json:"error_message"`
+		Data         viewmodels.GetDraftCocktailListResponse `json:"data"`
+	}
 }
 
 // swagger:parameters googleAuthenticateRequest
@@ -37,7 +45,11 @@ type swaggerGoogleAuthenticateRequest struct {
 // swagger:response googleAuthenticateResponse
 type swaggerGoogleAuthenticateResponse struct {
 	// in: body
-	Body viewmodels.GoogleAuthenticateResponse
+	Body struct {
+		ErrorCode    string                                `json:"error_code"`
+		ErrorMessage string                                `json:"error_message"`
+		Data         viewmodels.GoogleAuthenticateResponse `json:"data"`
+	}
 }
 
 // swagger:parameters logoutRequest
@@ -49,7 +61,11 @@ type swaggerLogoutRequest struct {
 // swagger:response getUserInfoResponse
 type swaggerGetUserInfoResponse struct {
 	// in: body
-	Body viewmodels.GetUserInfoResponse
+	Body struct {
+		ErrorCode    string                         `json:"error_code"`
+		ErrorMessage string                         `json:"error_message"`
+		Data         viewmodels.GetUserInfoResponse `json:"data"`
+	}
 }
 
 // swagger:parameters updateUserInfoRequest
@@ -61,7 +77,11 @@ type swaggerUpdateUserInfoRequest struct {
 // swagger:response updateUserPhotoResponse
 type swaggerUpdateUserPhotoResponse struct {
 	// in: body
-	Body viewmodels.UpdateUserInfoResponse
+	Body struct {
+		ErrorCode    string                            `json:"error_code"`
+		ErrorMessage string                            `json:"error_message"`
+		Data         viewmodels.UpdateUserInfoResponse `json:"data"`
+	}
 }
 
 // swagger:parameters postArticleRequest
@@ -85,7 +105,11 @@ type swaggerGetCocktailByIDRequest struct {
 // swagger:response getCocktailByIDResponse
 type swaggerGetCocktailByIDResponse struct {
 	// in: body
-	Body viewmodels.GetCocktailByIDResponse
+	Body struct {
+		ErrorCode    string                             `json:"error_code"`
+		ErrorMessage string                             `json:"error_message"`
+		Data         viewmodels.GetCocktailByIDResponse `json:"data"`
+	}
 }
 
 // swagger:parameters getCocktailDraftByIDRequest
@@ -97,7 +121,11 @@ type swaggerGetCocktailDraftByIDRequest struct {
 // swagger:response getCocktailDraftByIDResponse
 type swaggerGetCocktailDraftByIDResponse struct {
 	// in: body
-	Body viewmodels.GetCocktailDraftByIDResponse
+	Body struct {
+		ErrorCode    string                                  `json:"error_code"`
+		ErrorMessage string                                  `json:"error_message"`
+		Data         viewmodels.GetCocktailDraftByIDResponse `json:"data"`
+	}
 }
 
 // swagger:model updateDraftArticleRequest
@@ -116,4 +144,14 @@ type swaggerDeleteDraftArticleRequest struct {
 type swaggerCollectArticleRequest struct {
 	// in: body
 	Body viewmodels.CollectArticleRequest
+}
+
+// swagger:response getUserFavoriteCocktailListResponse
+type swaggerGetUserFavoriteCocktailListResponse struct {
+	// in: body
+	Body struct {
+		ErrorCode    string                                         `json:"error_code"`
+		ErrorMessage string                                         `json:"error_message"`
+		Data         viewmodels.GetUserFavoriteCocktailListResponse `json:"data"`
+	}
 }

@@ -311,45 +311,15 @@ func (u *UserHandler) RemoveCollectionArticle(c *gin.Context) {
 // security:
 // - Bearer: [apiKey]
 //
-// parameters:
-// - name: page
-//   in: query
-//   required: true
-//   type: integer
-//   example: 1
-//
-// - name: page_size
-//   in: query
-//   required: true
-//   type: integer
-//   example: 10
-//
 // responses:
 //  "200":
-//    "$ref": "#/responses/getUserInfoResponse"
+//    "$ref": "#/responses/getUserFavoriteCocktailListResponse"
 func (u *UserHandler) GetUserFavoriteList(c *gin.Context) {
 	api := "/user/info"
 	var response viewmodels.GetUserFavoriteCocktailListResponse
 	userId := c.GetInt64("user_id")
 
-	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
-	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, nil).Errorf("parameter illegal - %s", err)
-		util.PackResponseWithError(c, err, err.Error())
-		return
-	}
-	pageSize, err := strconv.Atoi(c.DefaultQuery("page_size", "10"))
-	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, nil).Errorf("parameter illegal - %s", err)
-		util.PackResponseWithError(c, err, err.Error())
-		return
-	}
-
-	favoriteCocktails, total, err := u.FavoriteCocktailUsecase.QueryByUserID(c, userId,
-		domain.PaginationUsecase{
-			Page:     page,
-			PageSize: pageSize,
-		})
+	favoriteCocktails, total, err := u.FavoriteCocktailUsecase.QueryByUserID(c, userId, domain.PaginationUsecase{})
 	if err != nil {
 		service.GetLoggerEntry(u.Logger, api, nil).Errorf("query by id failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())

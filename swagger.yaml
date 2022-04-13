@@ -70,6 +70,23 @@ definitions:
         x-go-name: Title
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  FavoriteCocktail:
+    properties:
+      cocktail_id:
+        format: int64
+        type: integer
+        x-go-name: CocktailID
+      photo:
+        type: string
+        x-go-name: Photo
+      title:
+        type: string
+        x-go-name: Title
+      user_name:
+        type: string
+        x-go-name: UserName
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   GetCocktailByIDRequest:
     properties:
       id:
@@ -228,6 +245,19 @@ definitions:
         x-go-name: Total
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  GetUserFavoriteCocktailListResponse:
+    properties:
+      favorite_cocktail_list:
+        items:
+          $ref: '#/definitions/FavoriteCocktail'
+        type: array
+        x-go-name: FavoriteCocktailList
+      total:
+        format: int64
+        type: integer
+        x-go-name: Total
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   GetUserInfoResponse:
     properties:
       email:
@@ -262,6 +292,8 @@ definitions:
       code:
         type: string
         x-go-name: Code
+    required:
+    - code
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   GoogleAuthenticateResponse:
@@ -277,6 +309,8 @@ definitions:
         format: int64
         type: integer
         x-go-name: UserID
+    required:
+    - user_id
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   PopularCocktailList:
@@ -407,6 +441,9 @@ definitions:
           $ref: '#/definitions/CocktailStepWithoutID'
         type: array
         x-go-name: StepList
+    required:
+    - ingredient_list
+    - step_list
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   UpdateUserInfoRequest:
@@ -461,6 +498,9 @@ definitions:
           $ref: '#/definitions/CocktailStepWithoutID'
         type: array
         x-go-name: StepList
+    required:
+    - ingredient_list
+    - step_list
     type: object
     x-go-name: swaggerUpdateDraftArticleRequest
     x-go-package: github.com/beecool-cocktail/application-backend/swagger
@@ -561,7 +601,6 @@ paths:
         type: integer
       - in: body
         name: Body
-        required: true
         schema:
           $ref: '#/definitions/updateDraftArticleRequest'
       responses: {}
@@ -699,20 +738,9 @@ paths:
     get:
       description: Get user favorite cocktail article list.
       operationId: getUserFavoriteList
-      parameters:
-      - example: 1
-        in: query
-        name: page
-        required: true
-        type: integer
-      - example: 10
-        in: query
-        name: page_size
-        required: true
-        type: integer
       responses:
         "200":
-          $ref: '#/responses/getUserInfoResponse'
+          $ref: '#/responses/getUserFavoriteCocktailListResponse'
       security:
       - Bearer:
         - apiKey
@@ -755,31 +783,107 @@ responses:
   getCocktailByIDResponse:
     description: ""
     schema:
-      $ref: '#/definitions/GetCocktailByIDResponse'
+      properties:
+        data:
+          $ref: '#/definitions/GetCocktailByIDResponse'
+        error_code:
+          type: string
+          x-go-name: ErrorCode
+        error_message:
+          type: string
+          x-go-name: ErrorMessage
+      type: object
   getCocktailDraftByIDResponse:
     description: ""
     schema:
-      $ref: '#/definitions/GetCocktailDraftByIDResponse'
+      properties:
+        data:
+          $ref: '#/definitions/GetCocktailDraftByIDResponse'
+        error_code:
+          type: string
+          x-go-name: ErrorCode
+        error_message:
+          type: string
+          x-go-name: ErrorMessage
+      type: object
   getDraftCocktailListResponse:
     description: ""
     schema:
-      $ref: '#/definitions/GetDraftCocktailListResponse'
+      properties:
+        data:
+          $ref: '#/definitions/GetDraftCocktailListResponse'
+        error_code:
+          type: string
+          x-go-name: ErrorCode
+        error_message:
+          type: string
+          x-go-name: ErrorMessage
+      type: object
+  getUserFavoriteCocktailListResponse:
+    description: ""
+    schema:
+      properties:
+        data:
+          $ref: '#/definitions/GetUserFavoriteCocktailListResponse'
+        error_code:
+          type: string
+          x-go-name: ErrorCode
+        error_message:
+          type: string
+          x-go-name: ErrorMessage
+      type: object
   getUserInfoResponse:
     description: ""
     schema:
-      $ref: '#/definitions/GetUserInfoResponse'
+      properties:
+        data:
+          $ref: '#/definitions/GetUserInfoResponse'
+        error_code:
+          type: string
+          x-go-name: ErrorCode
+        error_message:
+          type: string
+          x-go-name: ErrorMessage
+      type: object
   googleAuthenticateResponse:
     description: ""
     schema:
-      $ref: '#/definitions/GoogleAuthenticateResponse'
+      properties:
+        data:
+          $ref: '#/definitions/GoogleAuthenticateResponse'
+        error_code:
+          type: string
+          x-go-name: ErrorCode
+        error_message:
+          type: string
+          x-go-name: ErrorMessage
+      type: object
   popularCocktailListResponse:
     description: ""
     schema:
-      $ref: '#/definitions/GetPopularCocktailListResponse'
+      properties:
+        data:
+          $ref: '#/definitions/GetPopularCocktailListResponse'
+        error_code:
+          type: string
+          x-go-name: ErrorCode
+        error_message:
+          type: string
+          x-go-name: ErrorMessage
+      type: object
   updateUserPhotoResponse:
     description: ""
     schema:
-      $ref: '#/definitions/UpdateUserInfoResponse'
+      properties:
+        data:
+          $ref: '#/definitions/UpdateUserInfoResponse'
+        error_code:
+          type: string
+          x-go-name: ErrorCode
+        error_message:
+          type: string
+          x-go-name: ErrorMessage
+      type: object
 schemes:
 - http
 - https
