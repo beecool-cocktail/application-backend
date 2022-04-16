@@ -163,3 +163,14 @@ type UpdateDraftArticleRequest struct {
 type DeleteDraftArticleRequest struct {
 	DeletedIds []int64 `json:"deleted_ids"`
 }
+
+type GetSelfCocktailListResponse struct {
+	PopularCocktailList []SelfCocktailList `json:"popular_cocktail_list"`
+}
+
+type SelfCocktailList struct {
+	CocktailID int64  `json:"cocktail_id"`
+	UserName   string `json:"user_name"`
+	Photo      string `json:"photo"`
+	Title      string `json:"title"`
+}

@@ -155,3 +155,13 @@ type swaggerGetUserFavoriteCocktailListResponse struct {
 		Data         viewmodels.GetUserFavoriteCocktailListResponse `json:"data"`
 	}
 }
+
+// swagger:response getSelfCocktailListResponse
+type swaggerGetSelfCocktailListResponse struct {
+	// in: body
+	Body struct {
+		ErrorCode    string                                 `json:"error_code"`
+		ErrorMessage string                                 `json:"error_message"`
+		Data         viewmodels.GetSelfCocktailListResponse `json:"data"`
+	}
+}

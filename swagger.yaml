@@ -245,6 +245,15 @@ definitions:
         x-go-name: Total
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  GetSelfCocktailListResponse:
+    properties:
+      popular_cocktail_list:
+        items:
+          $ref: '#/definitions/SelfCocktailList'
+        type: array
+        x-go-name: PopularCocktailList
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   GetUserFavoriteCocktailListResponse:
     properties:
       favorite_cocktail_list:
@@ -414,6 +423,23 @@ definitions:
       error_message:
         type: string
         x-go-name: ErrorMessage
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  SelfCocktailList:
+    properties:
+      cocktail_id:
+        format: int64
+        type: integer
+        x-go-name: CocktailID
+      photo:
+        type: string
+        x-go-name: Photo
+      title:
+        type: string
+        x-go-name: Title
+      user_name:
+        type: string
+        x-go-name: UserName
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   UpdateDraftArticleRequest:
@@ -689,6 +715,19 @@ paths:
       summary: Login with google OAuth2
       tags:
       - login
+  /self-cocktails:
+    get:
+      description: Get self cocktail list order by create date.
+      operationId: selfCocktailList
+      responses:
+        "200":
+          $ref: '#/responses/getSelfCocktailListResponse'
+      security:
+      - Bearer:
+        - apiKey
+      summary: Get self cocktail list
+      tags:
+      - cocktail
   /user/edit-info:
     post:
       description: Edit user name and collection of publicity status.
@@ -812,6 +851,19 @@ responses:
       properties:
         data:
           $ref: '#/definitions/GetDraftCocktailListResponse'
+        error_code:
+          type: string
+          x-go-name: ErrorCode
+        error_message:
+          type: string
+          x-go-name: ErrorMessage
+      type: object
+  getSelfCocktailListResponse:
+    description: ""
+    schema:
+      properties:
+        data:
+          $ref: '#/definitions/GetSelfCocktailListResponse'
         error_code:
           type: string
           x-go-name: ErrorCode

@@ -57,6 +57,14 @@ func (c *cocktailMySQLRepository) QueryByCocktailID(ctx context.Context, id int6
 	return cocktail, res.Error
 }
 
+func (c *cocktailMySQLRepository) QueryByUserID(ctx context.Context, id int64) ([]domain.Cocktail, error) {
+	var cocktail []domain.Cocktail
+
+	res := c.db.Where("user_id = ?", id).Find(&cocktail)
+
+	return cocktail, res.Error
+}
+
 func (c *cocktailMySQLRepository) StoreTx(ctx context.Context, tx *gorm.DB, co *domain.Cocktail) error {
 
 	res := tx.Select("cocktail_id", "user_id", "title", "description", "category").Create(co)

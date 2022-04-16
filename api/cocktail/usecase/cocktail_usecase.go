@@ -84,6 +84,39 @@ func (c *cocktailUsecase) fillCocktailList(ctx context.Context, cocktails []doma
 	return apiCocktails, nil
 }
 
+func (c *cocktailUsecase) fillSelfCocktailList(ctx context.Context, cocktails []domain.APICocktail) ([]domain.APICocktail, error) {
+
+	var apiCocktails []domain.APICocktail
+
+	for _, cocktail := range cocktails {
+		photos, err := c.cocktailPhotoMySQLRepo.QueryPhotosByCocktailId(ctx, cocktail.CocktailID)
+		if err != nil {
+			return []domain.APICocktail{}, err
+		}
+		for _, photo := range photos {
+			if photo.IsCoverPhoto == true {
+				cocktail.CoverPhoto = photo
+			}
+		}
+
+		ingredients, err := c.cocktailIngredientMySQLRepo.QueryByCocktailId(ctx, cocktail.CocktailID)
+		if err != nil {
+			return []domain.APICocktail{}, err
+		}
+		cocktail.Ingredients = ingredients
+
+		user, err := c.userMySQLRepo.QueryById(ctx, cocktail.UserID)
+		if err != nil {
+			return []domain.APICocktail{}, err
+		}
+		cocktail.UserName = user.Name
+
+		apiCocktails = append(apiCocktails, cocktail)
+	}
+
+	return apiCocktails, nil
+}
+
 func (c *cocktailUsecase) fillCocktailDetails(ctx context.Context, cocktail domain.APICocktail) (domain.APICocktail, error) {
 
 	photos, err := c.cocktailPhotoMySQLRepo.QueryPhotosByCocktailId(ctx, cocktail.CocktailID)
@@ -331,6 +364,33 @@ func (c *cocktailUsecase) QueryByCocktailID(ctx context.Context, cocktailID, use
 	}
 
 	return apiCocktail, nil
+}
+
+func (c *cocktailUsecase) QueryByUserID(ctx context.Context, id int64) ([]domain.APICocktail, error) {
+
+	cocktails, err := c.cocktailMySQLRepo.QueryByUserID(ctx, id)
+	if err != nil {
+		return []domain.APICocktail{}, err
+	}
+
+	var apiCocktails []domain.APICocktail
+	for _, cocktail := range cocktails {
+		out := domain.APICocktail{
+			CocktailID:  cocktail.CocktailID,
+			UserID:      cocktail.UserID,
+			Title:       cocktail.Title,
+			Description: cocktail.Description,
+			CreatedDate: util.GetFormatTime(cocktail.CreatedDate, "UTC"),
+		}
+		apiCocktails = append(apiCocktails, out)
+	}
+
+	apiCocktails, err = c.fillCocktailList(ctx, apiCocktails)
+	if err != nil {
+		return []domain.APICocktail{}, err
+	}
+
+	return apiCocktails, nil
 }
 
 func (c *cocktailUsecase) QueryDraftByCocktailID(ctx context.Context, cocktailID, userID int64) (domain.APICocktail, error) {
