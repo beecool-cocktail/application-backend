@@ -165,7 +165,7 @@ type DeleteDraftArticleRequest struct {
 }
 
 type GetSelfCocktailListResponse struct {
-	PopularCocktailList []SelfCocktailList `json:"popular_cocktail_list"`
+	CocktailList []SelfCocktailList `json:"cocktail_list"`
 }
 
 type SelfCocktailList struct {

@@ -28,7 +28,6 @@ func NewCocktailHandler(s *service.Service, cocktailUsecase domain.CocktailUseca
 	s.HTTP.GET("/api/cocktail-drafts/:cocktailID", middlewareHandler.JWTAuthMiddleware(), handler.GetCocktailDraftByCocktailID)
 	s.HTTP.GET("/api/cocktails", middlewareHandler.JWTAuthMiddlewareIfExist(), handler.CocktailList)
 	s.HTTP.GET("/api/cocktail-drafts", middlewareHandler.JWTAuthMiddleware(), handler.CocktailDraftList)
-	s.HTTP.GET("/api/self-cocktails", middlewareHandler.JWTAuthMiddlewareIfExist(), handler.SelfCocktailList)
 	s.HTTP.POST("/api/cocktails", middlewareHandler.JWTAuthMiddleware(), handler.PostArticle)
 	s.HTTP.POST("/api/cocktail-drafts", middlewareHandler.JWTAuthMiddleware(), handler.PostDraftArticle)
 	s.HTTP.POST("/api/cocktail-drafts/:cocktailID", middlewareHandler.JWTAuthMiddleware(), handler.MakeDraftArticleToFormalArticle)
@@ -320,59 +319,6 @@ func (co *CocktailHandler) CocktailDraftList(c *gin.Context) {
 
 	response.Total = total
 	response.DraftCocktailList = cocktailList
-
-	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
-}
-
-// swagger:operation GET /self-cocktails cocktail selfCocktailList
-// ---
-// summary: Get self cocktail list
-// description: Get self cocktail list order by create date.
-//
-// security:
-// - Bearer: [apiKey]
-//
-// responses:
-//  "200":
-//    "$ref": "#/responses/getSelfCocktailListResponse"
-func (co *CocktailHandler) SelfCocktailList(c *gin.Context) {
-	api := "/self-cocktails"
-	userId := c.GetInt64("user_id")
-
-	var response viewmodels.GetSelfCocktailListResponse
-
-	filter := make(map[string]interface{})
-	filter["category"] = cockarticletype.Normal
-	filter["user_id"] = userId
-	cocktails, err := co.CocktailUsecase.QueryByUserID(c, userId)
-	if err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("get cocktails with filter failed - %s", err)
-		util.PackResponseWithError(c, err, err.Error())
-		return
-	}
-
-	cocktailList := make([]viewmodels.SelfCocktailList, 0)
-	for _, cocktail := range cocktails {
-		ingredients := make([]viewmodels.CocktailIngredientWithoutID, 0)
-		for _, ingredient := range cocktail.Ingredients {
-			out := viewmodels.CocktailIngredientWithoutID{
-				Name:   ingredient.IngredientName,
-				Amount: ingredient.IngredientAmount,
-			}
-			ingredients = append(ingredients, out)
-		}
-
-		out := viewmodels.SelfCocktailList{
-			CocktailID: cocktail.CocktailID,
-			UserName:   cocktail.UserName,
-			Title:      cocktail.Title,
-			Photo:      cocktail.CoverPhoto.Photo,
-		}
-
-		cocktailList = append(cocktailList, out)
-	}
-
-	response.PopularCocktailList = cocktailList
 
 	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
 }

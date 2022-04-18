@@ -715,19 +715,6 @@ paths:
       summary: Login with google OAuth2
       tags:
       - login
-  /self-cocktails:
-    get:
-      description: Get self cocktail list order by create date.
-      operationId: selfCocktailList
-      responses:
-        "200":
-          $ref: '#/responses/getSelfCocktailListResponse'
-      security:
-      - Bearer:
-        - apiKey
-      summary: Get self cocktail list
-      tags:
-      - cocktail
   /user/edit-info:
     post:
       description: Edit user name and collection of publicity status.
@@ -771,6 +758,19 @@ paths:
           $ref: '#/definitions/LogoutRequest'
       responses: {}
       summary: User logout.
+      tags:
+      - user
+  /users/current/cocktails:
+    get:
+      description: Get self cocktail list order by create date.
+      operationId: selfCocktailList
+      responses:
+        "200":
+          $ref: '#/responses/getSelfCocktailListResponse'
+      security:
+      - Bearer:
+        - apiKey
+      summary: Get self cocktail list
       tags:
       - user
   /users/favorite-cocktails:

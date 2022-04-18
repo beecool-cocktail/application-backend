@@ -80,6 +80,6 @@ func initializeRoutes(s *service.Service) {
 		cocktailPhotoMySQLRepo, cocktailIngredientMySQLRepo, cocktailStepMySQLRepo, userMySQLRepo, favoriteCocktailMySQLRepo, transactionRepo)
 
 	// Delivery dependency injection
-	_userHandlerHttpDelivery.NewUserHandler(s, userUsecase, socialAccountUsecase, favoriteCocktailUsecase, *middlewareHandler)
+	_userHandlerHttpDelivery.NewUserHandler(s, userUsecase, socialAccountUsecase, cocktailUsecase, favoriteCocktailUsecase, *middlewareHandler)
 	_cocktailHandlerHttpDelivery.NewCocktailHandler(s, cocktailUsecase, *middlewareHandler)
 }

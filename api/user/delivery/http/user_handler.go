@@ -2,6 +2,7 @@ package http
 
 import (
 	"github.com/beecool-cocktail/application-backend/domain"
+	"github.com/beecool-cocktail/application-backend/enum/cockarticletype"
 	"github.com/beecool-cocktail/application-backend/middleware"
 	"github.com/beecool-cocktail/application-backend/service"
 	"github.com/beecool-cocktail/application-backend/util"
@@ -19,18 +20,21 @@ type UserHandler struct {
 	Configure               *service.Configure
 	Logger                  *logrus.Logger
 	UserUsecase             domain.UserUsecase
+	CocktailUsecase         domain.CocktailUsecase
 	FavoriteCocktailUsecase domain.FavoriteCocktailUsecase
 	SocialAccountUsecase    domain.SocialAccountUsecase
 }
 
 func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase, socialAccountUsecase domain.SocialAccountUsecase,
-	favoriteCocktailUsecase domain.FavoriteCocktailUsecase, middlewareHandler middleware.Handler) {
+	CocktailUsecase domain.CocktailUsecase, favoriteCocktailUsecase domain.FavoriteCocktailUsecase,
+	middlewareHandler middleware.Handler) {
 
 	handler := &UserHandler{
 		Configure:               s.Configure,
 		Logger:                  s.Logger,
 		UserUsecase:             userUsecase,
 		FavoriteCocktailUsecase: favoriteCocktailUsecase,
+		CocktailUsecase:         CocktailUsecase,
 		SocialAccountUsecase:    socialAccountUsecase,
 	}
 
@@ -42,6 +46,7 @@ func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase, socialAc
 	s.HTTP.POST("/api/users/favorite-cocktails", middlewareHandler.JWTAuthMiddleware(), handler.CollectArticle)
 	s.HTTP.DELETE("/api/users/favorite-cocktails/:cocktailID", middlewareHandler.JWTAuthMiddleware(), handler.RemoveCollectionArticle)
 	s.HTTP.GET("/api/users/favorite-cocktails", middlewareHandler.JWTAuthMiddleware(), handler.GetUserFavoriteList)
+	s.HTTP.GET("/api/users/current/cocktails", middlewareHandler.JWTAuthMiddleware(), handler.SelfCocktailList)
 }
 
 // swagger:route GET /google-login login googleLogin
@@ -342,6 +347,59 @@ func (u *UserHandler) GetUserFavoriteList(c *gin.Context) {
 		Total:                total,
 		FavoriteCocktailList: list,
 	}
+
+	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
+}
+
+// swagger:operation GET /users/current/cocktails user selfCocktailList
+// ---
+// summary: Get self cocktail list
+// description: Get self cocktail list order by create date.
+//
+// security:
+// - Bearer: [apiKey]
+//
+// responses:
+//  "200":
+//    "$ref": "#/responses/getSelfCocktailListResponse"
+func (u *UserHandler) SelfCocktailList(c *gin.Context) {
+	api := "/self-cocktails"
+	userId := c.GetInt64("user_id")
+
+	var response viewmodels.GetSelfCocktailListResponse
+
+	filter := make(map[string]interface{})
+	filter["category"] = cockarticletype.Normal
+	filter["user_id"] = userId
+	cocktails, err := u.CocktailUsecase.QueryByUserID(c, userId)
+	if err != nil {
+		service.GetLoggerEntry(u.Logger, api, nil).Errorf("get cocktails with filter failed - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
+	cocktailList := make([]viewmodels.SelfCocktailList, 0)
+	for _, cocktail := range cocktails {
+		ingredients := make([]viewmodels.CocktailIngredientWithoutID, 0)
+		for _, ingredient := range cocktail.Ingredients {
+			out := viewmodels.CocktailIngredientWithoutID{
+				Name:   ingredient.IngredientName,
+				Amount: ingredient.IngredientAmount,
+			}
+			ingredients = append(ingredients, out)
+		}
+
+		out := viewmodels.SelfCocktailList{
+			CocktailID: cocktail.CocktailID,
+			UserName:   cocktail.UserName,
+			Title:      cocktail.Title,
+			Photo:      cocktail.CoverPhoto.Photo,
+		}
+
+		cocktailList = append(cocktailList, out)
+	}
+
+	response.PopularCocktailList = cocktailList
 
 	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
 }
