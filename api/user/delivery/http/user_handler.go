@@ -38,18 +38,18 @@ func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase, socialAc
 		SocialAccountUsecase:    socialAccountUsecase,
 	}
 
-	s.HTTP.GET("/api/google-login", handler.SocialLogin)
-	s.HTTP.POST("/api/google-authenticate", handler.GoogleAuthenticate)
-	s.HTTP.POST("/api/user/logout", handler.Logout)
-	s.HTTP.GET("/api/user/info", middlewareHandler.JWTAuthMiddleware(), handler.GetUserInfo)
-	s.HTTP.POST("/api/user/edit-info", middlewareHandler.JWTAuthMiddleware(), handler.UpdateUserInfo)
-	s.HTTP.POST("/api/users/favorite-cocktails", middlewareHandler.JWTAuthMiddleware(), handler.CollectArticle)
-	s.HTTP.DELETE("/api/users/favorite-cocktails/:cocktailID", middlewareHandler.JWTAuthMiddleware(), handler.RemoveCollectionArticle)
-	s.HTTP.GET("/api/users/favorite-cocktails", middlewareHandler.JWTAuthMiddleware(), handler.GetUserFavoriteList)
+	s.HTTP.GET("/api/auth/google-login", handler.SocialLogin)
+	s.HTTP.POST("/api/auth/google-authenticate", handler.GoogleAuthenticate)
+	s.HTTP.POST("/api/auth/logout", handler.Logout)
+	s.HTTP.GET("/api/users/current", middlewareHandler.JWTAuthMiddleware(), handler.GetUserInfo)
+	s.HTTP.PUT("/api/users/current", middlewareHandler.JWTAuthMiddleware(), handler.UpdateUserInfo)
+	s.HTTP.POST("/api/users/current/favorite-cocktails", middlewareHandler.JWTAuthMiddleware(), handler.CollectArticle)
+	s.HTTP.DELETE("/api/users/current/favorite-cocktails/:cocktailID", middlewareHandler.JWTAuthMiddleware(), handler.RemoveCollectionArticle)
+	s.HTTP.GET("/api/users/current/favorite-cocktails", middlewareHandler.JWTAuthMiddleware(), handler.GetUserFavoriteList)
 	s.HTTP.GET("/api/users/current/cocktails", middlewareHandler.JWTAuthMiddleware(), handler.SelfCocktailList)
 }
 
-// swagger:route GET /google-login login googleLogin
+// swagger:route GET /auth/google-login login googleLogin
 //
 // Login with google OAuth2
 //
@@ -72,7 +72,7 @@ func (u *UserHandler) SocialLogin(c *gin.Context) {
 	c.Redirect(http.StatusTemporaryRedirect, url)
 }
 
-// swagger:operation POST /google-authenticate login googleAuthenticateRequest
+// swagger:operation POST /auth/google-authenticate login googleAuthenticateRequest
 // ---
 // summary: Get access token.
 // description: Use Code to exchange access token.
@@ -110,7 +110,7 @@ func (u *UserHandler) GoogleAuthenticate(c *gin.Context) {
 	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
 }
 
-// swagger:operation POST /user/logout user logoutRequest
+// swagger:operation POST /auth/logout user logoutRequest
 // ---
 // summary: User logout.
 // description: make token invalid.
@@ -136,7 +136,7 @@ func (u *UserHandler) Logout(c *gin.Context) {
 	util.PackResponseWithData(c, http.StatusOK, nil, domain.GetErrorCode(nil), "")
 }
 
-// swagger:operation GET /user/info user info
+// swagger:operation GET /user/current user info
 // ---
 // summary: Get user information.
 // description: Get user id, name, email, numberOfPost, numberOfCollection and photo.
@@ -172,7 +172,7 @@ func (u *UserHandler) GetUserInfo(c *gin.Context) {
 	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
 }
 
-// swagger:operation POST /user/edit-info user updateUserInfoRequest
+// swagger:operation PUT /user/current user updateUserInfoRequest
 // ---
 // summary: Edit user information.
 // description: Edit user name and collection of publicity status.
@@ -234,7 +234,7 @@ func (u *UserHandler) UpdateUserInfo(c *gin.Context) {
 	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
 }
 
-// swagger:operation POST /users/favorite-cocktails user collectArticleRequest
+// swagger:operation POST /users/current/favorite-cocktails user collectArticleRequest
 // ---
 // summary: Add cocktail article to favorite list.
 // description: Add cocktail article to favorite list.
@@ -269,7 +269,7 @@ func (u *UserHandler) CollectArticle(c *gin.Context) {
 	util.PackResponseWithData(c, http.StatusCreated, nil, domain.GetErrorCode(nil), "")
 }
 
-// swagger:operation DELETE /users/favorite-cocktails/{id} user removeCollectionArticle
+// swagger:operation DELETE /users/current/favorite-cocktails/{id} user removeCollectionArticle
 // ---
 // summary: Remove cocktail article from favorite list.
 // description: Remove cocktail article from favorite list.
@@ -308,7 +308,7 @@ func (u *UserHandler) RemoveCollectionArticle(c *gin.Context) {
 	util.PackResponseWithData(c, http.StatusCreated, nil, domain.GetErrorCode(nil), "")
 }
 
-// swagger:operation GET /users/favorite-cocktails user getUserFavoriteList
+// swagger:operation GET /users/current/favorite-cocktails user getUserFavoriteList
 // ---
 // summary: Get user favorite cocktail article list.
 // description: Get user favorite cocktail article list.
@@ -399,7 +399,7 @@ func (u *UserHandler) SelfCocktailList(c *gin.Context) {
 		cocktailList = append(cocktailList, out)
 	}
 
-	response.PopularCocktailList = cocktailList
+	response.CocktailList = cocktailList
 
 	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
 }
