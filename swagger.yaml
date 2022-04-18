@@ -247,11 +247,11 @@ definitions:
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   GetSelfCocktailListResponse:
     properties:
-      popular_cocktail_list:
+      cocktail_list:
         items:
           $ref: '#/definitions/SelfCocktailList'
         type: array
-        x-go-name: PopularCocktailList
+        x-go-name: CocktailList
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   GetUserFavoriteCocktailListResponse:
@@ -536,6 +536,44 @@ info:
   title: api server
   version: "0.1"
 paths:
+  /auth/google-authenticate:
+    post:
+      description: Use Code to exchange access token.
+      operationId: googleAuthenticateRequest
+      parameters:
+      - in: body
+        name: Body
+        schema:
+          $ref: '#/definitions/GoogleAuthenticateRequest'
+      responses:
+        "201":
+          $ref: '#/responses/googleAuthenticateResponse'
+      summary: Get access token.
+      tags:
+      - login
+  /auth/google-login:
+    get:
+      description: Will redirect with authorization code.
+      operationId: googleLogin
+      responses:
+        "307":
+          description: ' redirect'
+      summary: Login with google OAuth2
+      tags:
+      - login
+  /auth/logout:
+    post:
+      description: make token invalid.
+      operationId: logoutRequest
+      parameters:
+      - in: body
+        name: Body
+        schema:
+          $ref: '#/definitions/LogoutRequest'
+      responses: {}
+      summary: User logout.
+      tags:
+      - user
   /cocktail-drafts:
     get:
       description: Get draft cocktail list order by create date.
@@ -690,33 +728,21 @@ paths:
       summary: Get cocktail detail information
       tags:
       - cocktail
-  /google-authenticate:
-    post:
-      description: Use Code to exchange access token.
-      operationId: googleAuthenticateRequest
-      parameters:
-      - in: body
-        name: Body
-        schema:
-          $ref: '#/definitions/GoogleAuthenticateRequest'
-      responses:
-        "201":
-          $ref: '#/responses/googleAuthenticateResponse'
-      summary: Get access token.
-      tags:
-      - login
-  /google-login:
+  /users/current:
     get:
-      description: Will redirect with authorization code.
-      operationId: googleLogin
+      description: Get user id, name, email, numberOfPost, numberOfCollection and
+        photo.
+      operationId: info
       responses:
-        "307":
-          description: ' redirect'
-      summary: Login with google OAuth2
+        "200":
+          $ref: '#/responses/getUserInfoResponse'
+      security:
+      - Bearer:
+        - apiKey
+      summary: Get user information.
       tags:
-      - login
-  /user/edit-info:
-    post:
+      - user
+    put:
       description: Edit user name and collection of publicity status.
       operationId: updateUserInfoRequest
       parameters:
@@ -733,33 +759,6 @@ paths:
       summary: Edit user information.
       tags:
       - user
-  /user/info:
-    get:
-      description: Get user id, name, email, numberOfPost, numberOfCollection and
-        photo.
-      operationId: info
-      responses:
-        "200":
-          $ref: '#/responses/getUserInfoResponse'
-      security:
-      - Bearer:
-        - apiKey
-      summary: Get user information.
-      tags:
-      - user
-  /user/logout:
-    post:
-      description: make token invalid.
-      operationId: logoutRequest
-      parameters:
-      - in: body
-        name: Body
-        schema:
-          $ref: '#/definitions/LogoutRequest'
-      responses: {}
-      summary: User logout.
-      tags:
-      - user
   /users/current/cocktails:
     get:
       description: Get self cocktail list order by create date.
@@ -773,7 +772,7 @@ paths:
       summary: Get self cocktail list
       tags:
       - user
-  /users/favorite-cocktails:
+  /users/current/favorite-cocktails:
     get:
       description: Get user favorite cocktail article list.
       operationId: getUserFavoriteList
@@ -801,7 +800,7 @@ paths:
       summary: Add cocktail article to favorite list.
       tags:
       - user
-  /users/favorite-cocktails/{id}:
+  /users/current/favorite-cocktails/{id}:
     delete:
       description: Remove cocktail article from favorite list.
       operationId: removeCollectionArticle

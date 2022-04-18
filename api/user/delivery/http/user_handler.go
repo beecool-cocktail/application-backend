@@ -136,7 +136,7 @@ func (u *UserHandler) Logout(c *gin.Context) {
 	util.PackResponseWithData(c, http.StatusOK, nil, domain.GetErrorCode(nil), "")
 }
 
-// swagger:operation GET /user/current user info
+// swagger:operation GET /users/current user info
 // ---
 // summary: Get user information.
 // description: Get user id, name, email, numberOfPost, numberOfCollection and photo.
@@ -172,7 +172,7 @@ func (u *UserHandler) GetUserInfo(c *gin.Context) {
 	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
 }
 
-// swagger:operation PUT /user/current user updateUserInfoRequest
+// swagger:operation PUT /users/current user updateUserInfoRequest
 // ---
 // summary: Edit user information.
 // description: Edit user name and collection of publicity status.
