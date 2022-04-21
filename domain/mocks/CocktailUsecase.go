@@ -114,6 +114,29 @@ func (_m *CocktailUsecase) QueryDraftByCocktailID(ctx context.Context, cocktailI
 	return r0, r1
 }
 
+// QueryFormalByUserID provides a mock function with given fields: ctx, id
+func (_m *CocktailUsecase) QueryFormalByUserID(ctx context.Context, id int64) ([]domain.APICocktail, error) {
+	ret := _m.Called(ctx, id)
+
+	var r0 []domain.APICocktail
+	if rf, ok := ret.Get(0).(func(context.Context, int64) []domain.APICocktail); ok {
+		r0 = rf(ctx, id)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]domain.APICocktail)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
+		r1 = rf(ctx, id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // Store provides a mock function with given fields: ctx, c, cig, cs, ci, userID
 func (_m *CocktailUsecase) Store(ctx context.Context, c *domain.Cocktail, cig []domain.CocktailIngredient, cs []domain.CocktailStep, ci []domain.CocktailImage, userID int64) error {
 	ret := _m.Called(ctx, c, cig, cs, ci, userID)
