@@ -6,6 +6,7 @@ type GoogleAuthenticateRequest struct {
 }
 
 type GoogleAuthenticateResponse struct {
+	//required: true
 	Token string `json:"token"`
 }
 
@@ -15,13 +16,20 @@ type LogoutRequest struct {
 }
 
 type GetUserInfoResponse struct {
-	UserID             int64  `json:"user_id"`
-	Name               string `json:"user_name"`
-	Email              string `json:"email"`
-	Photo              string `json:"photo"`
-	NumberOfPost       int    `json:"number_of_post"`
-	NumberOfCollection int    `json:"number_of_collection"`
+	//required: true
+	UserID int64 `json:"user_id"`
+	//required: true
+	Name string `json:"user_name"`
+	//required: true
+	Email string `json:"email"`
+	//required: true
+	Photo string `json:"photo"`
+	//required: true
+	NumberOfPost int `json:"number_of_post"`
+	//required: true
+	NumberOfCollection int `json:"number_of_collection"`
 	// 是否公開收藏 false=不公開, true=公開
+	//required: true
 	IsCollectionPublic bool `json:"is_collection_public"`
 }
 
@@ -40,6 +48,7 @@ type UpdateUserInfoRequest struct {
 }
 
 type UpdateUserInfoResponse struct {
+	//required: true
 	Photo string `json:"photo"`
 }
 
@@ -51,13 +60,19 @@ type CollectArticleRequest struct {
 }
 
 type GetUserFavoriteCocktailListResponse struct {
-	Total                int64              `json:"total"`
+	//required: true
+	Total int64 `json:"total"`
+	//required: true
 	FavoriteCocktailList []FavoriteCocktail `json:"favorite_cocktail_list"`
 }
 
 type FavoriteCocktail struct {
-	CocktailID int64  `json:"cocktail_id"`
-	UserName   string `json:"user_name"`
-	Photo      string `json:"photo"`
-	Title      string `json:"title"`
+	//required: true
+	CocktailID int64 `json:"cocktail_id"`
+	//required: true
+	UserName string `json:"user_name"`
+	//required: true
+	Photo string `json:"photo"`
+	//required: true
+	Title string `json:"title"`
 }

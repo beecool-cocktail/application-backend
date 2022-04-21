@@ -10,6 +10,9 @@ definitions:
         example: Gin Tonic
         type: string
         x-go-name: Name
+    required:
+    - name
+    - amount
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   CocktailPhotoWithID:
@@ -21,6 +24,9 @@ definitions:
       path:
         type: string
         x-go-name: Photo
+    required:
+    - id
+    - path
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   CocktailStepWithoutID:
@@ -29,6 +35,8 @@ definitions:
         example: shake
         type: string
         x-go-name: Description
+    required:
+    - description
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   CollectArticleRequest:
@@ -68,6 +76,11 @@ definitions:
       title:
         type: string
         x-go-name: Title
+    required:
+    - cocktail_id
+    - photo
+    - title
+    - created_date
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   FavoriteCocktail:
@@ -85,6 +98,11 @@ definitions:
       user_name:
         type: string
         x-go-name: UserName
+    required:
+    - cocktail_id
+    - user_name
+    - photo
+    - title
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   GetCocktailByIDRequest:
@@ -139,6 +157,17 @@ definitions:
       user_name:
         type: string
         x-go-name: UserName
+    required:
+    - cocktail_id
+    - user_id
+    - user_name
+    - photos
+    - title
+    - description
+    - ingredient_list
+    - step_list
+    - is_collected
+    - created_date
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   GetCocktailDraftByIDRequest:
@@ -183,6 +212,14 @@ definitions:
       title:
         type: string
         x-go-name: Title
+    required:
+    - cocktail_id
+    - photos
+    - title
+    - description
+    - ingredient_list
+    - step_list
+    - created_date
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   GetDraftCocktailListRequest:
@@ -213,6 +250,9 @@ definitions:
         format: int64
         type: integer
         x-go-name: Total
+    required:
+    - total
+    - draft_cocktail_list
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   GetPopularCocktailListRequest:
@@ -243,6 +283,9 @@ definitions:
         format: int64
         type: integer
         x-go-name: Total
+    required:
+    - total
+    - popular_cocktail_list
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   GetSelfCocktailListResponse:
@@ -252,6 +295,8 @@ definitions:
           $ref: '#/definitions/SelfCocktailList'
         type: array
         x-go-name: CocktailList
+    required:
+    - cocktail_list
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   GetUserFavoriteCocktailListResponse:
@@ -265,6 +310,9 @@ definitions:
         format: int64
         type: integer
         x-go-name: Total
+    required:
+    - total
+    - favorite_cocktail_list
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   GetUserInfoResponse:
@@ -294,6 +342,14 @@ definitions:
       user_name:
         type: string
         x-go-name: Name
+    required:
+    - user_id
+    - user_name
+    - email
+    - photo
+    - number_of_post
+    - number_of_collection
+    - is_collection_public
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   GoogleAuthenticateRequest:
@@ -310,6 +366,8 @@ definitions:
       token:
         type: string
         x-go-name: Token
+    required:
+    - token
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   LogoutRequest:
@@ -354,6 +412,15 @@ definitions:
       user_name:
         type: string
         x-go-name: UserName
+    required:
+    - cocktail_id
+    - user_id
+    - user_name
+    - title
+    - photos
+    - ingredient_list
+    - is_collected
+    - created_date
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   PostArticleRequest:
@@ -440,6 +507,11 @@ definitions:
       user_name:
         type: string
         x-go-name: UserName
+    required:
+    - cocktail_id
+    - user_name
+    - photo
+    - title
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   UpdateDraftArticleRequest:
@@ -497,6 +569,8 @@ definitions:
       photo:
         type: string
         x-go-name: Photo
+    required:
+    - photo
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   updateDraftArticleRequest:
@@ -573,7 +647,7 @@ paths:
       responses: {}
       summary: User logout.
       tags:
-      - user
+      - login
   /cocktail-drafts:
     get:
       description: Get draft cocktail list order by create date.
@@ -830,6 +904,10 @@ responses:
         error_message:
           type: string
           x-go-name: ErrorMessage
+      required:
+      - error_code
+      - error_message
+      - data
       type: object
   getCocktailDraftByIDResponse:
     description: ""
@@ -843,6 +921,10 @@ responses:
         error_message:
           type: string
           x-go-name: ErrorMessage
+      required:
+      - error_code
+      - error_message
+      - data
       type: object
   getDraftCocktailListResponse:
     description: ""
@@ -856,6 +938,10 @@ responses:
         error_message:
           type: string
           x-go-name: ErrorMessage
+      required:
+      - error_code
+      - error_message
+      - data
       type: object
   getSelfCocktailListResponse:
     description: ""
@@ -869,6 +955,10 @@ responses:
         error_message:
           type: string
           x-go-name: ErrorMessage
+      required:
+      - error_code
+      - error_message
+      - data
       type: object
   getUserFavoriteCocktailListResponse:
     description: ""
@@ -882,6 +972,10 @@ responses:
         error_message:
           type: string
           x-go-name: ErrorMessage
+      required:
+      - error_code
+      - error_message
+      - data
       type: object
   getUserInfoResponse:
     description: ""
@@ -895,6 +989,10 @@ responses:
         error_message:
           type: string
           x-go-name: ErrorMessage
+      required:
+      - error_code
+      - error_message
+      - data
       type: object
   googleAuthenticateResponse:
     description: ""
@@ -908,6 +1006,10 @@ responses:
         error_message:
           type: string
           x-go-name: ErrorMessage
+      required:
+      - error_code
+      - error_message
+      - data
       type: object
   popularCocktailListResponse:
     description: ""
@@ -921,6 +1023,10 @@ responses:
         error_message:
           type: string
           x-go-name: ErrorMessage
+      required:
+      - error_code
+      - error_message
+      - data
       type: object
   updateUserPhotoResponse:
     description: ""
@@ -934,6 +1040,10 @@ responses:
         error_message:
           type: string
           x-go-name: ErrorMessage
+      required:
+      - error_code
+      - error_message
+      - data
       type: object
 schemes:
 - http

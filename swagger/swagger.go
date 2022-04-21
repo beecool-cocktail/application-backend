@@ -14,9 +14,12 @@ type swaggerPopularCocktailListRequest struct {
 type swaggerPopularCocktailListResponse struct {
 	// in: body
 	Body struct {
-		ErrorCode    string                                    `json:"error_code"`
-		ErrorMessage string                                    `json:"error_message"`
-		Data         viewmodels.GetPopularCocktailListResponse `json:"data"`
+		//required: true
+		ErrorCode string `json:"error_code"`
+		//required: true
+		ErrorMessage string `json:"error_message"`
+		//required: true
+		Data viewmodels.GetPopularCocktailListResponse `json:"data"`
 	}
 }
 
@@ -30,9 +33,12 @@ type swaggerGetDraftCocktailListRequest struct {
 type swaggerGetDraftCocktailListResponse struct {
 	// in: body
 	Body struct {
-		ErrorCode    string                                  `json:"error_code"`
-		ErrorMessage string                                  `json:"error_message"`
-		Data         viewmodels.GetDraftCocktailListResponse `json:"data"`
+		//required: true
+		ErrorCode string `json:"error_code"`
+		//required: true
+		ErrorMessage string `json:"error_message"`
+		//required: true
+		Data viewmodels.GetDraftCocktailListResponse `json:"data"`
 	}
 }
 
@@ -46,9 +52,12 @@ type swaggerGoogleAuthenticateRequest struct {
 type swaggerGoogleAuthenticateResponse struct {
 	// in: body
 	Body struct {
-		ErrorCode    string                                `json:"error_code"`
-		ErrorMessage string                                `json:"error_message"`
-		Data         viewmodels.GoogleAuthenticateResponse `json:"data"`
+		//required: true
+		ErrorCode string `json:"error_code"`
+		//required: true
+		ErrorMessage string `json:"error_message"`
+		//required: true
+		Data viewmodels.GoogleAuthenticateResponse `json:"data"`
 	}
 }
 
@@ -62,9 +71,12 @@ type swaggerLogoutRequest struct {
 type swaggerGetUserInfoResponse struct {
 	// in: body
 	Body struct {
-		ErrorCode    string                         `json:"error_code"`
-		ErrorMessage string                         `json:"error_message"`
-		Data         viewmodels.GetUserInfoResponse `json:"data"`
+		//required: true
+		ErrorCode string `json:"error_code"`
+		//required: true
+		ErrorMessage string `json:"error_message"`
+		//required: true
+		Data viewmodels.GetUserInfoResponse `json:"data"`
 	}
 }
 
@@ -78,9 +90,12 @@ type swaggerUpdateUserInfoRequest struct {
 type swaggerUpdateUserPhotoResponse struct {
 	// in: body
 	Body struct {
-		ErrorCode    string                            `json:"error_code"`
-		ErrorMessage string                            `json:"error_message"`
-		Data         viewmodels.UpdateUserInfoResponse `json:"data"`
+		//required: true
+		ErrorCode string `json:"error_code"`
+		//required: true
+		ErrorMessage string `json:"error_message"`
+		//required: true
+		Data viewmodels.UpdateUserInfoResponse `json:"data"`
 	}
 }
 
@@ -106,9 +121,12 @@ type swaggerGetCocktailByIDRequest struct {
 type swaggerGetCocktailByIDResponse struct {
 	// in: body
 	Body struct {
-		ErrorCode    string                             `json:"error_code"`
-		ErrorMessage string                             `json:"error_message"`
-		Data         viewmodels.GetCocktailByIDResponse `json:"data"`
+		//required: true
+		ErrorCode string `json:"error_code"`
+		//required: true
+		ErrorMessage string `json:"error_message"`
+		//required: true
+		Data viewmodels.GetCocktailByIDResponse `json:"data"`
 	}
 }
 
@@ -122,9 +140,12 @@ type swaggerGetCocktailDraftByIDRequest struct {
 type swaggerGetCocktailDraftByIDResponse struct {
 	// in: body
 	Body struct {
-		ErrorCode    string                                  `json:"error_code"`
-		ErrorMessage string                                  `json:"error_message"`
-		Data         viewmodels.GetCocktailDraftByIDResponse `json:"data"`
+		//required: true
+		ErrorCode string `json:"error_code"`
+		//required: true
+		ErrorMessage string `json:"error_message"`
+		//required: true
+		Data viewmodels.GetCocktailDraftByIDResponse `json:"data"`
 	}
 }
 
@@ -150,9 +171,12 @@ type swaggerCollectArticleRequest struct {
 type swaggerGetUserFavoriteCocktailListResponse struct {
 	// in: body
 	Body struct {
-		ErrorCode    string                                         `json:"error_code"`
-		ErrorMessage string                                         `json:"error_message"`
-		Data         viewmodels.GetUserFavoriteCocktailListResponse `json:"data"`
+		//required: true
+		ErrorCode string `json:"error_code"`
+		//required: true
+		ErrorMessage string `json:"error_message"`
+		//required: true
+		Data viewmodels.GetUserFavoriteCocktailListResponse `json:"data"`
 	}
 }
 
@@ -160,8 +184,11 @@ type swaggerGetUserFavoriteCocktailListResponse struct {
 type swaggerGetSelfCocktailListResponse struct {
 	// in: body
 	Body struct {
-		ErrorCode    string                                 `json:"error_code"`
-		ErrorMessage string                                 `json:"error_message"`
-		Data         viewmodels.GetSelfCocktailListResponse `json:"data"`
+		//required: true
+		ErrorCode string `json:"error_code"`
+		//required: true
+		ErrorMessage string `json:"error_message"`
+		//required: true
+		Data viewmodels.GetSelfCocktailListResponse `json:"data"`
 	}
 }

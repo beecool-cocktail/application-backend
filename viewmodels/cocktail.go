@@ -11,19 +11,29 @@ type GetPopularCocktailListRequest struct {
 }
 
 type GetPopularCocktailListResponse struct {
-	Total               int64                 `json:"total"`
+	//required: true
+	Total int64 `json:"total"`
+	//required: true
 	PopularCocktailList []PopularCocktailList `json:"popular_cocktail_list"`
 }
 
 type PopularCocktailList struct {
-	CocktailID     int64                         `json:"cocktail_id"`
-	UserID         int64                         `json:"user_id"`
-	UserName       string                        `json:"user_name"`
-	Title          string                        `json:"title"`
-	Photos         []string                      `json:"photos"`
+	//required: true
+	CocktailID int64 `json:"cocktail_id"`
+	//required: true
+	UserID int64 `json:"user_id"`
+	//required: true
+	UserName string `json:"user_name"`
+	//required: true
+	Title string `json:"title"`
+	//required: true
+	Photos []string `json:"photos"`
+	//required: true
 	IngredientList []CocktailIngredientWithoutID `json:"ingredient_list"`
-	IsCollected    bool                          `json:"is_collected"`
-	CreatedDate    string                        `json:"created_date"`
+	//required: true
+	IsCollected bool `json:"is_collected"`
+	//required: true
+	CreatedDate string `json:"created_date"`
 }
 
 type GetDraftCocktailListRequest struct {
@@ -37,14 +47,20 @@ type GetDraftCocktailListRequest struct {
 }
 
 type GetDraftCocktailListResponse struct {
-	Total             int64               `json:"total"`
+	//required: true
+	Total int64 `json:"total"`
+	//required: true
 	DraftCocktailList []DraftCocktailList `json:"draft_cocktail_list"`
 }
 
 type DraftCocktailList struct {
-	CocktailID  int64  `json:"cocktail_id"`
-	Photo       string `json:"photo"`
-	Title       string `json:"title"`
+	//required: true
+	CocktailID int64 `json:"cocktail_id"`
+	//required: true
+	Photo string `json:"photo"`
+	//required: true
+	Title string `json:"title"`
+	//required: true
 	CreatedDate string `json:"created_date"`
 }
 
@@ -79,31 +95,42 @@ type PostDraftArticleRequest struct {
 
 type CocktailIngredientWithoutID struct {
 	//example: Gin Tonic
+	//required: true
 	Name string `json:"name"`
 
 	//example: 1 cup
+	//required: true
 	Amount string `json:"amount"`
 }
 
 type CocktailIngredientWithID struct {
-	ID     int64  `json:"id"`
-	Name   string `json:"name"`
+	//required: true
+	ID int64 `json:"id"`
+	//required: true
+	Name string `json:"name"`
+	//required: true
 	Amount string `json:"amount"`
-	Unit   string `json:"unit"`
+	//required: true
+	Unit string `json:"unit"`
 }
 
 type CocktailStepWithoutID struct {
 	//example: shake
+	//required: true
 	Description string `json:"description"`
 }
 
 type CocktailStepWithID struct {
-	ID          int64  `json:"id"`
+	//required: true
+	ID int64 `json:"id"`
+	//required: true
 	Description string `json:"description"`
 }
 
 type CocktailPhotoWithID struct {
-	ID    int64  `json:"id"`
+	//required: true
+	ID int64 `json:"id"`
+	//required: true
 	Photo string `json:"path"`
 }
 
@@ -115,16 +142,26 @@ type GetCocktailByIDRequest struct {
 }
 
 type GetCocktailByIDResponse struct {
-	CocktailID     int64                         `json:"cocktail_id"`
-	UserID         int64                         `json:"user_id"`
-	UserName       string                        `json:"user_name"`
-	Photos         []CocktailPhotoWithID         `json:"photos"`
-	Title          string                        `json:"title"`
-	Description    string                        `json:"description"`
+	//required: true
+	CocktailID int64 `json:"cocktail_id"`
+	//required: true
+	UserID int64 `json:"user_id"`
+	//required: true
+	UserName string `json:"user_name"`
+	//required: true
+	Photos []CocktailPhotoWithID `json:"photos"`
+	//required: true
+	Title string `json:"title"`
+	//required: true
+	Description string `json:"description"`
+	//required: true
 	IngredientList []CocktailIngredientWithoutID `json:"ingredient_list"`
-	StepList       []CocktailStepWithoutID       `json:"step_list"`
-	IsCollected    bool                          `json:"is_collected"`
-	CreatedDate    string                        `json:"created_date"`
+	//required: true
+	StepList []CocktailStepWithoutID `json:"step_list"`
+	//required: true
+	IsCollected bool `json:"is_collected"`
+	//required: true
+	CreatedDate string `json:"created_date"`
 }
 
 type GetCocktailDraftByIDRequest struct {
@@ -135,13 +172,20 @@ type GetCocktailDraftByIDRequest struct {
 }
 
 type GetCocktailDraftByIDResponse struct {
-	CocktailID     int64                         `json:"cocktail_id"`
-	Photos         []CocktailPhotoWithID         `json:"photos"`
-	Title          string                        `json:"title"`
-	Description    string                        `json:"description"`
+	//required: true
+	CocktailID int64 `json:"cocktail_id"`
+	//required: true
+	Photos []CocktailPhotoWithID `json:"photos"`
+	//required: true
+	Title string `json:"title"`
+	//required: true
+	Description string `json:"description"`
+	//required: true
 	IngredientList []CocktailIngredientWithoutID `json:"ingredient_list"`
-	StepList       []CocktailStepWithoutID       `json:"step_list"`
-	CreatedDate    string                        `json:"created_date"`
+	//required: true
+	StepList []CocktailStepWithoutID `json:"step_list"`
+	//required: true
+	CreatedDate string `json:"created_date"`
 }
 
 type UpdateDraftArticleRequest struct {
@@ -165,12 +209,17 @@ type DeleteDraftArticleRequest struct {
 }
 
 type GetSelfCocktailListResponse struct {
+	//required: true
 	CocktailList []SelfCocktailList `json:"cocktail_list"`
 }
 
 type SelfCocktailList struct {
-	CocktailID int64  `json:"cocktail_id"`
-	UserName   string `json:"user_name"`
-	Photo      string `json:"photo"`
-	Title      string `json:"title"`
+	//required: true
+	CocktailID int64 `json:"cocktail_id"`
+	//required: true
+	UserName string `json:"user_name"`
+	//required: true
+	Photo string `json:"photo"`
+	//required: true
+	Title string `json:"title"`
 }
