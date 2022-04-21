@@ -369,9 +369,9 @@ func (u *UserHandler) SelfCocktailList(c *gin.Context) {
 	var response viewmodels.GetSelfCocktailListResponse
 
 	filter := make(map[string]interface{})
-	filter["category"] = cockarticletype.Normal
+	filter["category"] = cockarticletype.Formal
 	filter["user_id"] = userId
-	cocktails, err := u.CocktailUsecase.QueryByUserID(c, userId)
+	cocktails, err := u.CocktailUsecase.QueryFormalByUserID(c, userId)
 	if err != nil {
 		service.GetLoggerEntry(u.Logger, api, nil).Errorf("get cocktails with filter failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())

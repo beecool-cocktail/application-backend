@@ -4,18 +4,18 @@ type CocktailArticleType int
 
 const (
 	Draft CocktailArticleType = iota
-	Normal
+	Formal
 )
 
 func (s CocktailArticleType) String() string {
 	return [...]string{"draft", "normal"}[s]
 }
 
-func (s CocktailArticleType)Int() int {
+func (s CocktailArticleType) Int() int {
 	switch s {
 	case Draft:
 		return 0
-	case Normal:
+	case Formal:
 		return 1
 	default:
 		return -1

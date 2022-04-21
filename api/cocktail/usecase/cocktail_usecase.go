@@ -366,9 +366,9 @@ func (c *cocktailUsecase) QueryByCocktailID(ctx context.Context, cocktailID, use
 	return apiCocktail, nil
 }
 
-func (c *cocktailUsecase) QueryByUserID(ctx context.Context, id int64) ([]domain.APICocktail, error) {
+func (c *cocktailUsecase) QueryFormalByUserID(ctx context.Context, id int64) ([]domain.APICocktail, error) {
 
-	cocktails, err := c.cocktailMySQLRepo.QueryByUserID(ctx, id)
+	cocktails, err := c.cocktailMySQLRepo.QueryFormalByUserID(ctx, id)
 	if err != nil {
 		return []domain.APICocktail{}, err
 	}
@@ -744,7 +744,7 @@ func (c *cocktailUsecase) MakeDraftToFormal(ctx context.Context, cocktailID, use
 		_, err := c.cocktailMySQLRepo.UpdateCategoryTx(ctx, tx,
 			&domain.Cocktail{
 				CocktailID: cocktail.CocktailID,
-				Category:   cockarticletype.Normal.Int(),
+				Category:   cockarticletype.Formal.Int(),
 			})
 		if err != nil {
 			return err

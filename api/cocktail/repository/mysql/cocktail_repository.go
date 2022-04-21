@@ -3,6 +3,7 @@ package mysql
 import (
 	"context"
 	"github.com/beecool-cocktail/application-backend/domain"
+	"github.com/beecool-cocktail/application-backend/enum/cockarticletype"
 	"github.com/beecool-cocktail/application-backend/enum/sortbydir"
 	"github.com/fatih/structs"
 	"gorm.io/gorm"
@@ -57,10 +58,10 @@ func (c *cocktailMySQLRepository) QueryByCocktailID(ctx context.Context, id int6
 	return cocktail, res.Error
 }
 
-func (c *cocktailMySQLRepository) QueryByUserID(ctx context.Context, id int64) ([]domain.Cocktail, error) {
+func (c *cocktailMySQLRepository) QueryFormalByUserID(ctx context.Context, id int64) ([]domain.Cocktail, error) {
 	var cocktail []domain.Cocktail
 
-	res := c.db.Where("user_id = ?", id).Find(&cocktail)
+	res := c.db.Where("user_id = ? AND category = ?", id, cockarticletype.Formal).Find(&cocktail)
 
 	return cocktail, res.Error
 }

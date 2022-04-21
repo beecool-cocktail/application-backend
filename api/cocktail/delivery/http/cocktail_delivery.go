@@ -228,7 +228,7 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 	}
 
 	filter := make(map[string]interface{})
-	filter["category"] = cockarticletype.Normal
+	filter["category"] = cockarticletype.Formal
 	cocktails, total, err := co.CocktailUsecase.GetAllWithFilter(c, filter, domain.PaginationUsecase{
 		Page:     page,
 		PageSize: pageSize,
@@ -348,7 +348,7 @@ func (co *CocktailHandler) PostArticle(c *gin.Context) {
 		UserID:      userId,
 		Title:       request.Name,
 		Description: request.Description,
-		Category:    cockarticletype.Normal.Int(),
+		Category:    cockarticletype.Formal.Int(),
 	}
 
 	var ingredients []domain.CocktailIngredient
