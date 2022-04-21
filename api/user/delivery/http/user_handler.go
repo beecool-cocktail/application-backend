@@ -110,7 +110,7 @@ func (u *UserHandler) GoogleAuthenticate(c *gin.Context) {
 	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
 }
 
-// swagger:operation POST /auth/logout user logoutRequest
+// swagger:operation POST /auth/logout login logoutRequest
 // ---
 // summary: User logout.
 // description: make token invalid.
