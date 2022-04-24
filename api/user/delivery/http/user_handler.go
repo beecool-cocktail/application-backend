@@ -451,9 +451,9 @@ func (u *UserHandler) SelfCocktailList(c *gin.Context) {
 
 	cocktailList := make([]viewmodels.SelfCocktailList, 0)
 	for _, cocktail := range cocktails {
-		ingredients := make([]viewmodels.CocktailIngredientWithoutID, 0)
+		ingredients := make([]viewmodels.CocktailIngredientWithoutIDInResponse, 0)
 		for _, ingredient := range cocktail.Ingredients {
-			out := viewmodels.CocktailIngredientWithoutID{
+			out := viewmodels.CocktailIngredientWithoutIDInResponse{
 				Name:   ingredient.IngredientName,
 				Amount: ingredient.IngredientAmount,
 			}
