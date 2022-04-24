@@ -13,7 +13,7 @@ services:
       MYSQL_DATABASE: whispering_conner
     restart: always
     volumes:
-      - ${DATA_DIR}/mysql_data:/var/lib/mysql
+#      - ${DATA_DIR}/mysql_data:/var/lib/mysql
       - ${MYSQL_CONFIG}:/etc/mysql/my.cnf
       - ./dockerconf/mysql/sql:/docker-entrypoint-initdb.d
 
@@ -42,9 +42,7 @@ services:
         tail -f /dev/null
 
   server:
-#    image: blawhi2435/whispering-corner:${APPLICATION_VERSION}
-    build:
-      context: .
+    image: blawhi2435/whispering-corner:${APPLICATION_VERSION}
     container_name: whispering-server
     networks:
       whispering:
