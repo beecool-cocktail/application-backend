@@ -61,6 +61,16 @@ definitions:
         x-go-name: DeletedIds
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  DeleteFormalArticleRequest:
+    properties:
+      deleted_ids:
+        items:
+          format: int64
+          type: integer
+        type: array
+        x-go-name: DeletedIds
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   DraftCocktailList:
     properties:
       cocktail_id:
@@ -544,6 +554,38 @@ definitions:
     - step_list
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  UpdateFormalArticleRequest:
+    properties:
+      description:
+        example: Very good to drink
+        type: string
+        x-go-name: Description
+      ingredient_list:
+        items:
+          $ref: '#/definitions/CocktailIngredientWithoutID'
+        type: array
+        x-go-name: IngredientList
+      name:
+        example: Gin Tonic
+        type: string
+        x-go-name: Name
+      photos:
+        items:
+          $ref: '#/definitions/CocktailPhotoWithID'
+        type: array
+        x-go-name: Photos
+      step_list:
+        items:
+          $ref: '#/definitions/CocktailStepWithoutID'
+        type: array
+        x-go-name: StepList
+    required:
+    - name
+    - ingredient_list
+    - step_list
+    - description
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   UpdateUserInfoRequest:
     properties:
       file:
@@ -603,6 +645,39 @@ definitions:
     - step_list
     type: object
     x-go-name: swaggerUpdateDraftArticleRequest
+    x-go-package: github.com/beecool-cocktail/application-backend/swagger
+  updateFormalArticleRequest:
+    properties:
+      description:
+        example: Very good to drink
+        type: string
+        x-go-name: Description
+      ingredient_list:
+        items:
+          $ref: '#/definitions/CocktailIngredientWithoutID'
+        type: array
+        x-go-name: IngredientList
+      name:
+        example: Gin Tonic
+        type: string
+        x-go-name: Name
+      photos:
+        items:
+          $ref: '#/definitions/CocktailPhotoWithID'
+        type: array
+        x-go-name: Photos
+      step_list:
+        items:
+          $ref: '#/definitions/CocktailStepWithoutID'
+        type: array
+        x-go-name: StepList
+    required:
+    - name
+    - ingredient_list
+    - step_list
+    - description
+    type: object
+    x-go-name: swaggerUpdateFormalArticleRequest
     x-go-package: github.com/beecool-cocktail/application-backend/swagger
 host: localhost:6969
 info:
@@ -769,6 +844,21 @@ paths:
       summary: Get popular cocktail list
       tags:
       - cocktail
+    patch:
+      description: DELETE cocktail formal article.
+      operationId: deleteFormalArticleRequest
+      parameters:
+      - in: body
+        name: Body
+        schema:
+          $ref: '#/definitions/DeleteFormalArticleRequest'
+      responses: {}
+      security:
+      - Bearer:
+        - apiKey
+      summary: DELETE cocktail formal article.
+      tags:
+      - cocktail
     post:
       description: Post cocktail article.
       operationId: postArticleRequest
@@ -802,6 +892,45 @@ paths:
       summary: Get cocktail detail information
       tags:
       - cocktail
+    put:
+      description: Edit cocktail formal article.
+      operationId: updateFormalArticle
+      parameters:
+      - example: 123456
+        in: path
+        name: id
+        required: true
+        type: integer
+      - in: body
+        name: Body
+        schema:
+          $ref: '#/definitions/updateFormalArticleRequest'
+      responses: {}
+      security:
+      - Bearer:
+        - apiKey
+      summary: Edit cocktail formal article.
+      tags:
+      - cocktail
+  /users/{id}/favorite-cocktails:
+    get:
+      description: Get other user favorite cocktail article list.
+      operationId: getOtherUserFavoriteList
+      parameters:
+      - example: 123456
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/getUserFavoriteCocktailListResponse'
+      security:
+      - Bearer:
+        - apiKey
+      summary: Get other user favorite cocktail article list.
+      tags:
+      - user
   /users/current:
     get:
       description: Get user id, name, email, numberOfPost, numberOfCollection and
@@ -848,7 +977,7 @@ paths:
       - user
   /users/current/favorite-cocktails:
     get:
-      description: Get user favorite cocktail article list.
+      description: Get current user favorite cocktail article list.
       operationId: getUserFavoriteList
       responses:
         "200":
@@ -856,7 +985,7 @@ paths:
       security:
       - Bearer:
         - apiKey
-      summary: Get user favorite cocktail article list.
+      summary: Get current user favorite cocktail article list.
       tags:
       - user
     post:

@@ -192,3 +192,15 @@ type swaggerGetSelfCocktailListResponse struct {
 		Data viewmodels.GetSelfCocktailListResponse `json:"data"`
 	}
 }
+
+// swagger:model updateFormalArticleRequest
+type swaggerUpdateFormalArticleRequest struct {
+	// in: body
+	viewmodels.UpdateFormalArticleRequest
+}
+
+// swagger:parameters deleteFormalArticleRequest
+type swaggerDeleteFormalArticleRequest struct {
+	// in: body
+	Body viewmodels.DeleteFormalArticleRequest
+}

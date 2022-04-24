@@ -208,6 +208,28 @@ type DeleteDraftArticleRequest struct {
 	DeletedIds []int64 `json:"deleted_ids"`
 }
 
+type DeleteFormalArticleRequest struct {
+	DeletedIds []int64 `json:"deleted_ids"`
+}
+
+type UpdateFormalArticleRequest struct {
+	Photos []CocktailPhotoWithID `json:"photos"`
+
+	//example: Gin Tonic
+	//required: true
+	Name string `json:"name" binding:"required"`
+
+	//required: true
+	IngredientList []CocktailIngredientWithoutID `json:"ingredient_list" binding:"required,gt=0"`
+
+	//required: true
+	StepList []CocktailStepWithoutID `json:"step_list" binding:"required,gt=0"`
+
+	//example: Very good to drink
+	//required: true
+	Description string `json:"description" binding:"required"`
+}
+
 type GetSelfCocktailListResponse struct {
 	//required: true
 	CocktailList []SelfCocktailList `json:"cocktail_list"`

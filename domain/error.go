@@ -7,42 +7,44 @@ import (
 )
 
 const (
-	CodeSuccess                 = "00000"
-	CodeRequestDecodeFailed     = "P0001"
-	CodeCanNotSpecifyHttpAction = "P0002"
-	CodeParameterIllegal        = "P0003"
-	CodePermissionDenied        = "P0004"
-	CodeItemDoesNotBelongToUser = "N0001"
-	CodeUserAlreadyExist        = "A0001"
-	CodeUserNotFound            = "A0002"
-	CodePasswordNotMatch        = "A0003"
-	CodeTokenExpired            = "A0004"
-	CodeCocktailNotFound        = "B0001"
-	CodeCocktailDraftIsMaximum  = "B0002"
-	CodeCocktailNotFinished     = "B0003"
-	CodeFileTypeIllegal         = "F0001"
-	CodeFileSizeIllegal         = "F0002"
-	CodeInternalError           = "S0001"
-	CodeResponseEncodedFailed   = "S0002"
+	CodeSuccess                                = "00000"
+	CodeRequestDecodeFailed                    = "P0001"
+	CodeCanNotSpecifyHttpAction                = "P0002"
+	CodeParameterIllegal                       = "P0003"
+	CodePermissionDenied                       = "P0004"
+	CodeItemDoesNotBelongToUser                = "N0001"
+	CodeUserAlreadyExist                       = "A0001"
+	CodeUserNotFound                           = "A0002"
+	CodePasswordNotMatch                       = "A0003"
+	CodeTokenExpired                           = "A0004"
+	CodeCocktailNotFound                       = "B0001"
+	CodeCocktailDraftIsMaximum                 = "B0002"
+	CodeCocktailNotFinished                    = "B0003"
+	CodeFavoriteCocktailListNotOpenToThePublic = "B0004"
+	CodeFileTypeIllegal                        = "F0001"
+	CodeFileSizeIllegal                        = "F0002"
+	CodeInternalError                          = "S0001"
+	CodeResponseEncodedFailed                  = "S0002"
 )
 
 var (
-	ErrRequestDecodeFailed      = errors.New("request decode failed")
-	ErrResponseEncodedFailed    = errors.New("response encoded failed")
-	ErrCanNotSpecifyHttpAction  = errors.New("can't specify action through request parameter")
-	ErrParameterIllegal         = errors.New("parameter illegal")
-	ErrPermissionDenied         = errors.New("permission denied")
-	ErrItemDoesNotBelongToUser  = errors.New("item doesn't belong to user")
-	ErrUserAlreadyExist         = errors.New("user already exist")
-	ErrUserNotFound             = errors.New("user not found")
-	ErrPasswordNotMatch         = errors.New("password not match")
-	ErrCocktailNotFound         = errors.New("cocktail not found")
-	ErrorCocktailDraftIsMaximum = errors.New("cocktail draft is maximum")
-	ErrorCocktailNotFinished    = errors.New("cocktail not finished")
-	ErrTokenExpired             = errors.New("token expired")
-	ErrCodeFileTypeIllegal      = errors.New("illegal file type")
-	ErrCodeFileSizeIllegal      = errors.New("illegal file size")
-	ErrFilePathIllegal          = errors.New("illegal file path")
+	ErrRequestDecodeFailed                      = errors.New("request decode failed")
+	ErrResponseEncodedFailed                    = errors.New("response encoded failed")
+	ErrCanNotSpecifyHttpAction                  = errors.New("can't specify action through request parameter")
+	ErrParameterIllegal                         = errors.New("parameter illegal")
+	ErrPermissionDenied                         = errors.New("permission denied")
+	ErrItemDoesNotBelongToUser                  = errors.New("item doesn't belong to user")
+	ErrUserAlreadyExist                         = errors.New("user already exist")
+	ErrUserNotFound                             = errors.New("user not found")
+	ErrPasswordNotMatch                         = errors.New("password not match")
+	ErrCocktailNotFound                         = errors.New("cocktail not found")
+	ErrorCocktailDraftIsMaximum                 = errors.New("cocktail draft is maximum")
+	ErrorCocktailNotFinished                    = errors.New("cocktail not finished")
+	ErrorFavoriteCocktailListNotOpenToThePublic = errors.New("favorite cocktail not open to the public")
+	ErrTokenExpired                             = errors.New("token expired")
+	ErrCodeFileTypeIllegal                      = errors.New("illegal file type")
+	ErrCodeFileSizeIllegal                      = errors.New("illegal file size")
+	ErrFilePathIllegal                          = errors.New("illegal file path")
 )
 
 func GetErrorCode(err error) string {
@@ -79,6 +81,8 @@ func GetErrorCode(err error) string {
 		return CodeCocktailDraftIsMaximum
 	case ErrorCocktailNotFinished:
 		return CodeCocktailNotFinished
+	case ErrorFavoriteCocktailListNotOpenToThePublic:
+		return CodeFavoriteCocktailListNotOpenToThePublic
 	case ErrCodeFileTypeIllegal:
 		return CodeFileTypeIllegal
 	case ErrCodeFileSizeIllegal:
@@ -120,6 +124,8 @@ func GetStatusCode(err error) int {
 		return http.StatusBadRequest
 	case ErrorCocktailNotFinished:
 		return http.StatusBadRequest
+	case ErrorFavoriteCocktailListNotOpenToThePublic:
+		return http.StatusUnauthorized
 	case ErrCodeFileTypeIllegal:
 		return http.StatusForbidden
 	case ErrCodeFileSizeIllegal:

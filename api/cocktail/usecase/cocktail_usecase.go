@@ -539,11 +539,6 @@ func (c *cocktailUsecase) Update(ctx context.Context, co *domain.Cocktail, ingre
 		return domain.ErrItemDoesNotBelongToUser
 	}
 
-	// can't update non-draft article
-	if cocktail.Category != cockarticletype.Draft.Int() {
-		return domain.ErrPermissionDenied
-	}
-
 	oldPhoto, err := c.cocktailPhotoMySQLRepo.QueryPhotosByCocktailId(ctx, co.CocktailID)
 	if err != nil {
 		return err

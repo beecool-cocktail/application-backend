@@ -46,6 +46,7 @@ func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase, socialAc
 	s.HTTP.POST("/api/users/current/favorite-cocktails", middlewareHandler.JWTAuthMiddleware(), handler.CollectArticle)
 	s.HTTP.DELETE("/api/users/current/favorite-cocktails/:cocktailID", middlewareHandler.JWTAuthMiddleware(), handler.RemoveCollectionArticle)
 	s.HTTP.GET("/api/users/current/favorite-cocktails", middlewareHandler.JWTAuthMiddleware(), handler.GetUserFavoriteList)
+	s.HTTP.GET("/api/users/:userID/favorite-cocktails", handler.GetOtherUserFavoriteList)
 	s.HTTP.GET("/api/users/current/cocktails", middlewareHandler.JWTAuthMiddleware(), handler.SelfCocktailList)
 }
 
@@ -310,8 +311,8 @@ func (u *UserHandler) RemoveCollectionArticle(c *gin.Context) {
 
 // swagger:operation GET /users/current/favorite-cocktails user getUserFavoriteList
 // ---
-// summary: Get user favorite cocktail article list.
-// description: Get user favorite cocktail article list.
+// summary: Get current user favorite cocktail article list.
+// description: Get current user favorite cocktail article list.
 //
 // security:
 // - Bearer: [apiKey]
@@ -320,13 +321,83 @@ func (u *UserHandler) RemoveCollectionArticle(c *gin.Context) {
 //  "200":
 //    "$ref": "#/responses/getUserFavoriteCocktailListResponse"
 func (u *UserHandler) GetUserFavoriteList(c *gin.Context) {
-	api := "/user/info"
+	api := "/users/current/favorite-cocktails"
 	var response viewmodels.GetUserFavoriteCocktailListResponse
 	userId := c.GetInt64("user_id")
 
 	favoriteCocktails, total, err := u.FavoriteCocktailUsecase.QueryByUserID(c, userId, domain.PaginationUsecase{})
 	if err != nil {
 		service.GetLoggerEntry(u.Logger, api, nil).Errorf("query by id failed - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
+	list := make([]viewmodels.FavoriteCocktail, 0)
+	for _, cocktail := range favoriteCocktails {
+		out := viewmodels.FavoriteCocktail{
+			CocktailID: cocktail.CocktailID,
+			UserName:   cocktail.UserName,
+			Photo:      cocktail.CoverPhoto,
+			Title:      cocktail.Title,
+		}
+
+		list = append(list, out)
+	}
+
+	response = viewmodels.GetUserFavoriteCocktailListResponse{
+		Total:                total,
+		FavoriteCocktailList: list,
+	}
+
+	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
+}
+
+// swagger:operation GET /users/{id}/favorite-cocktails user getOtherUserFavoriteList
+// ---
+// summary: Get other user favorite cocktail article list.
+// description: Get other user favorite cocktail article list.
+//
+// security:
+// - Bearer: [apiKey]
+//
+// parameters:
+// - name: id
+//   in: path
+//   required: true
+//   type: integer
+//   example: 123456
+//
+// responses:
+//  "200":
+//    "$ref": "#/responses/getUserFavoriteCocktailListResponse"
+func (u *UserHandler) GetOtherUserFavoriteList(c *gin.Context) {
+	api := "/users/{id}/favorite-cocktails"
+	userID := c.Param("userID")
+	var response viewmodels.GetUserFavoriteCocktailListResponse
+
+	userIDNumber, err := strconv.ParseInt(userID, 10, 64)
+	if err != nil {
+		service.GetLoggerEntry(u.Logger, api, nil).Errorf("parameter illegal - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
+	user, err := u.UserUsecase.QueryById(c, userIDNumber)
+	if err != nil {
+		service.GetLoggerEntry(u.Logger, api, nil).Errorf("query user by user id failed - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
+	if !user.IsCollectionPublic {
+		service.GetLoggerEntry(u.Logger, api, nil).Info("user doesn't public favorite cocktail list")
+		util.PackResponseWithError(c, domain.ErrorFavoriteCocktailListNotOpenToThePublic, domain.ErrorFavoriteCocktailListNotOpenToThePublic.Error())
+		return
+	}
+
+	favoriteCocktails, total, err := u.FavoriteCocktailUsecase.QueryByUserID(c, userIDNumber, domain.PaginationUsecase{})
+	if err != nil {
+		service.GetLoggerEntry(u.Logger, api, nil).Errorf("query favorite cocktail by user id failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
