@@ -389,9 +389,14 @@ func (u *UserHandler) GetOtherUserFavoriteList(c *gin.Context) {
 		return
 	}
 
+	list := make([]viewmodels.FavoriteCocktail, 0)
 	if !user.IsCollectionPublic {
-		service.GetLoggerEntry(u.Logger, api, nil).Info("user doesn't public favorite cocktail list")
-		util.PackResponseWithError(c, domain.ErrorFavoriteCocktailListNotOpenToThePublic, domain.ErrorFavoriteCocktailListNotOpenToThePublic.Error())
+		response = viewmodels.GetUserFavoriteCocktailListResponse{
+			IsPublic:             user.IsCollectionPublic,
+			Total:                0,
+			FavoriteCocktailList: list,
+		}
+		util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
 		return
 	}
 
@@ -402,7 +407,6 @@ func (u *UserHandler) GetOtherUserFavoriteList(c *gin.Context) {
 		return
 	}
 
-	list := make([]viewmodels.FavoriteCocktail, 0)
 	for _, cocktail := range favoriteCocktails {
 		out := viewmodels.FavoriteCocktail{
 			CocktailID: cocktail.CocktailID,
@@ -415,6 +419,7 @@ func (u *UserHandler) GetOtherUserFavoriteList(c *gin.Context) {
 	}
 
 	response = viewmodels.GetUserFavoriteCocktailListResponse{
+		IsPublic:             user.IsCollectionPublic,
 		Total:                total,
 		FavoriteCocktailList: list,
 	}

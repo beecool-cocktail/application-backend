@@ -61,6 +61,8 @@ type CollectArticleRequest struct {
 
 type GetUserFavoriteCocktailListResponse struct {
 	//required: true
+	IsPublic bool `json:"is_public"`
+	//required: true
 	Total int64 `json:"total"`
 	//required: true
 	FavoriteCocktailList []FavoriteCocktail `json:"favorite_cocktail_list"`
