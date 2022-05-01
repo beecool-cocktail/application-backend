@@ -17,13 +17,14 @@ type APIFavoriteCocktail struct {
 type FavoriteCocktail struct {
 	ID          int64     `gorm:"type:bigint(64) NOT NULL auto_increment;primary_key"`
 	CocktailID  int64     `gorm:"type:bigint(64) NOT NULL;index:idx_favorite_cocktail,priority:2; comment: 調酒id"`
-	UserID      int64     `gorm:"type:bigint(64) NOT NULL;index:idx_favorite_cocktail,priority:1; comment: 作者id"`
+	UserID      int64     `gorm:"type:bigint(64) NOT NULL;index:idx_favorite_cocktail,priority:1; comment: 收藏者id"`
 	CreatedDate time.Time `gorm:"type:timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;index:idx_date"`
 }
 
 type FavoriteCocktailMySQLRepository interface {
 	StoreTx(ctx context.Context, tx *gorm.DB, c *FavoriteCocktail) error
 	QueryByUserID(ctx context.Context, id int64, pagination PaginationMySQLRepository) ([]FavoriteCocktail, int64, error)
+	Delete(ctx context.Context, cocktailID, userID int64) error
 	DeleteTx(ctx context.Context, tx *gorm.DB, cocktailID, userID int64) error
 }
 

@@ -40,7 +40,13 @@ func (f *favoriteCocktailUsecase) fillFavoriteCocktailList(ctx context.Context,
 
 	for _, favoriteCocktail := range cocktails {
 		cocktail, err := f.cocktailMySQL.QueryByCocktailID(ctx, favoriteCocktail.CocktailID)
-		if err != nil {
+		if err != nil && err == gorm.ErrRecordNotFound {
+			// origin article was deleted
+			deleteErr := f.favoriteCocktailMySQL.Delete(ctx, favoriteCocktail.CocktailID, favoriteCocktail.UserID)
+			if deleteErr != nil {
+				return []domain.APIFavoriteCocktail{}, err
+			}
+		} else if err != nil {
 			return []domain.APIFavoriteCocktail{}, err
 		}
 

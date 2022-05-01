@@ -57,3 +57,11 @@ func (f *favoriteCocktailMySQLRepository) DeleteTx(ctx context.Context, tx *gorm
 
 	return res.Error
 }
+
+func (f *favoriteCocktailMySQLRepository) Delete(ctx context.Context, cocktailID, userID int64) error {
+	var cocktail domain.FavoriteCocktail
+
+	res := f.db.Where("user_id = ? AND cocktail_id = ?", userID, cocktailID).Delete(&cocktail)
+
+	return res.Error
+}

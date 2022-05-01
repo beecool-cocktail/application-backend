@@ -643,9 +643,6 @@ func (c *cocktailUsecase) Delete(ctx context.Context, cocktailID, userID int64) 
 		tx := i.(*gorm.DB)
 
 		if cocktail.Category == cockarticletype.Draft.Int() {
-			if user.NumberOfDraft == 30 {
-				return domain.ErrorCocktailDraftIsMaximum
-			}
 			numberOfDraft := user.NumberOfDraft - 1
 			_, err = c.userMySQLRepo.UpdateNumberOfDraftTx(ctx, tx, &domain.User{
 				ID:            user.ID,
