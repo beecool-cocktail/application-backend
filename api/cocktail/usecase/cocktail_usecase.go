@@ -721,7 +721,7 @@ func (c *cocktailUsecase) MakeDraftToFormal(ctx context.Context, cocktailID, use
 	}
 
 	if apiCocktail.Title == "" || apiCocktail.Description == "" || len(apiCocktail.Ingredients) <= 0 ||
-		len(apiCocktail.Steps) <= 0 || len(apiCocktail.Photos) <= 0 || len(apiCocktail.Photos) > 5 {
+		len(apiCocktail.Steps) <= 0 || len(apiCocktail.Photos) > 5 {
 		return domain.ErrorCocktailNotFinished
 	}
 
