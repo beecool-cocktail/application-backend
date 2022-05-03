@@ -46,6 +46,7 @@ func (f *favoriteCocktailUsecase) fillFavoriteCocktailList(ctx context.Context,
 			if deleteErr != nil {
 				return []domain.APIFavoriteCocktail{}, err
 			}
+			continue
 		} else if err != nil {
 			return []domain.APIFavoriteCocktail{}, err
 		}
