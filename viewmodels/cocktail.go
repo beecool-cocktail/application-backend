@@ -189,6 +189,8 @@ type GetCocktailByIDResponse struct {
 	//required: true
 	UserName string `json:"user_name"`
 	//required: true
+	UserPhoto string `json:"user_photo"`
+	//required: true
 	Photos []CocktailPhotoWithIDInResponse `json:"photos"`
 	//required: true
 	Title string `json:"title"`

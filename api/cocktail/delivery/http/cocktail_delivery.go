@@ -16,11 +16,15 @@ import (
 type CocktailHandler struct {
 	Service         *service.Service
 	CocktailUsecase domain.CocktailUsecase
+	UserUsecase     domain.UserUsecase
 }
 
-func NewCocktailHandler(s *service.Service, cocktailUsecase domain.CocktailUsecase, middlewareHandler middleware.Handler) {
+func NewCocktailHandler(s *service.Service, cocktailUsecase domain.CocktailUsecase,
+	userUsecase domain.UserUsecase,
+	middlewareHandler middleware.Handler) {
 	handler := &CocktailHandler{
 		Service:         s,
+		UserUsecase:     userUsecase,
 		CocktailUsecase: cocktailUsecase,
 	}
 
@@ -97,10 +101,18 @@ func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 		photos = append(photos, out)
 	}
 
+	cocktailUser, err := co.UserUsecase.QueryById(c, cocktail.UserID)
+	if err != nil {
+		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("query user by user id failed - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
 	response = viewmodels.GetCocktailByIDResponse{
 		CocktailID:     cocktail.CocktailID,
 		UserID:         cocktail.UserID,
 		UserName:       cocktail.UserName,
+		UserPhoto:      cocktailUser.Photo,
 		Title:          cocktail.Title,
 		Description:    cocktail.Description,
 		IngredientList: ingredients,
