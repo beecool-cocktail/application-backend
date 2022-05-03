@@ -205,10 +205,14 @@ definitions:
       user_name:
         type: string
         x-go-name: UserName
+      user_photo:
+        type: string
+        x-go-name: UserPhoto
     required:
     - cocktail_id
     - user_id
     - user_name
+    - user_photo
     - photos
     - title
     - description
