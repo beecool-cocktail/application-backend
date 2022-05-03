@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/beecool-cocktail/application-backend/domain"
 	"github.com/beecool-cocktail/application-backend/enum/cockarticletype"
 	"github.com/beecool-cocktail/application-backend/enum/httpaction"
@@ -156,8 +157,6 @@ func (c *cocktailUsecase) fillCollectionStatusInDetails(ctx context.Context, coc
 	for _, favoriteCocktail := range favoriteCocktails {
 		if cocktail.CocktailID == favoriteCocktail.CocktailID {
 			cocktail.IsCollected = true
-		} else {
-			cocktail.IsCollected = false
 		}
 	}
 
@@ -355,6 +354,7 @@ func (c *cocktailUsecase) QueryByCocktailID(ctx context.Context, cocktailID, use
 	if err != nil {
 		return domain.APICocktail{}, err
 	}
+	fmt.Printf("user_id: %d\n", userID)
 
 	if userID != 0 {
 		apiCocktail, err = c.fillCollectionStatusInDetails(ctx, apiCocktail, userID)
