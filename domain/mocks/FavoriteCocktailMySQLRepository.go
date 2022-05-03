@@ -16,6 +16,20 @@ type FavoriteCocktailMySQLRepository struct {
 	mock.Mock
 }
 
+// Delete provides a mock function with given fields: ctx, cocktailID, userID
+func (_m *FavoriteCocktailMySQLRepository) Delete(ctx context.Context, cocktailID int64, userID int64) error {
+	ret := _m.Called(ctx, cocktailID, userID)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64, int64) error); ok {
+		r0 = rf(ctx, cocktailID, userID)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // DeleteTx provides a mock function with given fields: ctx, tx, cocktailID, userID
 func (_m *FavoriteCocktailMySQLRepository) DeleteTx(ctx context.Context, tx *gorm.DB, cocktailID int64, userID int64) error {
 	ret := _m.Called(ctx, tx, cocktailID, userID)
