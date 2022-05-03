@@ -81,5 +81,5 @@ func initializeRoutes(s *service.Service) {
 
 	// Delivery dependency injection
 	_userHandlerHttpDelivery.NewUserHandler(s, userUsecase, socialAccountUsecase, cocktailUsecase, favoriteCocktailUsecase, *middlewareHandler)
-	_cocktailHandlerHttpDelivery.NewCocktailHandler(s, cocktailUsecase, *middlewareHandler)
+	_cocktailHandlerHttpDelivery.NewCocktailHandler(s, cocktailUsecase, userUsecase, *middlewareHandler)
 }
