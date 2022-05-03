@@ -130,6 +130,7 @@ func (f *favoriteCocktailUsecase) QueryByUserID(ctx context.Context, id int64,
 	for _, cocktail := range cocktails {
 		out := domain.APIFavoriteCocktail{
 			CocktailID: cocktail.CocktailID,
+			UserID:     cocktail.UserID,
 		}
 		apiFavoriteCocktails = append(apiFavoriteCocktails, out)
 	}
