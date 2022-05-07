@@ -354,11 +354,15 @@ definitions:
           $ref: '#/definitions/FavoriteCocktail'
         type: array
         x-go-name: FavoriteCocktailList
+      is_public:
+        type: boolean
+        x-go-name: IsPublic
       total:
         format: int64
         type: integer
         x-go-name: Total
     required:
+    - is_public
     - total
     - favorite_cocktail_list
     type: object
@@ -445,6 +449,11 @@ definitions:
       is_collected:
         type: boolean
         x-go-name: IsCollected
+      low_quality_photos:
+        items:
+          type: string
+        type: array
+        x-go-name: LowQualityPhotos
       photos:
         items:
           type: string
@@ -466,6 +475,7 @@ definitions:
     - user_name
     - title
     - photos
+    - low_quality_photos
     - ingredient_list
     - is_collected
     - created_date

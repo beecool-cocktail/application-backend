@@ -66,6 +66,12 @@ func (c *cocktailUsecase) fillCocktailList(ctx context.Context, cocktails []doma
 			}
 		}
 
+		lowQualityPhotos, err := c.cocktailPhotoMySQLRepo.QueryLowQualityPhotosByCocktailId(ctx, cocktail.CocktailID)
+		if err != nil {
+			return []domain.APICocktail{}, err
+		}
+		cocktail.LowQualityPhotos = lowQualityPhotos
+
 		ingredients, err := c.cocktailIngredientMySQLRepo.QueryByCocktailId(ctx, cocktail.CocktailID)
 		if err != nil {
 			return []domain.APICocktail{}, err
@@ -191,9 +197,9 @@ func (c *cocktailUsecase) fillCollectionStatusInList(ctx context.Context, cockta
 }
 
 func (c *cocktailUsecase) getNeedDeletedPhoto(oldPhotos []domain.CocktailPhoto,
-	newImages []domain.CocktailImage) []int64 {
+	newImages []domain.CocktailImage) []domain.CocktailPhoto {
 
-	var deletedPhotoID []int64
+	var deletedPhotoID []domain.CocktailPhoto
 	for _, oldPhoto := range oldPhotos {
 		var needDeleted = true
 		for _, newImage := range newImages {
@@ -202,7 +208,7 @@ func (c *cocktailUsecase) getNeedDeletedPhoto(oldPhotos []domain.CocktailPhoto,
 			}
 		}
 		if needDeleted {
-			deletedPhotoID = append(deletedPhotoID, oldPhoto.ID)
+			deletedPhotoID = append(deletedPhotoID, oldPhoto)
 		}
 	}
 
@@ -228,6 +234,7 @@ func (c *cocktailUsecase) addPhoto(ctx context.Context, tx *gorm.DB, image *doma
 
 	newFileName := uuid.New().String()
 	image.Name = newFileName
+	lowQualityBundleID := util.GetID(util.IdGenerator)
 
 	if !util.ValidateImageType(image.Type) {
 		return domain.ErrCodeFileTypeIllegal
@@ -242,9 +249,30 @@ func (c *cocktailUsecase) addPhoto(ctx context.Context, tx *gorm.DB, image *doma
 	image.Destination = urlPath + newFileName + ".webp"
 	err = c.cocktailPhotoMySQLRepo.StoreTx(ctx, tx,
 		&domain.CocktailPhoto{
-			CocktailID:   image.CocktailID,
-			Photo:        image.Destination,
-			IsCoverPhoto: image.IsCoverPhoto,
+			CocktailID:         image.CocktailID,
+			Photo:              image.Destination,
+			IsCoverPhoto:       image.IsCoverPhoto,
+			IsLowQuality:       false,
+			LowQualityBundleID: lowQualityBundleID,
+		})
+	if err != nil {
+		return err
+	}
+
+	image.Destination = savePath + newFileName
+	err = c.cocktailFileRepo.SaveAsWebpInLQIP(ctx, image)
+	if err != nil {
+		return err
+	}
+
+	image.Destination = urlPath + newFileName + "_lq.webp"
+	err = c.cocktailPhotoMySQLRepo.StoreTx(ctx, tx,
+		&domain.CocktailPhoto{
+			CocktailID:         image.CocktailID,
+			Photo:              image.Destination,
+			IsCoverPhoto:       image.IsCoverPhoto,
+			IsLowQuality:       true,
+			LowQualityBundleID: lowQualityBundleID,
 		})
 	if err != nil {
 		return err
@@ -275,6 +303,34 @@ func (c *cocktailUsecase) editPhoto(ctx context.Context, tx *gorm.DB, image *dom
 
 	//this file already have type
 	image.Destination = urlPath + fileName
+	_, err = c.cocktailPhotoMySQLRepo.UpdateTx(ctx, tx,
+		&domain.CocktailPhoto{
+			ID:           image.ImageID,
+			Photo:        image.Destination,
+			IsCoverPhoto: image.IsCoverPhoto,
+		})
+	if err != nil {
+		return err
+	}
+
+	lowQualityPhoto, err := c.cocktailPhotoMySQLRepo.QueryLowQualityPhotoByBundleId(ctx, photo.LowQualityBundleID)
+	if err != nil {
+		return err
+	}
+
+	lowQualityFileName, err := util.GetFileNameByPath(lowQualityPhoto.Photo)
+	if err != nil {
+		return err
+	}
+
+	image.Destination = savePath + lowQualityFileName
+	err = c.cocktailFileRepo.UpdateAsWebpInLQIP(ctx, image)
+	if err != nil {
+		return err
+	}
+
+	//this file already have type
+	image.Destination = urlPath + lowQualityFileName
 	_, err = c.cocktailPhotoMySQLRepo.UpdateTx(ctx, tx,
 		&domain.CocktailPhoto{
 			ID:           image.ImageID,
@@ -471,6 +527,7 @@ func (c *cocktailUsecase) Store(ctx context.Context, co *domain.Cocktail, ingred
 
 			newFileName := uuid.New().String()
 			image.Name = newFileName
+			lowQualityBundleID := util.GetID(util.IdGenerator)
 
 			if !util.ValidateImageType(image.Type) {
 				return domain.ErrCodeFileTypeIllegal
@@ -485,9 +542,30 @@ func (c *cocktailUsecase) Store(ctx context.Context, co *domain.Cocktail, ingred
 			image.Destination = urlPath + newFileName + ".webp"
 			err = c.cocktailPhotoMySQLRepo.StoreTx(ctx, tx,
 				&domain.CocktailPhoto{
-					CocktailID:   newCocktailID,
-					Photo:        image.Destination,
-					IsCoverPhoto: image.IsCoverPhoto,
+					CocktailID:         newCocktailID,
+					Photo:              image.Destination,
+					IsCoverPhoto:       image.IsCoverPhoto,
+					IsLowQuality:       false,
+					LowQualityBundleID: lowQualityBundleID,
+				})
+			if err != nil {
+				return err
+			}
+
+			image.Destination = savePath + newFileName
+			err = c.cocktailFileRepo.SaveAsWebpInLQIP(ctx, &image)
+			if err != nil {
+				return err
+			}
+
+			image.Destination = urlPath + newFileName + "_lq.webp"
+			err = c.cocktailPhotoMySQLRepo.StoreTx(ctx, tx,
+				&domain.CocktailPhoto{
+					CocktailID:         newCocktailID,
+					Photo:              image.Destination,
+					IsCoverPhoto:       image.IsCoverPhoto,
+					IsLowQuality:       true,
+					LowQualityBundleID: lowQualityBundleID,
 				})
 			if err != nil {
 				return err
@@ -544,7 +622,7 @@ func (c *cocktailUsecase) Update(ctx context.Context, co *domain.Cocktail, ingre
 		return err
 	}
 
-	deletedPhoto := c.getNeedDeletedPhoto(oldPhoto, images)
+	deletedPhotos := c.getNeedDeletedPhoto(oldPhoto, images)
 
 	if err := c.transactionRepo.Transaction(func(i interface{}) error {
 		tx := i.(*gorm.DB)
@@ -562,8 +640,8 @@ func (c *cocktailUsecase) Update(ctx context.Context, co *domain.Cocktail, ingre
 				return err
 			}
 
-			logrus.Debugf("update photo id: %d", image.ImageID)
-			logrus.Debugf("update photo action: %s", action.String())
+			logrus.Infof("update photo photo: %d", image.ImageID)
+			logrus.Infof("update photo action: %s", action.String())
 
 			if action == httpaction.Add {
 				err = c.addPhoto(ctx, tx, &image)
@@ -580,8 +658,8 @@ func (c *cocktailUsecase) Update(ctx context.Context, co *domain.Cocktail, ingre
 			}
 		}
 
-		for _, id := range deletedPhoto {
-			err := c.cocktailPhotoMySQLRepo.DeleteByIDTx(ctx, tx, id)
+		for _, photo := range deletedPhotos {
+			err := c.cocktailPhotoMySQLRepo.DeleteByLowQualityBundleIDTx(ctx, tx, photo.LowQualityBundleID)
 			if err != nil {
 				return err
 			}

@@ -14,20 +14,22 @@ type CocktailImage struct {
 	Type         string
 	Destination  string
 	IsCoverPhoto bool
+	IsLowQuality bool
 }
 
 type APICocktail struct {
-	CocktailID  int64
-	UserID      int64
-	UserName    string
-	Title       string
-	Description string
-	CoverPhoto  CocktailPhoto
-	Photos      []CocktailPhoto
-	Ingredients []CocktailIngredient
-	Steps       []CocktailStep
-	IsCollected bool
-	CreatedDate string
+	CocktailID       int64
+	UserID           int64
+	UserName         string
+	Title            string
+	Description      string
+	CoverPhoto       CocktailPhoto
+	Photos           []CocktailPhoto
+	LowQualityPhotos []CocktailPhoto
+	Ingredients      []CocktailIngredient
+	Steps            []CocktailStep
+	IsCollected      bool
+	CreatedDate      string
 }
 
 type CocktailRedis struct {
@@ -68,5 +70,7 @@ type CocktailUsecase interface {
 
 type CocktailFileRepository interface {
 	SaveAsWebp(ctx context.Context, ci *CocktailImage) error
+	SaveAsWebpInLQIP(ctx context.Context, ci *CocktailImage) error
 	UpdateAsWebp(ctx context.Context, ci *CocktailImage) error
+	UpdateAsWebpInLQIP(ctx context.Context, ci *CocktailImage) error
 }

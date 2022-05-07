@@ -29,6 +29,8 @@ type PopularCocktailList struct {
 	//required: true
 	Photos []string `json:"photos"`
 	//required: true
+	LowQualityPhotos []string `json:"low_quality_photos"`
+	//required: true
 	IngredientList []CocktailIngredientWithoutIDInResponse `json:"ingredient_list"`
 	//required: true
 	IsCollected bool `json:"is_collected"`
