@@ -270,15 +270,21 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 			photos = append(photos, photo.Photo)
 		}
 
+		lowQualityPhotos := make([]string, 0)
+		for _, photo := range cocktail.LowQualityPhotos {
+			lowQualityPhotos = append(lowQualityPhotos, photo.Photo)
+		}
+
 		out := viewmodels.PopularCocktailList{
-			CocktailID:     cocktail.CocktailID,
-			UserID:         cocktail.UserID,
-			UserName:       cocktail.UserName,
-			Title:          cocktail.Title,
-			Photos:         photos,
-			IngredientList: ingredients,
-			IsCollected:    cocktail.IsCollected,
-			CreatedDate:    cocktail.CreatedDate,
+			CocktailID:       cocktail.CocktailID,
+			UserID:           cocktail.UserID,
+			UserName:         cocktail.UserName,
+			Title:            cocktail.Title,
+			Photos:           photos,
+			LowQualityPhotos: lowQualityPhotos,
+			IngredientList:   ingredients,
+			IsCollected:      cocktail.IsCollected,
+			CreatedDate:      cocktail.CreatedDate,
 		}
 
 		cocktailList = append(cocktailList, out)

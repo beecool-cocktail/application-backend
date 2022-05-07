@@ -515,6 +515,11 @@ definitions:
       is_collected:
         type: boolean
         x-go-name: IsCollected
+      low_quality_photos:
+        items:
+          type: string
+        type: array
+        x-go-name: LowQualityPhotos
       photos:
         items:
           type: string
@@ -536,6 +541,7 @@ definitions:
     - user_name
     - title
     - photos
+    - low_quality_photos
     - ingredient_list
     - is_collected
     - created_date

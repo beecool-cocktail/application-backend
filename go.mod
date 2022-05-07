@@ -5,6 +5,7 @@ go 1.16
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
+	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/gin-contrib/sessions v0.0.4 // indirect
 	github.com/gin-gonic/gin v1.7.6 // indirect
@@ -27,6 +28,7 @@ require (
 	github.com/ugorji/go v1.2.6 // indirect
 	github.com/vincent-petithory/dataurl v1.0.0 // indirect
 	golang.org/x/crypto v0.0.0-20211117183948-ae814b36b871 // indirect
+	golang.org/x/image v0.0.0-20220413100746-70e8d0d3baa9 // indirect
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
 	golang.org/x/sys v0.0.0-20211117180635-dee7805ff2e1 // indirect
 	golang.org/x/text v0.3.7 // indirect

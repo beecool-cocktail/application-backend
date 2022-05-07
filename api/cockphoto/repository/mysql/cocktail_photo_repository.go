@@ -22,7 +22,7 @@ func NewMySQLCocktailStepRepository(db *gorm.DB) domain.CocktailPhotoMySQLReposi
 
 func (s *cocktailCocktailMySQLRepository) StoreTx(ctx context.Context, tx *gorm.DB, c *domain.CocktailPhoto) error {
 
-	res := tx.Select("cocktail_id", "photo", "is_cover_photo").Create(c)
+	res := tx.Select("cocktail_id", "photo", "is_cover_photo", "low_quality_bundle_id", "is_low_quality").Create(c)
 
 	return res.Error
 }
@@ -33,6 +33,7 @@ func (s *cocktailCocktailMySQLRepository) QueryCoverPhotoByCocktailId(ctx contex
 	res := s.db.Select("photo").
 		Where("cocktail_id = ?", id).
 		Where("is_cover_photo = ?", true).
+		Where("is_low_quality = ?", false).
 		Take(&photo)
 
 	return photo.Photo, res.Error
@@ -41,8 +42,20 @@ func (s *cocktailCocktailMySQLRepository) QueryCoverPhotoByCocktailId(ctx contex
 func (s *cocktailCocktailMySQLRepository) QueryPhotosByCocktailId(ctx context.Context, id int64) ([]domain.CocktailPhoto, error) {
 
 	var photos []domain.CocktailPhoto
-	res := s.db.Select("id", "cocktail_id", "photo", "is_cover_photo", "created_date").
+	res := s.db.Select("id", "cocktail_id", "low_quality_bundle_id", "photo", "is_cover_photo", "created_date").
 		Where("cocktail_id = ?", id).
+		Where("is_low_quality = ?", false).
+		Find(&photos)
+
+	return photos, res.Error
+}
+
+func (s *cocktailCocktailMySQLRepository) QueryLowQualityPhotosByCocktailId(ctx context.Context, id int64) ([]domain.CocktailPhoto, error) {
+
+	var photos []domain.CocktailPhoto
+	res := s.db.Select("id", "cocktail_id", "low_quality_bundle_id", "photo", "is_cover_photo", "created_date").
+		Where("cocktail_id = ?", id).
+		Where("is_low_quality = ?", true).
 		Find(&photos)
 
 	return photos, res.Error
@@ -53,6 +66,17 @@ func (s *cocktailCocktailMySQLRepository) QueryPhotoById(ctx context.Context, id
 	var photo domain.CocktailPhoto
 	res := s.db.Select("id", "cocktail_id", "photo", "is_cover_photo", "created_date").
 		Where("id = ?", id).
+		Take(&photo)
+
+	return photo, res.Error
+}
+
+func (s *cocktailCocktailMySQLRepository) QueryLowQualityPhotoByBundleId(ctx context.Context, id int64) (domain.CocktailPhoto, error) {
+
+	var photo domain.CocktailPhoto
+	res := s.db.Select("id", "cocktail_id", "photo", "is_cover_photo", "created_date").
+		Where("low_quality_bundle_id = ?", id).
+		Where("is_low_quality = ?", true).
 		Take(&photo)
 
 	return photo, res.Error
@@ -82,6 +106,14 @@ func (s *cocktailCocktailMySQLRepository) DeleteByIDTx(ctx context.Context, tx *
 	var photo domain.CocktailPhoto
 
 	res := tx.Where("id = ?", id).Delete(&photo)
+
+	return res.Error
+}
+
+func (s *cocktailCocktailMySQLRepository) DeleteByLowQualityBundleIDTx(ctx context.Context, tx *gorm.DB, id int64) error {
+	var photo domain.CocktailPhoto
+
+	res := tx.Where("low_quality_bundle_id = ?", id).Delete(&photo)
 
 	return res.Error
 }
