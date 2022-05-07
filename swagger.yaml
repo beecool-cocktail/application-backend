@@ -307,6 +307,46 @@ definitions:
     - draft_cocktail_list
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  GetOtherCocktailListResponse:
+    properties:
+      cocktail_list:
+        items:
+          $ref: '#/definitions/OtherCocktailList'
+        type: array
+        x-go-name: CocktailList
+    required:
+    - cocktail_list
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  GetOtherUserInfoResponse:
+    properties:
+      is_collection_public:
+        description: 是否公開收藏 false=不公開, true=公開
+        type: boolean
+        x-go-name: IsCollectionPublic
+      number_of_collection:
+        format: int64
+        type: integer
+        x-go-name: NumberOfCollection
+      number_of_post:
+        format: int64
+        type: integer
+        x-go-name: NumberOfPost
+      user_id:
+        format: int64
+        type: integer
+        x-go-name: UserID
+      user_name:
+        type: string
+        x-go-name: Name
+    required:
+    - user_id
+    - user_name
+    - number_of_post
+    - number_of_collection
+    - is_collection_public
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   GetPopularCocktailListRequest:
     properties:
       page:
@@ -434,6 +474,28 @@ definitions:
         x-go-name: UserID
     required:
     - user_id
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  OtherCocktailList:
+    properties:
+      cocktail_id:
+        format: int64
+        type: integer
+        x-go-name: CocktailID
+      photo:
+        type: string
+        x-go-name: Photo
+      title:
+        type: string
+        x-go-name: Title
+      user_name:
+        type: string
+        x-go-name: UserName
+    required:
+    - cocktail_id
+    - user_name
+    - photo
+    - title
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   PopularCocktailList:
@@ -958,6 +1020,45 @@ paths:
       summary: Edit cocktail formal article.
       tags:
       - cocktail
+  /users/{id}:
+    get:
+      description: Get other user id, name, email, numberOfPost, numberOfCollection
+        and photo.
+      operationId: getOtherUserInfo
+      parameters:
+      - example: 1
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/getOtherUserInfoResponse'
+      security:
+      - Bearer:
+        - apiKey
+      summary: Get other user information.
+      tags:
+      - user
+  /users/{id}/cocktails:
+    get:
+      description: Get other user cocktail list order by create date.
+      operationId: otherCocktailList
+      parameters:
+      - example: 1
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/getOtherCocktailListResponse'
+      security:
+      - Bearer:
+        - apiKey
+      summary: Get other user cocktail list
+      tags:
+      - user
   /users/{id}/favorite-cocktails:
     get:
       description: Get other user favorite cocktail article list.
@@ -1107,6 +1208,40 @@ responses:
       properties:
         data:
           $ref: '#/definitions/GetDraftCocktailListResponse'
+        error_code:
+          type: string
+          x-go-name: ErrorCode
+        error_message:
+          type: string
+          x-go-name: ErrorMessage
+      required:
+      - error_code
+      - error_message
+      - data
+      type: object
+  getOtherCocktailListResponse:
+    description: ""
+    schema:
+      properties:
+        data:
+          $ref: '#/definitions/GetOtherCocktailListResponse'
+        error_code:
+          type: string
+          x-go-name: ErrorCode
+        error_message:
+          type: string
+          x-go-name: ErrorMessage
+      required:
+      - error_code
+      - error_message
+      - data
+      type: object
+  getOtherUserInfoResponse:
+    description: ""
+    schema:
+      properties:
+        data:
+          $ref: '#/definitions/GetOtherUserInfoResponse'
         error_code:
           type: string
           x-go-name: ErrorCode

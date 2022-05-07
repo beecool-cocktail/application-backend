@@ -80,6 +80,19 @@ type swaggerGetUserInfoResponse struct {
 	}
 }
 
+// swagger:response getOtherUserInfoResponse
+type swaggerGetOtherUserInfoResponse struct {
+	// in: body
+	Body struct {
+		//required: true
+		ErrorCode string `json:"error_code"`
+		//required: true
+		ErrorMessage string `json:"error_message"`
+		//required: true
+		Data viewmodels.GetOtherUserInfoResponse `json:"data"`
+	}
+}
+
 // swagger:parameters updateUserInfoRequest
 type swaggerUpdateUserInfoRequest struct {
 	// in: body
@@ -190,6 +203,19 @@ type swaggerGetSelfCocktailListResponse struct {
 		ErrorMessage string `json:"error_message"`
 		//required: true
 		Data viewmodels.GetSelfCocktailListResponse `json:"data"`
+	}
+}
+
+// swagger:response getOtherCocktailListResponse
+type swaggerGetOtherCocktailListResponse struct {
+	// in: body
+	Body struct {
+		//required: true
+		ErrorCode string `json:"error_code"`
+		//required: true
+		ErrorMessage string `json:"error_message"`
+		//required: true
+		Data viewmodels.GetOtherCocktailListResponse `json:"data"`
 	}
 }
 

@@ -287,3 +287,19 @@ type SelfCocktailList struct {
 	//required: true
 	Title string `json:"title"`
 }
+
+type GetOtherCocktailListResponse struct {
+	//required: true
+	CocktailList []OtherCocktailList `json:"cocktail_list"`
+}
+
+type OtherCocktailList struct {
+	//required: true
+	CocktailID int64 `json:"cocktail_id"`
+	//required: true
+	UserName string `json:"user_name"`
+	//required: true
+	Photo string `json:"photo"`
+	//required: true
+	Title string `json:"title"`
+}

@@ -33,6 +33,20 @@ type GetUserInfoResponse struct {
 	IsCollectionPublic bool `json:"is_collection_public"`
 }
 
+type GetOtherUserInfoResponse struct {
+	//required: true
+	UserID int64 `json:"user_id"`
+	//required: true
+	Name string `json:"user_name"`
+	//required: true
+	NumberOfPost int `json:"number_of_post"`
+	//required: true
+	NumberOfCollection int `json:"number_of_collection"`
+	// 是否公開收藏 false=不公開, true=公開
+	//required: true
+	IsCollectionPublic bool `json:"is_collection_public"`
+}
+
 type UpdateUserInfoRequest struct {
 	File string `json:"file"`
 

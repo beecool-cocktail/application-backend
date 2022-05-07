@@ -42,12 +42,14 @@ func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase, socialAc
 	s.HTTP.POST("/api/auth/google-authenticate", handler.GoogleAuthenticate)
 	s.HTTP.POST("/api/auth/logout", handler.Logout)
 	s.HTTP.GET("/api/users/current", middlewareHandler.JWTAuthMiddleware(), handler.GetUserInfo)
+	s.HTTP.GET("/api/users/:userID", handler.GetOtherUserInfo)
 	s.HTTP.PUT("/api/users/current", middlewareHandler.JWTAuthMiddleware(), handler.UpdateUserInfo)
 	s.HTTP.POST("/api/users/current/favorite-cocktails", middlewareHandler.JWTAuthMiddleware(), handler.CollectArticle)
 	s.HTTP.DELETE("/api/users/current/favorite-cocktails/:cocktailID", middlewareHandler.JWTAuthMiddleware(), handler.RemoveCollectionArticle)
 	s.HTTP.GET("/api/users/current/favorite-cocktails", middlewareHandler.JWTAuthMiddleware(), handler.GetUserFavoriteList)
 	s.HTTP.GET("/api/users/:userID/favorite-cocktails", handler.GetOtherUserFavoriteList)
 	s.HTTP.GET("/api/users/current/cocktails", middlewareHandler.JWTAuthMiddleware(), handler.SelfCocktailList)
+	s.HTTP.GET("/api/users/:userID/cocktails", handler.OtherCocktailList)
 }
 
 // swagger:route GET /auth/google-login login googleLogin
@@ -165,6 +167,54 @@ func (u *UserHandler) GetUserInfo(c *gin.Context) {
 		Name:               user.Name,
 		Email:              user.Email,
 		Photo:              user.Photo,
+		NumberOfPost:       user.NumberOfPost,
+		NumberOfCollection: user.NumberOfCollection,
+		IsCollectionPublic: user.IsCollectionPublic,
+	}
+
+	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
+}
+
+// swagger:operation GET /users/{id} user getOtherUserInfo
+// ---
+// summary: Get other user information.
+// description: Get other user id, name, email, numberOfPost, numberOfCollection and photo.
+//
+// security:
+// - Bearer: [apiKey]
+//
+// parameters:
+// - name: id
+//   in: path
+//   required: true
+//   type: integer
+//   example: 1
+//
+// responses:
+//  "200":
+//    "$ref": "#/responses/getOtherUserInfoResponse"
+func (u *UserHandler) GetOtherUserInfo(c *gin.Context) {
+	api := "/user/info"
+	var response viewmodels.GetOtherUserInfoResponse
+	userID := c.Param("userID")
+
+	userIDNumber, err := strconv.ParseInt(userID, 10, 64)
+	if err != nil {
+		service.GetLoggerEntry(u.Logger, api, nil).Errorf("parameter illegal - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
+	user, err := u.UserUsecase.QueryById(c, userIDNumber)
+	if err != nil {
+		service.GetLoggerEntry(u.Logger, api, nil).Errorf("query by id failed - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
+	response = viewmodels.GetOtherUserInfoResponse{
+		UserID:             user.ID,
+		Name:               user.Name,
 		NumberOfPost:       user.NumberOfPost,
 		NumberOfCollection: user.NumberOfCollection,
 		IsCollectionPublic: user.IsCollectionPublic,
@@ -466,6 +516,73 @@ func (u *UserHandler) SelfCocktailList(c *gin.Context) {
 		}
 
 		out := viewmodels.SelfCocktailList{
+			CocktailID: cocktail.CocktailID,
+			UserName:   cocktail.UserName,
+			Title:      cocktail.Title,
+			Photo:      cocktail.CoverPhoto.Photo,
+		}
+
+		cocktailList = append(cocktailList, out)
+	}
+
+	response.CocktailList = cocktailList
+
+	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
+}
+
+// swagger:operation GET /users/{id}/cocktails user otherCocktailList
+// ---
+// summary: Get other user cocktail list
+// description: Get other user cocktail list order by create date.
+//
+// security:
+// - Bearer: [apiKey]
+//
+// parameters:
+// - name: id
+//   in: path
+//   required: true
+//   type: integer
+//   example: 1
+//
+// responses:
+//  "200":
+//    "$ref": "#/responses/getOtherCocktailListResponse"
+func (u *UserHandler) OtherCocktailList(c *gin.Context) {
+	api := "/self-cocktails"
+	userID := c.Param("userID")
+
+	userIDNumber, err := strconv.ParseInt(userID, 10, 64)
+	if err != nil {
+		service.GetLoggerEntry(u.Logger, api, nil).Errorf("parameter illegal - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
+	var response viewmodels.GetOtherCocktailListResponse
+
+	filter := make(map[string]interface{})
+	filter["category"] = cockarticletype.Formal
+	filter["user_id"] = userIDNumber
+	cocktails, err := u.CocktailUsecase.QueryFormalByUserID(c, userIDNumber)
+	if err != nil {
+		service.GetLoggerEntry(u.Logger, api, nil).Errorf("get cocktails with filter failed - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
+	cocktailList := make([]viewmodels.OtherCocktailList, 0)
+	for _, cocktail := range cocktails {
+		ingredients := make([]viewmodels.CocktailIngredientWithoutIDInResponse, 0)
+		for _, ingredient := range cocktail.Ingredients {
+			out := viewmodels.CocktailIngredientWithoutIDInResponse{
+				Name:   ingredient.IngredientName,
+				Amount: ingredient.IngredientAmount,
+			}
+			ingredients = append(ingredients, out)
+		}
+
+		out := viewmodels.OtherCocktailList{
 			CocktailID: cocktail.CocktailID,
 			UserName:   cocktail.UserName,
 			Title:      cocktail.Title,
