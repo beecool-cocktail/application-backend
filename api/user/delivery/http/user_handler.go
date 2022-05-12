@@ -215,6 +215,7 @@ func (u *UserHandler) GetOtherUserInfo(c *gin.Context) {
 	response = viewmodels.GetOtherUserInfoResponse{
 		UserID:             user.ID,
 		Name:               user.Name,
+		Photo:              user.Photo,
 		NumberOfPost:       user.NumberOfPost,
 		NumberOfCollection: user.NumberOfCollection,
 		IsCollectionPublic: user.IsCollectionPublic,

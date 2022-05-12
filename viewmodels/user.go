@@ -39,6 +39,8 @@ type GetOtherUserInfoResponse struct {
 	//required: true
 	Name string `json:"user_name"`
 	//required: true
+	Photo string `json:"photo"`
+	//required: true
 	NumberOfPost int `json:"number_of_post"`
 	//required: true
 	NumberOfCollection int `json:"number_of_collection"`
