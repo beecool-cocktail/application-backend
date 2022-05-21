@@ -1,4 +1,3 @@
-version: '3'
 services:
   db:
     image: mariadb:latest
@@ -74,6 +73,30 @@ services:
     command: serve -F=swagger -p 3030 --no-open /swagger.yaml
     depends_on:
       - server
+
+  elasticsearch:
+    container_name: es-container
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_SEARCH_VERSION}
+    environment:
+      - xpack.security.enabled=false
+      - "discovery.type=single-node"
+    networks:
+      whispering:
+        ipv4_address: 172.28.0.6
+    ports:
+      - 9200:9200
+  kibana:
+    container_name: kb-container
+    image: docker.elastic.co/kibana/kibana:${ELASTIC_SEARCH_VERSION}
+    environment:
+      - ELASTICSEARCH_HOSTS=http://es-container:9200
+    networks:
+      whispering:
+        ipv4_address: 172.28.0.8
+    depends_on:
+      - elasticsearch
+    ports:
+      - 5601:5601
 
 networks:
   whispering:
