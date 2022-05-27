@@ -6,6 +6,38 @@ import (
 	"time"
 )
 
+const CocktailsIndex = "cocktails"
+const CocktailsMapping = `
+{
+	"mappings": {
+		"properties": {
+			"cocktail_id": {
+				"type": "keyword"
+			},
+			"user_id": {
+				"type": "keyword"
+			},
+			"title": {
+				"type": "keyword"
+			},
+			"description": {
+				"type": "text"
+			},
+			"created_date": {
+				"type": "date"
+			}
+		}
+	}
+}`
+
+type CocktailElasticSearch struct {
+	CocktailID  int64     `json:"cocktail_id"`
+	UserID      int64     `json:"user_id"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	CreatedDate time.Time `json:"created_date"`
+}
+
 type CocktailImage struct {
 	ImageID      int64
 	CocktailID   int64
@@ -57,8 +89,23 @@ type CocktailMySQLRepository interface {
 	UpdateCategoryTx(ctx context.Context, tx *gorm.DB, c *Cocktail) (int64, error)
 }
 
+type CocktailFileRepository interface {
+	SaveAsWebp(ctx context.Context, ci *CocktailImage) error
+	SaveAsWebpInLQIP(ctx context.Context, ci *CocktailImage) error
+	UpdateAsWebp(ctx context.Context, ci *CocktailImage) error
+	UpdateAsWebpInLQIP(ctx context.Context, ci *CocktailImage) error
+}
+
+type CocktailElasticSearchRepository interface {
+	Index(ctx context.Context, c *CocktailElasticSearch) error
+	Search(ctx context.Context, text string, from, size int) ([]CocktailElasticSearch, int64, error)
+	Update(ctx context.Context, c *CocktailElasticSearch) error
+	Delete(ctx context.Context, id int64) error
+}
+
 type CocktailUsecase interface {
 	GetAllWithFilter(ctx context.Context, filter map[string]interface{}, pagination PaginationUsecase, userID int64) ([]APICocktail, int64, error)
+	Search(ctx context.Context, keyword string, from, size int, userID int64) ([]APICocktail, int64, error)
 	QueryByCocktailID(ctx context.Context, cocktailID, userID int64) (APICocktail, error)
 	QueryFormalByUserID(ctx context.Context, id int64) ([]APICocktail, error)
 	QueryDraftByCocktailID(ctx context.Context, cocktailID, userID int64) (APICocktail, error)
@@ -66,11 +113,4 @@ type CocktailUsecase interface {
 	Delete(ctx context.Context, cocktailID, userID int64) error
 	Update(ctx context.Context, c *Cocktail, cig []CocktailIngredient, cs []CocktailStep, ci []CocktailImage, userID int64) error
 	MakeDraftToFormal(ctx context.Context, cocktailID, userID int64) error
-}
-
-type CocktailFileRepository interface {
-	SaveAsWebp(ctx context.Context, ci *CocktailImage) error
-	SaveAsWebpInLQIP(ctx context.Context, ci *CocktailImage) error
-	UpdateAsWebp(ctx context.Context, ci *CocktailImage) error
-	UpdateAsWebpInLQIP(ctx context.Context, ci *CocktailImage) error
 }

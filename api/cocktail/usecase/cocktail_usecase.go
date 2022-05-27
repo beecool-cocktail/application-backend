@@ -13,11 +13,13 @@ import (
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
+	"time"
 )
 
 type cocktailUsecase struct {
 	service                     *service.Service
 	cocktailMySQLRepo           domain.CocktailMySQLRepository
+	cocktailElasticSearchRepo   domain.CocktailElasticSearchRepository
 	cocktailFileRepo            domain.CocktailFileRepository
 	cocktailPhotoMySQLRepo      domain.CocktailPhotoMySQLRepository
 	cocktailIngredientMySQLRepo domain.CocktailIngredientMySQLRepository
@@ -31,6 +33,7 @@ type cocktailUsecase struct {
 func NewCocktailUsecase(
 	s *service.Service,
 	cocktailMySQLRepo domain.CocktailMySQLRepository,
+	cocktailElasticSearchRepo domain.CocktailElasticSearchRepository,
 	cocktailFileRepo domain.CocktailFileRepository,
 	cocktailPhotoMySQLRepo domain.CocktailPhotoMySQLRepository,
 	cocktailIngredientMySQLRepo domain.CocktailIngredientMySQLRepository,
@@ -41,6 +44,7 @@ func NewCocktailUsecase(
 	return &cocktailUsecase{
 		service:                     s,
 		cocktailMySQLRepo:           cocktailMySQLRepo,
+		cocktailElasticSearchRepo:   cocktailElasticSearchRepo,
 		cocktailFileRepo:            cocktailFileRepo,
 		cocktailPhotoMySQLRepo:      cocktailPhotoMySQLRepo,
 		cocktailIngredientMySQLRepo: cocktailIngredientMySQLRepo,
@@ -389,6 +393,41 @@ func (c *cocktailUsecase) GetAllWithFilter(ctx context.Context, filter map[strin
 	return apiCocktails, total, nil
 }
 
+func (c *cocktailUsecase) Search(ctx context.Context, keyword string, from, size int, userID int64) ([]domain.APICocktail,
+	int64, error) {
+
+	cocktails, total, err := c.cocktailElasticSearchRepo.Search(ctx, keyword, from, size)
+	if err != nil {
+		return []domain.APICocktail{}, 0, err
+	}
+
+	var apiCocktails []domain.APICocktail
+	for _, cocktail := range cocktails {
+		out := domain.APICocktail{
+			CocktailID:  cocktail.CocktailID,
+			UserID:      cocktail.UserID,
+			Title:       cocktail.Title,
+			Description: cocktail.Description,
+			CreatedDate: util.GetFormatTime(cocktail.CreatedDate, "UTC"),
+		}
+		apiCocktails = append(apiCocktails, out)
+	}
+
+	apiCocktails, err = c.fillCocktailList(ctx, apiCocktails)
+	if err != nil {
+		return []domain.APICocktail{}, 0, err
+	}
+
+	if userID != 0 {
+		apiCocktails, err = c.fillCollectionStatusInList(ctx, apiCocktails, userID)
+		if err != nil {
+			return []domain.APICocktail{}, 0, err
+		}
+	}
+
+	return apiCocktails, total, nil
+}
+
 func (c *cocktailUsecase) QueryByCocktailID(ctx context.Context, cocktailID, userID int64) (domain.APICocktail, error) {
 
 	cocktail, err := c.cocktailMySQLRepo.QueryByCocktailID(ctx, cocktailID)
@@ -478,6 +517,7 @@ func (c *cocktailUsecase) QueryDraftByCocktailID(ctx context.Context, cocktailID
 	return apiCocktail, nil
 }
 
+//Todo 這裡不需要再傳userID
 func (c *cocktailUsecase) Store(ctx context.Context, co *domain.Cocktail, ingredients []domain.CocktailIngredient,
 	steps []domain.CocktailStep, images []domain.CocktailImage, userID int64) error {
 
@@ -588,6 +628,17 @@ func (c *cocktailUsecase) Store(ctx context.Context, co *domain.Cocktail, ingred
 			}
 		}
 
+		err = c.cocktailElasticSearchRepo.Index(ctx, &domain.CocktailElasticSearch{
+			CocktailID:  newCocktailID,
+			UserID:      co.UserID,
+			Title:       co.Title,
+			Description: co.Description,
+			CreatedDate: time.Now(),
+		})
+		if err != nil {
+			return err
+		}
+
 		return nil
 	})
 
@@ -691,6 +742,15 @@ func (c *cocktailUsecase) Update(ctx context.Context, co *domain.Cocktail, ingre
 			}
 		}
 
+		err = c.cocktailElasticSearchRepo.Update(ctx, &domain.CocktailElasticSearch{
+			CocktailID:  co.CocktailID,
+			Title:       co.Title,
+			Description: co.Description,
+		})
+		if err != nil {
+			return err
+		}
+
 		return nil
 	}); err != nil {
 		return err
@@ -756,6 +816,11 @@ func (c *cocktailUsecase) Delete(ctx context.Context, cocktailID, userID int64) 
 		}
 
 		err = c.cocktailPhotoMySQLRepo.DeleteByCocktailIDTx(ctx, tx, cocktailID)
+		if err != nil {
+			return err
+		}
+
+		err = c.cocktailElasticSearchRepo.Delete(ctx, cocktailID)
 		if err != nil {
 			return err
 		}
@@ -836,6 +901,17 @@ func (c *cocktailUsecase) MakeDraftToFormal(ctx context.Context, cocktailID, use
 				ID:           user.ID,
 				NumberOfPost: numberOfPost,
 			})
+		if err != nil {
+			return err
+		}
+
+		err = c.cocktailElasticSearchRepo.Index(ctx, &domain.CocktailElasticSearch{
+			CocktailID:  cocktail.CocktailID,
+			UserID:      cocktail.UserID,
+			Title:       cocktail.Title,
+			Description: cocktail.Description,
+			CreatedDate: time.Now(),
+		})
 		if err != nil {
 			return err
 		}

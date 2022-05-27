@@ -332,6 +332,9 @@ definitions:
         format: int64
         type: integer
         x-go-name: NumberOfPost
+      photo:
+        type: string
+        x-go-name: Photo
       user_id:
         format: int64
         type: integer
@@ -342,6 +345,7 @@ definitions:
     required:
     - user_id
     - user_name
+    - photo
     - number_of_post
     - number_of_collection
     - is_collection_public
@@ -952,6 +956,10 @@ paths:
         name: page_size
         required: true
         type: integer
+      - example: search
+        in: query
+        name: keyword
+        type: string
       responses:
         "200":
           $ref: '#/responses/popularCocktailListResponse'

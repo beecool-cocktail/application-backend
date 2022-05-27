@@ -14,6 +14,7 @@ type Configure struct {
 	DB      *mysqlConfig
 	HTTP    *httpConfig
 	Redis   *redisConfig
+	Elastic *elasticConfig
 	Others  *OtherConfig
 }
 
@@ -54,6 +55,10 @@ type redisConfig struct {
 	ReadTimeoutSecond  int
 	WriteTimeoutSecond int
 	PoolSize           int
+}
+
+type elasticConfig struct {
+	Urls []string
 }
 
 type OtherConfig struct {

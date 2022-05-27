@@ -45,19 +45,19 @@ func Test_socialLoginUsecase_GetUserInfo(t *testing.T) {
 	}
 
 	mockSocialAccount := domain.SocialAccount{
-		UserID: 1,
+		UserID:   1,
 		SocialID: "googleUUID",
 	}
 
 	mockGoogleUserInfo := domain.GoogleUserInfo{
 		Name: "Andy",
-		Sub: "googleUUID",
+		Sub:  "googleUUID",
 	}
 
 	mockUserMySQL := domain.User{
-		ID: 1,
+		ID:      1,
 		Account: "account",
-		Name: "Andy",
+		Name:    "Andy",
 	}
 
 	t.Run("Not first login Success", func(t *testing.T) {
@@ -74,7 +74,7 @@ func Test_socialLoginUsecase_GetUserInfo(t *testing.T) {
 			Return(&mockUserMySQL, nil).Once()
 
 		mockUserRedisRepo.
-			On("Store", mock.Anything, mock.MatchedBy(func(mockUser *domain.UserCache) bool {
+			On("Index", mock.Anything, mock.MatchedBy(func(mockUser *domain.UserCache) bool {
 				return matchedByUserRedis(mockUser, &mockUserMySQL)
 			})).
 			Return(nil).Once()
@@ -95,11 +95,11 @@ func Test_socialLoginUsecase_GetUserInfo(t *testing.T) {
 			Return(nil, gorm.ErrRecordNotFound).Once()
 
 		mockSocialAccountMySQLRepo.
-			On("Store", mock.Anything, mock.Anything, mock.Anything).
+			On("Index", mock.Anything, mock.Anything, mock.Anything).
 			Return(int64(1), nil).Once()
 
 		mockUserRedisRepo.
-			On("Store", mock.Anything, mock.Anything).
+			On("Index", mock.Anything, mock.Anything).
 			Return(nil).Once()
 
 		s := NewSocialAccountUsecase(mockUserMySQLRepo, mockUserRedisRepo, mockSocialAccountMySQLRepo, mockSocialAccountGoogleOAuth2Repo)

@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
+	"github.com/olivere/elastic/v7"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
@@ -12,6 +13,7 @@ type Service struct {
 	Redis     *redis.Client
 	Logger    *logrus.Logger
 	HTTP      *gin.Engine
+	Elastic   *elastic.Client
 	Configure *Configure
 }
 
@@ -41,11 +43,17 @@ func NewService(fileName string) (*Service, error) {
 		return nil, err
 	}
 
+	elasticSearch, err := newElasticSearch(conf)
+	if err != nil {
+		return nil, err
+	}
+
 	service := &Service{
 		Configure: conf,
 		DB:        db,
 		Redis:     rdb,
 		HTTP:      http,
+		Elastic:   elasticSearch,
 		Logger:    logger,
 	}
 
@@ -62,7 +70,6 @@ func NewDBService(fileName string) (*Service, error) {
 	if err != nil {
 		return nil, err
 	}
-
 
 	service := &Service{
 		Configure: conf,

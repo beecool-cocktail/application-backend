@@ -5,6 +5,7 @@ import (
 	_cocktailPhotoMySQLRepo "github.com/beecool-cocktail/application-backend/api/cockphoto/repository/mysql"
 	_cocktailStepMySQLRepo "github.com/beecool-cocktail/application-backend/api/cockstep/repository/mysql"
 	_cocktailHandlerHttpDelivery "github.com/beecool-cocktail/application-backend/api/cocktail/delivery/http"
+	_cocktailElasticSearchRepo "github.com/beecool-cocktail/application-backend/api/cocktail/repository/elastic"
 	_cocktailFileRepo "github.com/beecool-cocktail/application-backend/api/cocktail/repository/file"
 	_cocktailMySQLRepo "github.com/beecool-cocktail/application-backend/api/cocktail/repository/mysql"
 	_cocktailUsecase "github.com/beecool-cocktail/application-backend/api/cocktail/usecase"
@@ -64,6 +65,8 @@ func initializeRoutes(s *service.Service) {
 	cocktailPhotoMySQLRepo := _cocktailPhotoMySQLRepo.NewMySQLCocktailStepRepository(s.DB)
 	favoriteCocktailMySQLRepo := _favoriteCocktailMySQLRepo.NewMySQLFavoriteCocktailRepository(s.DB)
 
+	cocktailElasticSearchRepo := _cocktailElasticSearchRepo.NewElasticSearchCocktailRepository(s.Elastic)
+
 	userRedisRepo := _userCache.NewRedisUserRepository(s.Redis)
 
 	userFileRepo := _userFileRepo.NewFileUserRepository()
@@ -76,7 +79,7 @@ func initializeRoutes(s *service.Service) {
 	socialAccountUsecase := _socialAccountUsecase.NewSocialAccountUsecase(userMySQLRepo, userRedisRepo,
 		socialAccountMySQLRepo, socialAccountGoogleOAuthRepo)
 	favoriteCocktailUsecase := _favoriteCocktailUsecase.NewFavoriteCocktailUsecase(favoriteCocktailMySQLRepo, cocktailMySQLRepo, cocktailPhotoMySQLRepo, userMySQLRepo, userRedisRepo, transactionRepo)
-	cocktailUsecase := _cocktailUsecase.NewCocktailUsecase(s, cocktailMySQLRepo, cocktailFileMySQL,
+	cocktailUsecase := _cocktailUsecase.NewCocktailUsecase(s, cocktailMySQLRepo, cocktailElasticSearchRepo, cocktailFileMySQL,
 		cocktailPhotoMySQLRepo, cocktailIngredientMySQLRepo, cocktailStepMySQLRepo, userMySQLRepo, favoriteCocktailMySQLRepo, transactionRepo)
 
 	// Delivery dependency injection

@@ -33,6 +33,11 @@
     "WriteTimeoutSecond":3,
     "PoolSize":10
   },
+  "Elastic":{
+    "Urls": [
+      "http://elasticsearch:9200"
+    ]
+  },
   "Others": {
     "GoogleOAuth2": {
       "ClientID": "1000067287437-at6sjqjdj8vd13iergnsjgml7nv974c9.apps.googleusercontent.com",

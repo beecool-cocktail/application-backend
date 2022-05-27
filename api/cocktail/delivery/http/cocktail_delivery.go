@@ -220,6 +220,12 @@ func (co *CocktailHandler) GetCocktailDraftByCocktailID(c *gin.Context) {
 //   type: integer
 //   example: 10
 //
+// - name: keyword
+//   in: query
+//   required: false
+//   type: string
+//   example: search
+//
 // responses:
 //  "200":
 //    "$ref": "#/responses/popularCocktailListResponse"
@@ -241,17 +247,31 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 		return
 	}
 
-	filter := make(map[string]interface{})
-	filter["category"] = cockarticletype.Formal
-	cocktails, total, err := co.CocktailUsecase.GetAllWithFilter(c, filter, domain.PaginationUsecase{
-		Page:     page,
-		PageSize: pageSize,
-	},
-		userId)
-	if err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("get cocktails with filter failed - %s", err)
-		util.PackResponseWithError(c, err, err.Error())
-		return
+	keyword := c.DefaultQuery("keyword", "")
+
+	var cocktails []domain.APICocktail
+	var total int64
+	if keyword != "" {
+		cocktails, total, err = co.CocktailUsecase.Search(c, keyword, page, pageSize, userId)
+		if err != nil {
+			service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("get cocktails with keyword "+
+				"failed - %s", err)
+			util.PackResponseWithError(c, err, err.Error())
+			return
+		}
+	} else {
+		filter := make(map[string]interface{})
+		filter["category"] = cockarticletype.Formal
+		cocktails, total, err = co.CocktailUsecase.GetAllWithFilter(c, filter, domain.PaginationUsecase{
+			Page:     page,
+			PageSize: pageSize,
+		},
+			userId)
+		if err != nil {
+			service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("get cocktails with filter failed - %s", err)
+			util.PackResponseWithError(c, err, err.Error())
+			return
+		}
 	}
 
 	cocktailList := make([]viewmodels.PopularCocktailList, 0)
