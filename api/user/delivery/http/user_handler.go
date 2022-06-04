@@ -162,13 +162,29 @@ func (u *UserHandler) GetUserInfo(c *gin.Context) {
 		return
 	}
 
+	numberOfPost, err := u.CocktailUsecase.QueryFormalCountsByUserID(c, user.ID)
+	if err != nil {
+		service.GetLoggerEntry(u.Logger, api, nil).Errorf("query formal counts by user_id failed - %s",
+			err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
+	numberOfCollection, err := u.FavoriteCocktailUsecase.QueryCountsByUserID(c, user.ID)
+	if err != nil {
+		service.GetLoggerEntry(u.Logger, api, nil).Errorf("query favotite counts by user_id failed - %s",
+			err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
 	response = viewmodels.GetUserInfoResponse{
 		UserID:             user.ID,
 		Name:               user.Name,
 		Email:              user.Email,
 		Photo:              user.Photo,
-		NumberOfPost:       user.NumberOfPost,
-		NumberOfCollection: user.NumberOfCollection,
+		NumberOfPost:       numberOfPost,
+		NumberOfCollection: numberOfCollection,
 		IsCollectionPublic: user.IsCollectionPublic,
 	}
 
@@ -212,12 +228,28 @@ func (u *UserHandler) GetOtherUserInfo(c *gin.Context) {
 		return
 	}
 
+	numberOfPost, err := u.CocktailUsecase.QueryFormalCountsByUserID(c, user.ID)
+	if err != nil {
+		service.GetLoggerEntry(u.Logger, api, nil).Errorf("query formal counts by user_id failed - %s",
+			err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
+	numberOfCollection, err := u.FavoriteCocktailUsecase.QueryCountsByUserID(c, user.ID)
+	if err != nil {
+		service.GetLoggerEntry(u.Logger, api, nil).Errorf("query favotite counts by user_id failed - %s",
+			err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
 	response = viewmodels.GetOtherUserInfoResponse{
 		UserID:             user.ID,
 		Name:               user.Name,
 		Photo:              user.Photo,
-		NumberOfPost:       user.NumberOfPost,
-		NumberOfCollection: user.NumberOfCollection,
+		NumberOfPost:       numberOfPost,
+		NumberOfCollection: numberOfCollection,
 		IsCollectionPublic: user.IsCollectionPublic,
 	}
 

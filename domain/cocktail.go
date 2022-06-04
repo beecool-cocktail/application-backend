@@ -83,6 +83,7 @@ type CocktailMySQLRepository interface {
 	GetAllWithFilter(ctx context.Context, filter map[string]interface{}, pagination PaginationMySQLRepository) ([]Cocktail, int64, error)
 	QueryByCocktailID(ctx context.Context, id int64) (Cocktail, error)
 	QueryFormalByUserID(ctx context.Context, id int64) ([]Cocktail, error)
+	QueryFormalCountsByUserID(ctx context.Context, id int64) (int64, error)
 	StoreTx(ctx context.Context, tx *gorm.DB, c *Cocktail) error
 	DeleteTx(ctx context.Context, tx *gorm.DB, id int64) error
 	UpdateTx(ctx context.Context, tx *gorm.DB, c *Cocktail) (int64, error)
@@ -109,6 +110,7 @@ type CocktailUsecase interface {
 	QueryByCocktailID(ctx context.Context, cocktailID, userID int64) (APICocktail, error)
 	QueryFormalByUserID(ctx context.Context, id int64) ([]APICocktail, error)
 	QueryDraftByCocktailID(ctx context.Context, cocktailID, userID int64) (APICocktail, error)
+	QueryFormalCountsByUserID(ctx context.Context, id int64) (int64, error)
 	Store(ctx context.Context, c *Cocktail, cig []CocktailIngredient, cs []CocktailStep, ci []CocktailImage, userID int64) error
 	Delete(ctx context.Context, cocktailID, userID int64) error
 	Update(ctx context.Context, c *Cocktail, cig []CocktailIngredient, cs []CocktailStep, ci []CocktailImage, userID int64) error

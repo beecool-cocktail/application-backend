@@ -50,10 +50,29 @@ func (f *favoriteCocktailMySQLRepository) QueryByUserID(ctx context.Context, id 
 	return cocktails, total, res.Error
 }
 
+func (f *favoriteCocktailMySQLRepository) QueryCountsByUserID(ctx context.Context, id int64) (int64, error) {
+	var cocktail domain.FavoriteCocktail
+	var total int64
+
+	orm := f.db.Model(&cocktail)
+	orm.Where("user_id = ?", id)
+
+	res := orm.Count(&total)
+
+	return total, res.Error
+}
+
 func (f *favoriteCocktailMySQLRepository) DeleteTx(ctx context.Context, tx *gorm.DB, cocktailID, userID int64) error {
 	var cocktail domain.FavoriteCocktail
+	orm := tx.Model(&cocktail)
+	if cocktailID > 0 {
+		orm.Where("cocktail_id = ?", cocktailID)
+	}
 
-	res := tx.Where("user_id = ? AND cocktail_id = ?", userID, cocktailID).Delete(&cocktail)
+	if userID > 0 {
+		orm.Where("user_id = ?", userID)
+	}
+	res := orm.Delete(&cocktail)
 
 	return res.Error
 }

@@ -24,6 +24,7 @@ type FavoriteCocktail struct {
 type FavoriteCocktailMySQLRepository interface {
 	StoreTx(ctx context.Context, tx *gorm.DB, c *FavoriteCocktail) error
 	QueryByUserID(ctx context.Context, id int64, pagination PaginationMySQLRepository) ([]FavoriteCocktail, int64, error)
+	QueryCountsByUserID(ctx context.Context, id int64) (int64, error)
 	Delete(ctx context.Context, cocktailID, userID int64) error
 	DeleteTx(ctx context.Context, tx *gorm.DB, cocktailID, userID int64) error
 }
@@ -31,5 +32,6 @@ type FavoriteCocktailMySQLRepository interface {
 type FavoriteCocktailUsecase interface {
 	Store(ctx context.Context, c *FavoriteCocktail) error
 	QueryByUserID(ctx context.Context, id int64, pagination PaginationUsecase) ([]APIFavoriteCocktail, int64, error)
+	QueryCountsByUserID(ctx context.Context, id int64) (int64, error)
 	Delete(ctx context.Context, cocktailID, userID int64) error
 }

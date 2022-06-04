@@ -25,9 +25,9 @@ type GetUserInfoResponse struct {
 	//required: true
 	Photo string `json:"photo"`
 	//required: true
-	NumberOfPost int `json:"number_of_post"`
+	NumberOfPost int64 `json:"number_of_post"`
 	//required: true
-	NumberOfCollection int `json:"number_of_collection"`
+	NumberOfCollection int64 `json:"number_of_collection"`
 	// 是否公開收藏 false=不公開, true=公開
 	//required: true
 	IsCollectionPublic bool `json:"is_collection_public"`
@@ -41,9 +41,9 @@ type GetOtherUserInfoResponse struct {
 	//required: true
 	Photo string `json:"photo"`
 	//required: true
-	NumberOfPost int `json:"number_of_post"`
+	NumberOfPost int64 `json:"number_of_post"`
 	//required: true
-	NumberOfCollection int `json:"number_of_collection"`
+	NumberOfCollection int64 `json:"number_of_collection"`
 	// 是否公開收藏 false=不公開, true=公開
 	//required: true
 	IsCollectionPublic bool `json:"is_collection_public"`

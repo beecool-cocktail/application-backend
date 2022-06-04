@@ -517,6 +517,16 @@ func (c *cocktailUsecase) QueryDraftByCocktailID(ctx context.Context, cocktailID
 	return apiCocktail, nil
 }
 
+func (c *cocktailUsecase) QueryFormalCountsByUserID(ctx context.Context, id int64) (int64, error) {
+
+	total, err := c.cocktailMySQLRepo.QueryFormalCountsByUserID(ctx, id)
+	if err != nil {
+		return 0, err
+	}
+
+	return total, nil
+}
+
 //Todo 這裡不需要再傳userID
 func (c *cocktailUsecase) Store(ctx context.Context, co *domain.Cocktail, ingredients []domain.CocktailIngredient,
 	steps []domain.CocktailStep, images []domain.CocktailImage, userID int64) error {
@@ -801,6 +811,11 @@ func (c *cocktailUsecase) Delete(ctx context.Context, cocktailID, userID int64) 
 		}
 
 		err := c.cocktailMySQLRepo.DeleteTx(ctx, tx, cocktailID)
+		if err != nil {
+			return err
+		}
+
+		err = c.favoriteCocktailMySQL.DeleteTx(ctx, tx, cocktailID, domain.AllUsers)
 		if err != nil {
 			return err
 		}

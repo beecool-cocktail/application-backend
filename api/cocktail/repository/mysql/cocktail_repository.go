@@ -66,6 +66,19 @@ func (c *cocktailMySQLRepository) QueryFormalByUserID(ctx context.Context, id in
 	return cocktail, res.Error
 }
 
+func (c *cocktailMySQLRepository) QueryFormalCountsByUserID(ctx context.Context, id int64) (int64, error) {
+	var cocktail []domain.Cocktail
+	var total int64
+
+	orm := c.db.Model(&cocktail)
+	orm.Where("user_id = ?", id)
+	orm.Where("category = ?", cockarticletype.Formal)
+
+	res := orm.Count(&total)
+
+	return total, res.Error
+}
+
 func (c *cocktailMySQLRepository) StoreTx(ctx context.Context, tx *gorm.DB, co *domain.Cocktail) error {
 
 	res := tx.Select("cocktail_id", "user_id", "title", "description", "category").Create(co)

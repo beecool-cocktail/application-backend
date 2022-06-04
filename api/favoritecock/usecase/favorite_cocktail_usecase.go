@@ -39,33 +39,22 @@ func (f *favoriteCocktailUsecase) fillFavoriteCocktailList(ctx context.Context,
 	var apiFavoriteCocktails []domain.APIFavoriteCocktail
 
 	for _, favoriteCocktail := range cocktails {
-		cocktail, err := f.cocktailMySQL.QueryByCocktailID(ctx, favoriteCocktail.CocktailID)
-		if err != nil && err == gorm.ErrRecordNotFound {
-			// origin article was deleted
-			deleteErr := f.favoriteCocktailMySQL.Delete(ctx, favoriteCocktail.CocktailID, favoriteCocktail.UserID)
-			if deleteErr != nil {
-				return []domain.APIFavoriteCocktail{}, err
-			}
-			continue
-		} else if err != nil {
-			return []domain.APIFavoriteCocktail{}, err
-		}
 
-		photo, err := f.cocktailPhotoMySQLRepo.QueryCoverPhotoByCocktailId(ctx, cocktail.CocktailID)
+		photo, err := f.cocktailPhotoMySQLRepo.QueryCoverPhotoByCocktailId(ctx, favoriteCocktail.CocktailID)
 		if err != nil {
 			return []domain.APIFavoriteCocktail{}, err
 		}
 
-		userName, err := f.userRedisRepo.QueryUserNameByID(ctx, cocktail.UserID)
+		userName, err := f.userRedisRepo.QueryUserNameByID(ctx, favoriteCocktail.UserID)
 		if err != nil {
 			return []domain.APIFavoriteCocktail{}, err
 		}
 
 		out := domain.APIFavoriteCocktail{
-			CocktailID: cocktail.CocktailID,
-			UserID:     cocktail.UserID,
+			CocktailID: favoriteCocktail.CocktailID,
+			UserID:     favoriteCocktail.UserID,
 			UserName:   userName,
-			Title:      cocktail.Title,
+			Title:      favoriteCocktail.Title,
 			CoverPhoto: photo,
 		}
 
@@ -141,6 +130,16 @@ func (f *favoriteCocktailUsecase) QueryByUserID(ctx context.Context, id int64,
 	}
 
 	return apiFavoriteCocktail, total, nil
+}
+
+func (f *favoriteCocktailUsecase) QueryCountsByUserID(ctx context.Context, id int64) (int64, error) {
+
+	total, err := f.favoriteCocktailMySQL.QueryCountsByUserID(ctx, id)
+	if err != nil {
+		return 0, err
+	}
+
+	return total, nil
 }
 
 func (f *favoriteCocktailUsecase) Delete(ctx context.Context, cocktailID, userID int64) error {
