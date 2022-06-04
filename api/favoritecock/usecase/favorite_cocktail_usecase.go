@@ -41,7 +41,7 @@ func (f *favoriteCocktailUsecase) fillFavoriteCocktailList(ctx context.Context,
 	for _, favoriteCocktail := range cocktails {
 
 		photo, err := f.cocktailPhotoMySQLRepo.QueryCoverPhotoByCocktailId(ctx, favoriteCocktail.CocktailID)
-		if err != nil {
+		if err != nil && err != gorm.ErrRecordNotFound {
 			return []domain.APIFavoriteCocktail{}, err
 		}
 
