@@ -55,6 +55,8 @@ func initializeRoutes(s *service.Service) {
 	// CORSMiddleware for all handler
 	s.HTTP.Use(middlewareHandler.CORSMiddleware())
 
+	s.HTTP.Static("/static", "/static/images")
+
 	// Repository dependency injection
 	transactionRepo := _transactionRepo.NewDBRepository(s.DB)
 	userMySQLRepo := _userRepo.NewMySQLUserRepository(s.DB)
