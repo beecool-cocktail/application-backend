@@ -19,7 +19,7 @@
   "HTTP":{
     "Address":"",
     "Port":"6969",
-    "IsTLS":false,
+    "IsTLS":true,
     "CertificateFile":"",
     "KeyFile":""
   },
