@@ -19,9 +19,9 @@
   "HTTP":{
     "Address":"",
     "Port":"6969",
-    "IsTLS":false,
-    "CertificateFile":"",
-    "KeyFile":""
+    "IsTLS":true,
+    "CertificateFile":"./server.pem",
+    "KeyFile":"./server.key"
   },
   "Redis":{
     "Network":"tcp",

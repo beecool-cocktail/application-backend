@@ -7,6 +7,7 @@ import (
 	"github.com/beecool-cocktail/application-backend/viewmodels"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/unrolled/secure"
 	"net/http"
 	"strings"
 	"time"
@@ -43,6 +44,20 @@ func (h *Handler) CORSMiddleware() gin.HandlerFunc {
 
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
+			return
+		}
+		c.Next()
+	}
+}
+
+func TlsHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		secureMiddleware := secure.New(secure.Options{
+			SSLRedirect: true,
+			SSLHost:     ":6969",
+		})
+		err := secureMiddleware.Process(c.Writer, c.Request)
+		if err != nil {
 			return
 		}
 		c.Next()

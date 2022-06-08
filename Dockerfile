@@ -30,6 +30,8 @@ COPY --from=build /app/main ./
 COPY --from=build /app/serviceConfig.json ./
 COPY --from=build /app/serviceConfigDev.json ./
 COPY --from=build /app/wait-for-it.sh ./
+COPY --from=build /app/cert/server.pem ./
+COPY --from=build /app/cert/server.key ./
 
 RUN apk update && \
     apk upgrade && \

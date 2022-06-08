@@ -38,7 +38,6 @@ func Init(cfgFile string) {
 	initializeRoutes(appService)
 	go util.StartUserIdGenerator()
 
-	logrus.Fatal(appService.HTTP.Run(appService.Configure.HTTP.Address + ":" + appService.Configure.HTTP.Port))
 }
 
 func initializeRoutes(s *service.Service) {
@@ -54,6 +53,14 @@ func initializeRoutes(s *service.Service) {
 	middlewareHandler := middleware.NewMiddlewareHandler(s)
 	// CORSMiddleware for all handler
 	s.HTTP.Use(middlewareHandler.CORSMiddleware())
+	s.HTTP.Use(middlewareHandler.CORSMiddleware())
+
+	if s.Configure.HTTP.IsTLS {
+		logrus.Fatal(s.HTTP.RunTLS(s.Configure.HTTP.Address+":"+s.Configure.HTTP.Port,
+			s.Configure.HTTP.CertificateFile, s.Configure.HTTP.KeyFile))
+	} else {
+		logrus.Fatal(s.HTTP.Run(s.Configure.HTTP.Address + ":" + s.Configure.HTTP.Port))
+	}
 
 	s.HTTP.Static("/static", "/static/images")
 
