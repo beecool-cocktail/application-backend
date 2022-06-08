@@ -11,7 +11,6 @@ func newHTTP(configure *Configure) (*gin.Engine, error) {
 	}
 
 	r := gin.Default()
-	r.Static("/static", "/static/images")
 
 	return r, nil
 }
