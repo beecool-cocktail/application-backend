@@ -87,7 +87,7 @@ func initializeRoutes(s *service.Service) {
 
 	m := autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
-		HostPolicy: autocert.HostWhitelist("whisperingcorner2.zapto.org"),
+		HostPolicy: autocert.HostWhitelist("application-frontend-mhkzpmkvca-de.a.run.app"),
 		Cache:      autocert.DirCache("/var/www/.cache"),
 	}
 
