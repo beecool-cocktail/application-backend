@@ -20,8 +20,8 @@
     "Address":"",
     "Port":"6969",
     "IsTLS":false,
-    "CertificateFile":"",
-    "KeyFile":""
+    "CertificateFile":"server.pem-chain",
+    "KeyFile":"server.key"
   },
   "Redis":{
     "Network":"tcp",

@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"crypto/tls"
 	_cocktailIngredientMySQLRepo "github.com/beecool-cocktail/application-backend/api/cockingredient/repository/mysql"
 	_cocktailPhotoMySQLRepo "github.com/beecool-cocktail/application-backend/api/cockphoto/repository/mysql"
 	_cocktailStepMySQLRepo "github.com/beecool-cocktail/application-backend/api/cockstep/repository/mysql"
@@ -24,10 +23,8 @@ import (
 	"github.com/beecool-cocktail/application-backend/service"
 	"github.com/beecool-cocktail/application-backend/util"
 	"github.com/sirupsen/logrus"
-	"golang.org/x/crypto/acme/autocert"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
-	"net/http"
 )
 
 func Init(cfgFile string) {
@@ -39,6 +36,9 @@ func Init(cfgFile string) {
 
 	initializeRoutes(appService)
 	go util.StartUserIdGenerator()
+
+	logrus.Fatal(appService.HTTP.RunTLS(appService.Configure.HTTP.Address+":"+appService.Configure.HTTP.Port,
+		appService.Configure.HTTP.CertificateFile, appService.Configure.HTTP.KeyFile))
 }
 
 func initializeRoutes(s *service.Service) {
@@ -85,18 +85,4 @@ func initializeRoutes(s *service.Service) {
 	_userHandlerHttpDelivery.NewUserHandler(s, userUsecase, socialAccountUsecase, cocktailUsecase, favoriteCocktailUsecase, *middlewareHandler)
 	_cocktailHandlerHttpDelivery.NewCocktailHandler(s, cocktailUsecase, userUsecase, *middlewareHandler)
 
-	m := autocert.Manager{
-		Prompt:     autocert.AcceptTOS,
-		HostPolicy: autocert.HostWhitelist("whisperingcorner2.zapto.org"),
-		Cache:      autocert.DirCache("/var/www/.cache"),
-	}
-
-	h := &http.Server{
-		Addr:      ":" + s.Configure.HTTP.Port,
-		TLSConfig: &tls.Config{GetCertificate: m.GetCertificate},
-		Handler:   s.HTTP,
-	}
-	h.ListenAndServeTLS("", "")
-
-	//logrus.Fatal(s.HTTP.Run(s.Configure.HTTP.Address + ":" + s.Configure.HTTP.Port))
 }
