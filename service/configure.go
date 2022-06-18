@@ -58,7 +58,8 @@ type redisConfig struct {
 }
 
 type elasticConfig struct {
-	Urls []string
+	Enable bool
+	Urls   []string
 }
 
 type OtherConfig struct {

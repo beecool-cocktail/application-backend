@@ -12,6 +12,10 @@ func newElasticSearch(configure *Configure) (*elastic.Client, error) {
 		return nil, errors.New("elastic search configure is not initialed")
 	}
 
+	if !configure.Elastic.Enable {
+		return nil, nil
+	}
+
 	client, err := elastic.NewClient(elastic.SetURL(configure.Elastic.Urls...))
 	if err != nil {
 		return nil, err

@@ -2,13 +2,13 @@
   "Version":"1.0",
   "Logger":{
     "Path": "",
-    "Level": "info"
+    "Level": "debug"
   },
   "DB":{
     "MainDB":{
       "DriverName":"mysql",
       "User":"root",
-      "Password":"whispering_69_Conner",
+      "Password":"123456",
       "Address":"db:3306",
       "DBName":"whispering_conner",
       "SetConnMaxIdleTime":5,
@@ -19,7 +19,7 @@
   "HTTP":{
     "Address":"",
     "Port":"6969",
-    "IsTLS":true,
+    "IsTLS":false,
     "CertificateFile":"server.pem-chain",
     "KeyFile":"server.key"
   },
@@ -34,6 +34,7 @@
     "PoolSize":10
   },
   "Elastic":{
+    "Enable": false,
     "Urls": [
       "http://elasticsearch:9200"
     ]
@@ -42,7 +43,7 @@
     "GoogleOAuth2": {
       "ClientID": "1000067287437-at6sjqjdj8vd13iergnsjgml7nv974c9.apps.googleusercontent.com",
       "ClientSecret": "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",
-      "RedirectURL": "https://application-frontend-mhkzpmkvca-de.a.run.app/google-authenticate",
+      "RedirectURL": "http://localhost:8080/google-authenticate",
       "Scopes": [
         "https://www.googleapis.com/auth/userinfo.profile",
         "https://www.googleapis.com/auth/userinfo.email"

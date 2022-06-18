@@ -38,8 +38,12 @@ func Init(cfgFile string) {
 	initializeRoutes(appService)
 	go util.StartUserIdGenerator()
 
-	logrus.Fatal(appService.HTTP.RunTLS(appService.Configure.HTTP.Address+":"+appService.Configure.HTTP.Port,
-		appService.Configure.HTTP.CertificateFile, appService.Configure.HTTP.KeyFile))
+	if appService.Configure.HTTP.IsTLS {
+		logrus.Fatal(appService.HTTP.RunTLS(appService.Configure.HTTP.Address+":"+appService.Configure.HTTP.Port,
+			appService.Configure.HTTP.CertificateFile, appService.Configure.HTTP.KeyFile))
+	} else {
+		logrus.Fatal(appService.HTTP.Run(appService.Configure.HTTP.Address + ":" + appService.Configure.HTTP.Port))
+	}
 }
 
 func initializeRoutes(s *service.Service) {

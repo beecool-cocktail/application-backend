@@ -638,15 +638,17 @@ func (c *cocktailUsecase) Store(ctx context.Context, co *domain.Cocktail, ingred
 			}
 		}
 
-		err = c.cocktailElasticSearchRepo.Index(ctx, &domain.CocktailElasticSearch{
-			CocktailID:  newCocktailID,
-			UserID:      co.UserID,
-			Title:       co.Title,
-			Description: co.Description,
-			CreatedDate: time.Now(),
-		})
-		if err != nil {
-			return err
+		if c.service.Configure.Elastic.Enable && co.Category == cockarticletype.Formal.Int() {
+			err = c.cocktailElasticSearchRepo.Index(ctx, &domain.CocktailElasticSearch{
+				CocktailID:  newCocktailID,
+				UserID:      co.UserID,
+				Title:       co.Title,
+				Description: co.Description,
+				CreatedDate: time.Now(),
+			})
+			if err != nil {
+				return err
+			}
 		}
 
 		return nil
@@ -752,13 +754,15 @@ func (c *cocktailUsecase) Update(ctx context.Context, co *domain.Cocktail, ingre
 			}
 		}
 
-		err = c.cocktailElasticSearchRepo.Update(ctx, &domain.CocktailElasticSearch{
-			CocktailID:  co.CocktailID,
-			Title:       co.Title,
-			Description: co.Description,
-		})
-		if err != nil {
-			return err
+		if c.service.Configure.Elastic.Enable {
+			err = c.cocktailElasticSearchRepo.Update(ctx, &domain.CocktailElasticSearch{
+				CocktailID:  co.CocktailID,
+				Title:       co.Title,
+				Description: co.Description,
+			})
+			if err != nil {
+				return err
+			}
 		}
 
 		return nil
@@ -835,9 +839,11 @@ func (c *cocktailUsecase) Delete(ctx context.Context, cocktailID, userID int64) 
 			return err
 		}
 
-		err = c.cocktailElasticSearchRepo.Delete(ctx, cocktailID)
-		if err != nil {
-			return err
+		if c.service.Configure.Elastic.Enable {
+			err = c.cocktailElasticSearchRepo.Delete(ctx, cocktailID)
+			if err != nil {
+				return err
+			}
 		}
 
 		return nil
@@ -920,15 +926,17 @@ func (c *cocktailUsecase) MakeDraftToFormal(ctx context.Context, cocktailID, use
 			return err
 		}
 
-		err = c.cocktailElasticSearchRepo.Index(ctx, &domain.CocktailElasticSearch{
-			CocktailID:  cocktail.CocktailID,
-			UserID:      cocktail.UserID,
-			Title:       cocktail.Title,
-			Description: cocktail.Description,
-			CreatedDate: time.Now(),
-		})
-		if err != nil {
-			return err
+		if c.service.Configure.Elastic.Enable {
+			err = c.cocktailElasticSearchRepo.Index(ctx, &domain.CocktailElasticSearch{
+				CocktailID:  cocktail.CocktailID,
+				UserID:      cocktail.UserID,
+				Title:       cocktail.Title,
+				Description: cocktail.Description,
+				CreatedDate: time.Now(),
+			})
+			if err != nil {
+				return err
+			}
 		}
 
 		return nil

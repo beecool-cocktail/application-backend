@@ -251,7 +251,7 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 
 	var cocktails []domain.APICocktail
 	var total int64
-	if keyword != "" {
+	if keyword != "" && co.Service.Configure.Elastic.Enable {
 		cocktails, total, err = co.CocktailUsecase.Search(c, keyword, page, pageSize, userId)
 		if err != nil {
 			service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("get cocktails with keyword "+

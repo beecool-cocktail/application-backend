@@ -34,6 +34,7 @@
     "PoolSize":10
   },
   "Elastic":{
+    "Enable": true,
     "Urls": [
       "http://elasticsearch:9200"
     ]
