@@ -18,9 +18,15 @@ const CocktailsMapping = `
 				"type": "keyword"
 			},
 			"title": {
-				"type": "keyword"
+				"type": "text"
 			},
 			"description": {
+				"type": "text"
+			},
+			"ingredients": {
+				"type": "text"
+			},
+			"steps": {
 				"type": "text"
 			},
 			"created_date": {
@@ -35,6 +41,8 @@ type CocktailElasticSearch struct {
 	UserID      int64     `json:"user_id"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
+	Steps       []string  `json:"steps"`
+	Ingredients []string  `json:"ingredients"`
 	CreatedDate time.Time `json:"created_date"`
 }
 

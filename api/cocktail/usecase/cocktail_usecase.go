@@ -622,20 +622,24 @@ func (c *cocktailUsecase) Store(ctx context.Context, co *domain.Cocktail, ingred
 			}
 		}
 
+		var elasticIngredients []string
 		for _, ingredient := range ingredients {
 			ingredient.CocktailID = newCocktailID
 			err = c.cocktailIngredientMySQLRepo.StoreTx(ctx, tx, &ingredient)
 			if err != nil {
 				return err
 			}
+			elasticIngredients = append(elasticIngredients, ingredient.IngredientName)
 		}
 
+		var elasticSteps []string
 		for _, step := range steps {
 			step.CocktailID = newCocktailID
 			err = c.cocktailStepMySQLRepo.StoreTx(ctx, tx, &step)
 			if err != nil {
 				return err
 			}
+			elasticSteps = append(elasticSteps, step.StepDescription)
 		}
 
 		if c.service.Configure.Elastic.Enable && co.Category == cockarticletype.Formal.Int() {
@@ -644,6 +648,8 @@ func (c *cocktailUsecase) Store(ctx context.Context, co *domain.Cocktail, ingred
 				UserID:      co.UserID,
 				Title:       co.Title,
 				Description: co.Description,
+				Ingredients: elasticIngredients,
+				Steps:       elasticSteps,
 				CreatedDate: time.Now(),
 			})
 			if err != nil {
@@ -734,11 +740,13 @@ func (c *cocktailUsecase) Update(ctx context.Context, co *domain.Cocktail, ingre
 			return err
 		}
 
+		var elasticIngredients []string
 		for _, ingredient := range ingredients {
 			err = c.cocktailIngredientMySQLRepo.StoreTx(ctx, tx, &ingredient)
 			if err != nil {
 				return err
 			}
+			elasticIngredients = append(elasticIngredients, ingredient.IngredientName)
 		}
 
 		//update cocktail step
@@ -747,11 +755,13 @@ func (c *cocktailUsecase) Update(ctx context.Context, co *domain.Cocktail, ingre
 			return err
 		}
 
+		var elasticSteps []string
 		for _, step := range steps {
 			err = c.cocktailStepMySQLRepo.StoreTx(ctx, tx, &step)
 			if err != nil {
 				return err
 			}
+			elasticSteps = append(elasticSteps, step.StepDescription)
 		}
 
 		if c.service.Configure.Elastic.Enable {
@@ -759,6 +769,8 @@ func (c *cocktailUsecase) Update(ctx context.Context, co *domain.Cocktail, ingre
 				CocktailID:  co.CocktailID,
 				Title:       co.Title,
 				Description: co.Description,
+				Ingredients: elasticIngredients,
+				Steps:       elasticSteps,
 			})
 			if err != nil {
 				return err

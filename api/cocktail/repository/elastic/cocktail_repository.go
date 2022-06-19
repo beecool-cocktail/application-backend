@@ -2,6 +2,8 @@ package elastic
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"github.com/beecool-cocktail/application-backend/domain"
 	"github.com/fatih/structs"
 	"github.com/olivere/elastic/v7"
@@ -23,7 +25,7 @@ func NewElasticSearchCocktailRepository(es *elastic.Client) domain.CocktailElast
 }
 
 func (c *cocktailElasticSearchRepository) Index(ctx context.Context, co *domain.CocktailElasticSearch) error {
-
+	fmt.Printf("insert value: %+v\n", co)
 	_, err := c.es.Index().
 		Index(domain.CocktailsIndex).
 		Id(strconv.FormatInt(co.CocktailID, 10)).
@@ -42,11 +44,29 @@ func (c *cocktailElasticSearchRepository) Search(ctx context.Context, text strin
 
 	var result []domain.CocktailElasticSearch
 
+	titleWeight := elastic.NewWeightFactorFunction(domain.TitleWeight)
+	ingredientWeight := elastic.NewWeightFactorFunction(domain.IngredientWeight)
+	descriptionWeight := elastic.NewWeightFactorFunction(domain.DescriptionWeight)
+	stepWeight := elastic.NewWeightFactorFunction(domain.StepWeight)
+
 	boolQuery := elastic.NewBoolQuery()
-	boolQuery.Must(elastic.NewMatchQuery("description", text))
+
+	titleMatchQuery := elastic.NewMatchQuery("title", text)
+	ingredientMatchQuery := elastic.NewMatchQuery("ingredients", text)
+	descriptionWeightMatchQuery := elastic.NewMatchQuery("description", text)
+	stepWeightMatchQuery := elastic.NewMatchQuery("steps", text)
+
+	boolQuery.Should(elastic.NewFunctionScoreQuery().AddScoreFunc(titleWeight).Query(titleMatchQuery),
+		elastic.NewFunctionScoreQuery().AddScoreFunc(descriptionWeight).Query(descriptionWeightMatchQuery),
+		elastic.NewFunctionScoreQuery().AddScoreFunc(ingredientWeight).Query(ingredientMatchQuery),
+		elastic.NewFunctionScoreQuery().AddScoreFunc(stepWeight).Query(stepWeightMatchQuery))
+
+	src, _ := boolQuery.Source()
+	data, _ := json.Marshal(src)
+
 	res, _ := c.es.Search().
 		Index(domain.CocktailsIndex).
-		Query(boolQuery).
+		Query(elastic.NewRawStringQuery(string(data))).
 		From(from - 1).Size(size).
 		Do(ctx)
 
