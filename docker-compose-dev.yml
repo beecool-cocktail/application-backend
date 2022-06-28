@@ -48,6 +48,18 @@ services:
       - redis
       - db
 
+  elasticsearch:
+    container_name: whispering-elastic
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_SEARCH_VERSION}
+    environment:
+      - xpack.security.enabled=false
+      - "discovery.type=single-node"
+    networks:
+      whispering:
+        ipv4_address: 172.28.0.6
+    ports:
+      - "${ELASTIC_SEARCH_PORT}:9200"
+
 networks:
   whispering:
     driver: bridge
