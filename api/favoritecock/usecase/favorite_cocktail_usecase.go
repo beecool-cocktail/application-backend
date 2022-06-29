@@ -10,6 +10,7 @@ import (
 type favoriteCocktailUsecase struct {
 	favoriteCocktailMySQL  domain.FavoriteCocktailMySQLRepository
 	cocktailMySQL          domain.CocktailMySQLRepository
+	cocktailRedisRepo      domain.CocktailRedisRepository
 	cocktailPhotoMySQLRepo domain.CocktailPhotoMySQLRepository
 	userMySQLRepo          domain.UserMySQLRepository
 	userRedisRepo          domain.UserRedisRepository
@@ -19,6 +20,7 @@ type favoriteCocktailUsecase struct {
 func NewFavoriteCocktailUsecase(
 	favoriteCocktailMySQL domain.FavoriteCocktailMySQLRepository,
 	cocktailMySQL domain.CocktailMySQLRepository,
+	cocktailRedisRepo domain.CocktailRedisRepository,
 	cocktailPhotoMySQLRepo domain.CocktailPhotoMySQLRepository,
 	userMySQLRepo domain.UserMySQLRepository,
 	userRedisRepo domain.UserRedisRepository,
@@ -26,6 +28,7 @@ func NewFavoriteCocktailUsecase(
 	return &favoriteCocktailUsecase{
 		favoriteCocktailMySQL:  favoriteCocktailMySQL,
 		cocktailMySQL:          cocktailMySQL,
+		cocktailRedisRepo:      cocktailRedisRepo,
 		cocktailPhotoMySQLRepo: cocktailPhotoMySQLRepo,
 		userMySQLRepo:          userMySQLRepo,
 		userRedisRepo:          userRedisRepo,
@@ -66,11 +69,6 @@ func (f *favoriteCocktailUsecase) fillFavoriteCocktailList(ctx context.Context,
 
 func (f *favoriteCocktailUsecase) Store(ctx context.Context, c *domain.FavoriteCocktail) error {
 
-	user, err := f.userMySQLRepo.QueryById(ctx, c.UserID)
-	if err != nil {
-		return err
-	}
-
 	if err := f.transactionRepo.Transaction(func(i interface{}) error {
 		tx := i.(*gorm.DB)
 
@@ -79,8 +77,10 @@ func (f *favoriteCocktailUsecase) Store(ctx context.Context, c *domain.FavoriteC
 			return err
 		}
 
-		user.NumberOfCollection = user.NumberOfCollection + 1
-		_, err = f.userMySQLRepo.UpdateNumberOfNumberOfCollectionTx(ctx, tx, user)
+		err = f.cocktailRedisRepo.IncreaseCollectionNumbers(ctx, &domain.CocktailCollection{
+			CocktailID:       c.CocktailID,
+			CollectionCounts: 1,
+		})
 		if err != nil {
 			return err
 		}
@@ -143,10 +143,6 @@ func (f *favoriteCocktailUsecase) QueryCountsByUserID(ctx context.Context, id in
 }
 
 func (f *favoriteCocktailUsecase) Delete(ctx context.Context, cocktailID, userID int64) error {
-	user, err := f.userMySQLRepo.QueryById(ctx, userID)
-	if err != nil {
-		return err
-	}
 
 	if err := f.transactionRepo.Transaction(func(i interface{}) error {
 		tx := i.(*gorm.DB)
@@ -156,8 +152,10 @@ func (f *favoriteCocktailUsecase) Delete(ctx context.Context, cocktailID, userID
 			return err
 		}
 
-		user.NumberOfCollection = user.NumberOfCollection - 1
-		_, err = f.userMySQLRepo.UpdateNumberOfNumberOfCollectionTx(ctx, tx, user)
+		err = f.cocktailRedisRepo.DecreaseCollectionNumbers(ctx, &domain.CocktailCollection{
+			CocktailID:       cocktailID,
+			CollectionCounts: 1,
+		})
 		if err != nil {
 			return err
 		}

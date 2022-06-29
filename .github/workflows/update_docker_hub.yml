@@ -9,7 +9,7 @@ on:
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   CONFIG_FILE: serviceConfigDev.json
-  TAGS: v0.9.1,latest
+  TAGS: v0.10.0,latest
 
 jobs:
 

@@ -72,9 +72,9 @@ type APICocktail struct {
 	CreatedDate      string
 }
 
-type CocktailRedis struct {
-	CocktailID       int64 `structs:"cocktail_id"`
-	CollectionCounts int   `structs:"collection_counts"`
+type CocktailCollection struct {
+	CocktailID       int64   `structs:"cocktail_id"`
+	CollectionCounts float64 `structs:"collection_counts"`
 }
 
 type Cocktail struct {
@@ -96,6 +96,13 @@ type CocktailMySQLRepository interface {
 	DeleteTx(ctx context.Context, tx *gorm.DB, id int64) error
 	UpdateTx(ctx context.Context, tx *gorm.DB, c *Cocktail) (int64, error)
 	UpdateCategoryTx(ctx context.Context, tx *gorm.DB, c *Cocktail) (int64, error)
+}
+
+type CocktailRedisRepository interface {
+	InitialCollectionNumbers(ctx context.Context, cr *CocktailCollection) error
+	IncreaseCollectionNumbers(ctx context.Context, cr *CocktailCollection) error
+	DecreaseCollectionNumbers(ctx context.Context, cr *CocktailCollection) error
+	DeleteCollectionNumbers(ctx context.Context, cr *CocktailCollection) error
 }
 
 type CocktailFileRepository interface {

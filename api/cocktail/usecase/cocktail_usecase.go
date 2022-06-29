@@ -19,6 +19,7 @@ import (
 type cocktailUsecase struct {
 	service                     *service.Service
 	cocktailMySQLRepo           domain.CocktailMySQLRepository
+	cocktailRedisRepo           domain.CocktailRedisRepository
 	cocktailElasticSearchRepo   domain.CocktailElasticSearchRepository
 	cocktailFileRepo            domain.CocktailFileRepository
 	cocktailPhotoMySQLRepo      domain.CocktailPhotoMySQLRepository
@@ -33,6 +34,7 @@ type cocktailUsecase struct {
 func NewCocktailUsecase(
 	s *service.Service,
 	cocktailMySQLRepo domain.CocktailMySQLRepository,
+	cocktailRedisRepo domain.CocktailRedisRepository,
 	cocktailElasticSearchRepo domain.CocktailElasticSearchRepository,
 	cocktailFileRepo domain.CocktailFileRepository,
 	cocktailPhotoMySQLRepo domain.CocktailPhotoMySQLRepository,
@@ -44,6 +46,7 @@ func NewCocktailUsecase(
 	return &cocktailUsecase{
 		service:                     s,
 		cocktailMySQLRepo:           cocktailMySQLRepo,
+		cocktailRedisRepo:           cocktailRedisRepo,
 		cocktailElasticSearchRepo:   cocktailElasticSearchRepo,
 		cocktailFileRepo:            cocktailFileRepo,
 		cocktailPhotoMySQLRepo:      cocktailPhotoMySQLRepo,
@@ -657,6 +660,14 @@ func (c *cocktailUsecase) Store(ctx context.Context, co *domain.Cocktail, ingred
 			}
 		}
 
+		err = c.cocktailRedisRepo.InitialCollectionNumbers(ctx, &domain.CocktailCollection{
+			CocktailID:       newCocktailID,
+			CollectionCounts: 0,
+		})
+		if err != nil {
+			return err
+		}
+
 		return nil
 	})
 
@@ -856,6 +867,13 @@ func (c *cocktailUsecase) Delete(ctx context.Context, cocktailID, userID int64) 
 			if err != nil {
 				return err
 			}
+		}
+
+		err = c.cocktailRedisRepo.DeleteCollectionNumbers(ctx, &domain.CocktailCollection{
+			CocktailID: cocktailID,
+		})
+		if err != nil {
+			return err
 		}
 
 		return nil
