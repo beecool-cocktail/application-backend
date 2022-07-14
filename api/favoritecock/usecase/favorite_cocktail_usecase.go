@@ -2,9 +2,13 @@ package usecase
 
 import (
 	"context"
+	"github.com/beecool-cocktail/application-backend/command"
 	"github.com/beecool-cocktail/application-backend/domain"
 	"github.com/beecool-cocktail/application-backend/enum/sortbydir"
+	"github.com/beecool-cocktail/application-backend/util"
 	"gorm.io/gorm"
+	"strconv"
+	"time"
 )
 
 type favoriteCocktailUsecase struct {
@@ -14,6 +18,7 @@ type favoriteCocktailUsecase struct {
 	cocktailPhotoMySQLRepo domain.CocktailPhotoMySQLRepository
 	userMySQLRepo          domain.UserMySQLRepository
 	userRedisRepo          domain.UserRedisRepository
+	commandRedisRepo       domain.CommandRedisRepository
 	transactionRepo        domain.DBTransactionRepository
 }
 
@@ -24,6 +29,7 @@ func NewFavoriteCocktailUsecase(
 	cocktailPhotoMySQLRepo domain.CocktailPhotoMySQLRepository,
 	userMySQLRepo domain.UserMySQLRepository,
 	userRedisRepo domain.UserRedisRepository,
+	commandRedisRepo domain.CommandRedisRepository,
 	transactionRepo domain.DBTransactionRepository) domain.FavoriteCocktailUsecase {
 	return &favoriteCocktailUsecase{
 		favoriteCocktailMySQL:  favoriteCocktailMySQL,
@@ -32,6 +38,7 @@ func NewFavoriteCocktailUsecase(
 		cocktailPhotoMySQLRepo: cocktailPhotoMySQLRepo,
 		userMySQLRepo:          userMySQLRepo,
 		userRedisRepo:          userRedisRepo,
+		commandRedisRepo:       commandRedisRepo,
 		transactionRepo:        transactionRepo,
 	}
 }
@@ -142,7 +149,9 @@ func (f *favoriteCocktailUsecase) QueryCountsByUserID(ctx context.Context, id in
 	return total, nil
 }
 
-func (f *favoriteCocktailUsecase) Delete(ctx context.Context, cocktailID, userID int64) error {
+func (f *favoriteCocktailUsecase) Delete(ctx context.Context, cocktailID, userID int64) (string, error) {
+
+	commandID := strconv.FormatInt(util.GetID(util.IdGenerator), 10)
 
 	if err := f.transactionRepo.Transaction(func(i interface{}) error {
 		tx := i.(*gorm.DB)
@@ -160,10 +169,22 @@ func (f *favoriteCocktailUsecase) Delete(ctx context.Context, cocktailID, userID
 			return err
 		}
 
+		err = f.commandRedisRepo.Store(ctx, &domain.Command{
+			ID:   commandID,
+			Name: command.FavoriteCocktailDelete,
+			Type: domain.CommandType{
+				Delete: domain.DeleteCommand{
+					OperatorID: userID,
+					TargetID:   cocktailID,
+				},
+			},
+			ExpireTime: time.Minute * time.Duration(3),
+		})
+
 		return nil
 	}); err != nil {
-		return err
+		return commandID, err
 	}
 
-	return nil
+	return commandID, nil
 }

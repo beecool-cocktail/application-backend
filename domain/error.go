@@ -12,6 +12,7 @@ const (
 	CodeCanNotSpecifyHttpAction                = "P0002"
 	CodeParameterIllegal                       = "P0003"
 	CodePermissionDenied                       = "P0004"
+	CodeCommandNotFound                        = "C0001"
 	CodeItemDoesNotBelongToUser                = "N0001"
 	CodeUserAlreadyExist                       = "A0001"
 	CodeUserNotFound                           = "A0002"
@@ -42,6 +43,7 @@ var (
 	ErrorCocktailNotFinished                    = errors.New("cocktail not finished")
 	ErrorFavoriteCocktailListNotOpenToThePublic = errors.New("favorite cocktail not open to the public")
 	ErrTokenExpired                             = errors.New("token expired")
+	ErrCommandNotFound                          = errors.New("command expire or not exist")
 	ErrCodeFileTypeIllegal                      = errors.New("illegal file type")
 	ErrCodeFileSizeIllegal                      = errors.New("illegal file size")
 	ErrFilePathIllegal                          = errors.New("illegal file path")
@@ -67,6 +69,8 @@ func GetErrorCode(err error) string {
 		return CodeParameterIllegal
 	case ErrPermissionDenied:
 		return CodePermissionDenied
+	case ErrCommandNotFound:
+		return CodeCommandNotFound
 	case ErrUserAlreadyExist:
 		return CodeUserAlreadyExist
 	case ErrUserNotFound:
@@ -108,6 +112,8 @@ func GetStatusCode(err error) int {
 		return http.StatusBadRequest
 	case ErrParameterIllegal:
 		return http.StatusBadRequest
+	case ErrCommandNotFound:
+		return http.StatusNotFound
 	case ErrPermissionDenied:
 		return http.StatusForbidden
 	case ErrUserAlreadyExist:

@@ -99,6 +99,15 @@ definitions:
         x-go-name: DeletedIds
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  DeleteFavoriteCocktailResponse:
+    properties:
+      command_id:
+        type: string
+        x-go-name: CommandID
+    required:
+    - command_id
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   DeleteFormalArticleRequest:
     properties:
       deleted_ids:
@@ -1034,6 +1043,23 @@ paths:
       summary: Edit cocktail formal article.
       tags:
       - cocktail
+  /command/{id}/undo:
+    post:
+      description: Undo command.
+      operationId: undoCommand
+      parameters:
+      - example: 1
+        in: path
+        name: id
+        required: true
+        type: string
+      responses: {}
+      security:
+      - Bearer:
+        - apiKey
+      summary: Undo command.
+      tags:
+      - command
   /users/{id}:
     get:
       description: Get other user id, name, email, numberOfPost, numberOfCollection
@@ -1174,7 +1200,9 @@ paths:
         name: id
         required: true
         type: integer
-      responses: {}
+      responses:
+        "200":
+          $ref: '#/responses/deleteFavoriteCocktailResponse'
       security:
       - Bearer:
         - apiKey
@@ -1182,6 +1210,23 @@ paths:
       tags:
       - user
 responses:
+  deleteFavoriteCocktailResponse:
+    description: ""
+    schema:
+      properties:
+        data:
+          $ref: '#/definitions/DeleteFavoriteCocktailResponse'
+        error_code:
+          type: string
+          x-go-name: ErrorCode
+        error_message:
+          type: string
+          x-go-name: ErrorMessage
+      required:
+      - error_code
+      - error_message
+      - data
+      type: object
   getCocktailByIDResponse:
     description: ""
     schema:

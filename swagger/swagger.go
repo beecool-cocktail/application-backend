@@ -230,3 +230,16 @@ type swaggerDeleteFormalArticleRequest struct {
 	// in: body
 	Body viewmodels.DeleteFormalArticleRequest
 }
+
+// swagger:response deleteFavoriteCocktailResponse
+type swaggerDeleteFavoriteCocktailResponse struct {
+	// in: body
+	Body struct {
+		//required: true
+		ErrorCode string `json:"error_code"`
+		//required: true
+		ErrorMessage string `json:"error_message"`
+		//required: true
+		Data viewmodels.DeleteFavoriteCocktailResponse `json:"data"`
+	}
+}

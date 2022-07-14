@@ -94,3 +94,8 @@ type FavoriteCocktail struct {
 	//required: true
 	Title string `json:"title"`
 }
+
+type DeleteFavoriteCocktailResponse struct {
+	//required: true
+	CommandID string `json:"command_id"`
+}

@@ -33,5 +33,5 @@ type FavoriteCocktailUsecase interface {
 	Store(ctx context.Context, c *FavoriteCocktail) error
 	QueryByUserID(ctx context.Context, id int64, pagination PaginationUsecase) ([]APIFavoriteCocktail, int64, error)
 	QueryCountsByUserID(ctx context.Context, id int64) (int64, error)
-	Delete(ctx context.Context, cocktailID, userID int64) error
+	Delete(ctx context.Context, cocktailID, userID int64) (string, error)
 }

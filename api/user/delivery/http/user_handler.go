@@ -369,11 +369,14 @@ func (u *UserHandler) CollectArticle(c *gin.Context) {
 //   example: 123456
 //
 // responses:
-//  "200": success
+//  "200":
+//    "$ref": "#/responses/deleteFavoriteCocktailResponse"
 func (u *UserHandler) RemoveCollectionArticle(c *gin.Context) {
 	userId := c.GetInt64("user_id")
 	cocktailID := c.Param("cocktailID")
 	api := "Delete /users/favorite-cocktails/" + cocktailID
+
+	var response viewmodels.DeleteFavoriteCocktailResponse
 
 	cocktailIDNumber, err := strconv.ParseInt(cocktailID, 10, 64)
 	if err != nil {
@@ -382,14 +385,16 @@ func (u *UserHandler) RemoveCollectionArticle(c *gin.Context) {
 		return
 	}
 
-	err = u.FavoriteCocktailUsecase.Delete(c, cocktailIDNumber, userId)
+	commandID, err := u.FavoriteCocktailUsecase.Delete(c, cocktailIDNumber, userId)
 	if err != nil {
 		service.GetLoggerEntry(u.Logger, api, nil).Errorf("delete article from favotite lost failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
 
-	util.PackResponseWithData(c, http.StatusCreated, nil, domain.GetErrorCode(nil), "")
+	response.CommandID = commandID
+
+	util.PackResponseWithData(c, http.StatusCreated, response, domain.GetErrorCode(nil), "")
 }
 
 // swagger:operation GET /users/current/favorite-cocktails user getUserFavoriteList

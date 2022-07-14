@@ -10,6 +10,9 @@ import (
 	_cocktailMySQLRepo "github.com/beecool-cocktail/application-backend/api/cocktail/repository/mysql"
 	_cocktailRedisRepo "github.com/beecool-cocktail/application-backend/api/cocktail/repository/redis"
 	_cocktailUsecase "github.com/beecool-cocktail/application-backend/api/cocktail/usecase"
+	_commandHandlerHttpDelivery "github.com/beecool-cocktail/application-backend/api/command/delivery/http"
+	_commandRedis "github.com/beecool-cocktail/application-backend/api/command/repository/redis"
+	_commandUsecase "github.com/beecool-cocktail/application-backend/api/command/usecase"
 	_favoriteCocktailMySQLRepo "github.com/beecool-cocktail/application-backend/api/favoritecock/repository/mysql"
 	_favoriteCocktailUsecase "github.com/beecool-cocktail/application-backend/api/favoritecock/usecase"
 	_socialAccountGoogleOAuth "github.com/beecool-cocktail/application-backend/api/social-account/repository/google-oauth2"
@@ -20,6 +23,7 @@ import (
 	_userRepo "github.com/beecool-cocktail/application-backend/api/user/repository/mysql"
 	_userCache "github.com/beecool-cocktail/application-backend/api/user/repository/redis"
 	_userUsecase "github.com/beecool-cocktail/application-backend/api/user/usercase"
+	cmdPattern "github.com/beecool-cocktail/application-backend/command"
 	_transactionRepo "github.com/beecool-cocktail/application-backend/db/repository/mysql"
 	"github.com/beecool-cocktail/application-backend/middleware"
 	"github.com/beecool-cocktail/application-backend/service"
@@ -77,23 +81,32 @@ func initializeRoutes(s *service.Service) {
 
 	userRedisRepo := _userCache.NewRedisUserRepository(s.Redis)
 	cocktailRedisRepo := _cocktailRedisRepo.NewRedisCocktailRepository(s.Redis)
+	commandRedisRepo := _commandRedis.NewRedisCommandRepository(s.Redis)
 
 	userFileRepo := _userFileRepo.NewFileUserRepository()
 	cocktailFileMySQL := _cocktailFileRepo.NewFileUserRepository()
 
 	socialAccountGoogleOAuthRepo := _socialAccountGoogleOAuth.NewGoogleOAuthSocialAccountRepository(googleOAuthConfig)
 
+	//operator
+	operatorHandler := cmdPattern.NewOperatorHandler()
+	favoriteCocktailOperator := cmdPattern.NewFavoriteCocktailOperator(favoriteCocktailMySQLRepo, cocktailRedisRepo, transactionRepo)
+	operatorHandler.SetOperator(cmdPattern.FavoriteCocktailDelete, favoriteCocktailOperator)
+
 	// Usecase dependency injection
 	userUsecase := _userUsecase.NewUserUsecase(s, userMySQLRepo, userRedisRepo, userFileRepo, transactionRepo)
 	socialAccountUsecase := _socialAccountUsecase.NewSocialAccountUsecase(userMySQLRepo, userRedisRepo,
 		socialAccountMySQLRepo, socialAccountGoogleOAuthRepo)
 	favoriteCocktailUsecase := _favoriteCocktailUsecase.NewFavoriteCocktailUsecase(favoriteCocktailMySQLRepo,
-		cocktailMySQLRepo, cocktailRedisRepo, cocktailPhotoMySQLRepo, userMySQLRepo, userRedisRepo, transactionRepo)
+		cocktailMySQLRepo, cocktailRedisRepo, cocktailPhotoMySQLRepo, userMySQLRepo, userRedisRepo, commandRedisRepo,
+		transactionRepo)
 	cocktailUsecase := _cocktailUsecase.NewCocktailUsecase(s, cocktailMySQLRepo, cocktailRedisRepo,
 		cocktailElasticSearchRepo, cocktailFileMySQL, cocktailPhotoMySQLRepo, cocktailIngredientMySQLRepo,
 		cocktailStepMySQLRepo, userMySQLRepo, favoriteCocktailMySQLRepo, transactionRepo)
+	commandUsecase := _commandUsecase.NewCommandUsecase(s, commandRedisRepo, operatorHandler)
 
 	// Delivery dependency injection
 	_userHandlerHttpDelivery.NewUserHandler(s, userUsecase, socialAccountUsecase, cocktailUsecase, favoriteCocktailUsecase, *middlewareHandler)
 	_cocktailHandlerHttpDelivery.NewCocktailHandler(s, cocktailUsecase, userUsecase, *middlewareHandler)
+	_commandHandlerHttpDelivery.NewCommandHandler(s, commandUsecase, *middlewareHandler)
 }
