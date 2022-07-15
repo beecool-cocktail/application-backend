@@ -18,16 +18,24 @@ const CocktailsMapping = `
 				"type": "keyword"
 			},
 			"title": {
-				"type": "text"
+				"type": "text",
+				"analyzer": "ik_max_word",
+            	"search_analyzer": "ik_max_word"
 			},
 			"description": {
-				"type": "text"
+				"type": "text",
+				"analyzer": "ik_max_word",
+            	"search_analyzer": "ik_max_word"
 			},
 			"ingredients": {
-				"type": "text"
+				"type": "text",
+				"analyzer": "ik_max_word",
+            	"search_analyzer": "ik_max_word"
 			},
 			"steps": {
-				"type": "text"
+				"type": "text",
+				"analyzer": "ik_max_word",
+            	"search_analyzer": "ik_max_word"
 			},
 			"created_date": {
 				"type": "date"

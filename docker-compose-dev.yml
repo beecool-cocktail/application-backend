@@ -58,6 +58,8 @@ services:
     networks:
       whispering:
         ipv4_address: 172.28.0.6
+    volumes:
+      - ${ELASTIC_PLUGINS}:/usr/share/elasticsearch/plugins
     ports:
       - "${ELASTIC_SEARCH_PORT}:9200"
 
