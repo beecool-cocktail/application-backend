@@ -50,6 +50,11 @@ func (f *favoriteCocktailUsecase) fillFavoriteCocktailList(ctx context.Context,
 
 	for _, favoriteCocktail := range cocktails {
 
+		cocktail, err := f.cocktailMySQL.QueryByCocktailID(ctx, favoriteCocktail.CocktailID)
+		if err != nil {
+			return []domain.APIFavoriteCocktail{}, err
+		}
+
 		photo, err := f.cocktailPhotoMySQLRepo.QueryCoverPhotoByCocktailId(ctx, favoriteCocktail.CocktailID)
 		if err != nil && err != gorm.ErrRecordNotFound {
 			return []domain.APIFavoriteCocktail{}, err
@@ -64,7 +69,7 @@ func (f *favoriteCocktailUsecase) fillFavoriteCocktailList(ctx context.Context,
 			CocktailID: favoriteCocktail.CocktailID,
 			UserID:     favoriteCocktail.UserID,
 			UserName:   userName,
-			Title:      favoriteCocktail.Title,
+			Title:      cocktail.Title,
 			CoverPhoto: photo,
 		}
 
