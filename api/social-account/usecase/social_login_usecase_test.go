@@ -71,7 +71,7 @@ func Test_socialLoginUsecase_GetUserInfo(t *testing.T) {
 
 		mockUserMySQLRepo.
 			On("QueryById", mock.Anything, mock.MatchedBy(func(userID int64) bool { return userID == mockSocialAccount.UserID })).
-			Return(&mockUserMySQL, nil).Once()
+			Return(mockUserMySQL, nil).Once()
 
 		mockUserRedisRepo.
 			On("Store", mock.Anything, mock.MatchedBy(func(mockUser *domain.UserCache) bool {

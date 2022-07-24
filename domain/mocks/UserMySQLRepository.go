@@ -17,16 +17,14 @@ type UserMySQLRepository struct {
 }
 
 // QueryById provides a mock function with given fields: ctx, id
-func (_m *UserMySQLRepository) QueryById(ctx context.Context, id int64) (*domain.User, error) {
+func (_m *UserMySQLRepository) QueryById(ctx context.Context, id int64) (domain.User, error) {
 	ret := _m.Called(ctx, id)
 
-	var r0 *domain.User
-	if rf, ok := ret.Get(0).(func(context.Context, int64) *domain.User); ok {
+	var r0 domain.User
+	if rf, ok := ret.Get(0).(func(context.Context, int64) domain.User); ok {
 		r0 = rf(ctx, id)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*domain.User)
-		}
+		r0 = ret.Get(0).(domain.User)
 	}
 
 	var r1 error

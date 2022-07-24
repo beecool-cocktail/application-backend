@@ -15,17 +15,24 @@ type FavoriteCocktailUsecase struct {
 }
 
 // Delete provides a mock function with given fields: ctx, cocktailID, userID
-func (_m *FavoriteCocktailUsecase) Delete(ctx context.Context, cocktailID int64, userID int64) error {
+func (_m *FavoriteCocktailUsecase) Delete(ctx context.Context, cocktailID int64, userID int64) (string, error) {
 	ret := _m.Called(ctx, cocktailID, userID)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64, int64) error); ok {
+	var r0 string
+	if rf, ok := ret.Get(0).(func(context.Context, int64, int64) string); ok {
 		r0 = rf(ctx, cocktailID, userID)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(string)
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, int64, int64) error); ok {
+		r1 = rf(ctx, cocktailID, userID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // QueryByUserID provides a mock function with given fields: ctx, id, pagination
@@ -56,6 +63,27 @@ func (_m *FavoriteCocktailUsecase) QueryByUserID(ctx context.Context, id int64, 
 	}
 
 	return r0, r1, r2
+}
+
+// QueryCountsByUserID provides a mock function with given fields: ctx, id
+func (_m *FavoriteCocktailUsecase) QueryCountsByUserID(ctx context.Context, id int64) (int64, error) {
+	ret := _m.Called(ctx, id)
+
+	var r0 int64
+	if rf, ok := ret.Get(0).(func(context.Context, int64) int64); ok {
+		r0 = rf(ctx, id)
+	} else {
+		r0 = ret.Get(0).(int64)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
+		r1 = rf(ctx, id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // Store provides a mock function with given fields: ctx, c

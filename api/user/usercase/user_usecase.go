@@ -7,7 +7,6 @@ import (
 	"github.com/beecool-cocktail/application-backend/service"
 	"github.com/beecool-cocktail/application-backend/util"
 	"github.com/google/uuid"
-	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -38,22 +37,19 @@ func (u *userUsecase) Logout(ctx context.Context, id int64) (err error) {
 		AccessToken: token,
 	}
 	if err := u.userRedisRepo.UpdateToken(ctx, &redisToken); err != nil {
-		logrus.Error(err)
 		return err
 	}
 
 	return nil
 }
 
-func (u *userUsecase) QueryById(ctx context.Context, id int64) (*domain.User, error) {
+func (u *userUsecase) QueryById(ctx context.Context, id int64) (domain.User, error) {
 
 	user, err := u.userMySQLRepo.QueryById(ctx, id)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		logrus.Error(err)
-		return nil, domain.ErrUserNotFound
+		return domain.User{}, domain.ErrUserNotFound
 	} else if err != nil {
-		logrus.Error(err)
-		return nil, err
+		return domain.User{}, err
 	}
 
 	return user, nil
@@ -82,7 +78,6 @@ func (u *userUsecase) UpdateUserInfo(ctx context.Context, d *domain.User, ui *do
 				return err
 			}
 
-			//Todo research why use pointer!!!!!!!!!!!!!!!!!!!!
 			ui.Destination = urlPath + newFileName + ".webp"
 			_, err = u.userMySQLRepo.UpdateImageTx(ctx, tx, ui)
 			if err != nil {

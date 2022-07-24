@@ -137,6 +137,57 @@ func (_m *CocktailUsecase) QueryFormalByUserID(ctx context.Context, id int64) ([
 	return r0, r1
 }
 
+// QueryFormalCountsByUserID provides a mock function with given fields: ctx, id
+func (_m *CocktailUsecase) QueryFormalCountsByUserID(ctx context.Context, id int64) (int64, error) {
+	ret := _m.Called(ctx, id)
+
+	var r0 int64
+	if rf, ok := ret.Get(0).(func(context.Context, int64) int64); ok {
+		r0 = rf(ctx, id)
+	} else {
+		r0 = ret.Get(0).(int64)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
+		r1 = rf(ctx, id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// Search provides a mock function with given fields: ctx, keyword, from, size, userID
+func (_m *CocktailUsecase) Search(ctx context.Context, keyword string, from int, size int, userID int64) ([]domain.APICocktail, int64, error) {
+	ret := _m.Called(ctx, keyword, from, size, userID)
+
+	var r0 []domain.APICocktail
+	if rf, ok := ret.Get(0).(func(context.Context, string, int, int, int64) []domain.APICocktail); ok {
+		r0 = rf(ctx, keyword, from, size, userID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]domain.APICocktail)
+		}
+	}
+
+	var r1 int64
+	if rf, ok := ret.Get(1).(func(context.Context, string, int, int, int64) int64); ok {
+		r1 = rf(ctx, keyword, from, size, userID)
+	} else {
+		r1 = ret.Get(1).(int64)
+	}
+
+	var r2 error
+	if rf, ok := ret.Get(2).(func(context.Context, string, int, int, int64) error); ok {
+		r2 = rf(ctx, keyword, from, size, userID)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
+}
+
 // Store provides a mock function with given fields: ctx, c, cig, cs, ci, userID
 func (_m *CocktailUsecase) Store(ctx context.Context, c *domain.Cocktail, cig []domain.CocktailIngredient, cs []domain.CocktailStep, ci []domain.CocktailImage, userID int64) error {
 	ret := _m.Called(ctx, c, cig, cs, ci, userID)

@@ -104,6 +104,27 @@ func (_m *CocktailMySQLRepository) QueryFormalByUserID(ctx context.Context, id i
 	return r0, r1
 }
 
+// QueryFormalCountsByUserID provides a mock function with given fields: ctx, id
+func (_m *CocktailMySQLRepository) QueryFormalCountsByUserID(ctx context.Context, id int64) (int64, error) {
+	ret := _m.Called(ctx, id)
+
+	var r0 int64
+	if rf, ok := ret.Get(0).(func(context.Context, int64) int64); ok {
+		r0 = rf(ctx, id)
+	} else {
+		r0 = ret.Get(0).(int64)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
+		r1 = rf(ctx, id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // StoreTx provides a mock function with given fields: ctx, tx, c
 func (_m *CocktailMySQLRepository) StoreTx(ctx context.Context, tx *gorm.DB, c *domain.Cocktail) error {
 	ret := _m.Called(ctx, tx, c)

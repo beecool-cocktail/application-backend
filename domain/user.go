@@ -41,7 +41,7 @@ type UserImage struct {
 
 type UserMySQLRepository interface {
 	Store(ctx context.Context, d *User) error
-	QueryById(ctx context.Context, id int64) (*User, error)
+	QueryById(ctx context.Context, id int64) (User, error)
 	UpdateBasicInfo(ctx context.Context, d *User) (int64, error)
 	UpdateImage(ctx context.Context, d *UserImage) (int64, error)
 	UpdateBasicInfoTx(ctx context.Context, tx *gorm.DB, d *User) (int64, error)
@@ -64,6 +64,6 @@ type UserFileRepository interface {
 
 type UserUsecase interface {
 	Logout(ctx context.Context, id int64) error
-	QueryById(ctx context.Context, id int64) (*User, error)
+	QueryById(ctx context.Context, id int64) (User, error)
 	UpdateUserInfo(ctx context.Context, d *User, ui *UserImage) error
 }

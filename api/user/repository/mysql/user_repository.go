@@ -45,11 +45,11 @@ func (u *userMySQLRepository) Store(ctx context.Context, d *domain.User) error {
 	return nil
 }
 
-func (u *userMySQLRepository) QueryById(ctx context.Context, id int64) (*domain.User, error) {
+func (u *userMySQLRepository) QueryById(ctx context.Context, id int64) (domain.User, error) {
 	var user domain.User
 	res := u.db.Where("id = ?", id).Take(&user)
 
-	return &user, res.Error
+	return user, res.Error
 }
 
 func (u *userMySQLRepository) UpdateBasicInfo(ctx context.Context, d *domain.User) (int64, error) {

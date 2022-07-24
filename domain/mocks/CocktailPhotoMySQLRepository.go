@@ -44,6 +44,20 @@ func (_m *CocktailPhotoMySQLRepository) DeleteByIDTx(ctx context.Context, tx *go
 	return r0
 }
 
+// DeleteByLowQualityBundleIDTx provides a mock function with given fields: ctx, tx, id
+func (_m *CocktailPhotoMySQLRepository) DeleteByLowQualityBundleIDTx(ctx context.Context, tx *gorm.DB, id int64) error {
+	ret := _m.Called(ctx, tx, id)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *gorm.DB, int64) error); ok {
+		r0 = rf(ctx, tx, id)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // QueryCoverPhotoByCocktailId provides a mock function with given fields: ctx, id
 func (_m *CocktailPhotoMySQLRepository) QueryCoverPhotoByCocktailId(ctx context.Context, id int64) (string, error) {
 	ret := _m.Called(ctx, id)
@@ -53,6 +67,50 @@ func (_m *CocktailPhotoMySQLRepository) QueryCoverPhotoByCocktailId(ctx context.
 		r0 = rf(ctx, id)
 	} else {
 		r0 = ret.Get(0).(string)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
+		r1 = rf(ctx, id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// QueryLowQualityPhotoByBundleId provides a mock function with given fields: ctx, id
+func (_m *CocktailPhotoMySQLRepository) QueryLowQualityPhotoByBundleId(ctx context.Context, id int64) (domain.CocktailPhoto, error) {
+	ret := _m.Called(ctx, id)
+
+	var r0 domain.CocktailPhoto
+	if rf, ok := ret.Get(0).(func(context.Context, int64) domain.CocktailPhoto); ok {
+		r0 = rf(ctx, id)
+	} else {
+		r0 = ret.Get(0).(domain.CocktailPhoto)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
+		r1 = rf(ctx, id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// QueryLowQualityPhotosByCocktailId provides a mock function with given fields: ctx, id
+func (_m *CocktailPhotoMySQLRepository) QueryLowQualityPhotosByCocktailId(ctx context.Context, id int64) ([]domain.CocktailPhoto, error) {
+	ret := _m.Called(ctx, id)
+
+	var r0 []domain.CocktailPhoto
+	if rf, ok := ret.Get(0).(func(context.Context, int64) []domain.CocktailPhoto); ok {
+		r0 = rf(ctx, id)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]domain.CocktailPhoto)
+		}
 	}
 
 	var r1 error
