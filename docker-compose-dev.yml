@@ -16,7 +16,7 @@ services:
       - ${DATA_DIR}/mysql_data:/var/lib/mysql
       - ${MYSQL_CONFIG}:/etc/mysql/my.cnf
       - ./dockerconf/mysql/sql:/docker-entrypoint-initdb.d
-      - ./mysql_log/error/log:/var/log/mysql/error.log
+      - ./mysql_log/error.log:/var/log/mysql/error.log
 
   redis:
     image: redis:${REDIS_VERSION}
