@@ -89,6 +89,18 @@ definitions:
     - id
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  Coordinate:
+    properties:
+      x:
+        format: float
+        type: number
+        x-go-name: X
+      "y":
+        format: float
+        type: number
+        x-go-name: "Y"
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   DeleteDraftArticleRequest:
     properties:
       deleted_ids:
@@ -719,6 +731,12 @@ definitions:
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   UpdateUserInfoRequest:
     properties:
+      coordinate:
+        description: 座標 [左上XY, 右下XY]
+        items:
+          $ref: '#/definitions/Coordinate'
+        type: array
+        x-go-name: Coordinate
       file:
         type: string
         x-go-name: File
@@ -727,11 +745,21 @@ definitions:
         example: false
         type: boolean
         x-go-name: IsCollectionPublic
+      length:
+        description: 原圖長
+        format: float
+        type: number
+        x-go-name: Length
       name:
         description: name for this user
         example: Feen Lin
         type: string
         x-go-name: Name
+      width:
+        description: 原圖寬
+        format: float
+        type: number
+        x-go-name: Width
     required:
     - name
     - is_collection_public

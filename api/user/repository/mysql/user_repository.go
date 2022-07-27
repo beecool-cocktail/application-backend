@@ -8,8 +8,14 @@ import (
 )
 
 type basicInfo struct {
-	Name               string `structs:"name"`
-	IsCollectionPublic bool   `structs:"is_collection_public"`
+	Name               string  `structs:"name"`
+	IsCollectionPublic bool    `structs:"is_collection_public"`
+	Length             float32 `structs:"length"`
+	Width              float32 `structs:"width"`
+	CoordinateX1       float32 `structs:"coordinate_x1"`
+	CoordinateY1       float32 `structs:"coordinate_y1"`
+	CoordinateX2       float32 `structs:"coordinate_x2"`
+	CoordinateY2       float32 `structs:"coordinate_y2"`
 }
 
 type photo struct {
@@ -57,6 +63,12 @@ func (u *userMySQLRepository) UpdateBasicInfo(ctx context.Context, d *domain.Use
 	updateColumn := basicInfo{
 		Name:               d.Name,
 		IsCollectionPublic: d.IsCollectionPublic,
+		Length:             d.Length,
+		Width:              d.Width,
+		CoordinateX1:       d.CoordinateX1,
+		CoordinateY1:       d.CoordinateY1,
+		CoordinateX2:       d.CoordinateX2,
+		CoordinateY2:       d.CoordinateY2,
 	}
 
 	res := u.db.Model(&user).Where("id = ?", d.ID).Updates(structs.Map(updateColumn))
@@ -80,6 +92,12 @@ func (u *userMySQLRepository) UpdateBasicInfoTx(ctx context.Context, tx *gorm.DB
 	updateColumn := basicInfo{
 		Name:               d.Name,
 		IsCollectionPublic: d.IsCollectionPublic,
+		Length:             d.Length,
+		Width:              d.Width,
+		CoordinateX1:       d.CoordinateX1,
+		CoordinateY1:       d.CoordinateY1,
+		CoordinateX2:       d.CoordinateX2,
+		CoordinateY2:       d.CoordinateY2,
 	}
 
 	res := tx.Model(&user).Where("id = ?", d.ID).Updates(structs.Map(updateColumn))

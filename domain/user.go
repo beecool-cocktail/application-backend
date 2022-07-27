@@ -14,6 +14,12 @@ type User struct {
 	Name               string    `gorm:"type:varchar(32) NOT NULL DEFAULT ''"`
 	Email              string    `gorm:"type:varchar(64) NOT NULL DEFAULT ''"`
 	Photo              string    `gorm:"type:varchar(128) NOT NULL"`
+	Length             float32   `gorm:"type:float NOT NULL DEFAULT 0; comment:照片長度"`
+	Width              float32   `gorm:"type:float NOT NULL DEFAULT 0; comment:照片寬度"`
+	CoordinateX1       float32   `gorm:"type:float NOT NULL DEFAULT 0; comment:照片左上X座標"`
+	CoordinateY1       float32   `gorm:"type:float NOT NULL DEFAULT 0; comment:照片左上Y座標"`
+	CoordinateX2       float32   `gorm:"type:float NOT NULL DEFAULT 0; comment:照片左下X座標"`
+	CoordinateY2       float32   `gorm:"type:float NOT NULL DEFAULT 0; comment:照片左下Y座標"`
 	NumberOfPost       int       `gorm:"type:int unsigned NOT NULL DEFAULT 0; comment: 貼文數"`
 	NumberOfCollection int       `gorm:"type:int unsigned NOT NULL DEFAULT 0; comment: 收藏數"`
 	NumberOfDraft      int       `gorm:"type:int unsigned NOT NULL DEFAULT 0; comment: 草稿數"`

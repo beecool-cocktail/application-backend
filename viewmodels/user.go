@@ -24,6 +24,15 @@ type GetUserInfoResponse struct {
 	Email string `json:"email"`
 	//required: true
 	Photo string `json:"photo"`
+	//原圖長
+	// required: true
+	Length float32 `json:"length" binding:"required"`
+	//原圖寬
+	// required: true
+	Width float32 `json:"width" binding:"required"`
+	//座標 [左上XY, 右下XY]
+	// required: true
+	Coordinate []Coordinate `json:"coordinate" binding:"required,gte=2"`
 	//required: true
 	NumberOfPost int64 `json:"number_of_post"`
 	//required: true
@@ -40,6 +49,15 @@ type GetOtherUserInfoResponse struct {
 	Name string `json:"user_name"`
 	//required: true
 	Photo string `json:"photo"`
+	//原圖長
+	// required: true
+	Length float32 `json:"length" binding:"required"`
+	//原圖寬
+	// required: true
+	Width float32 `json:"width" binding:"required"`
+	//座標 [左上XY, 右下XY]
+	// required: true
+	Coordinate []Coordinate `json:"coordinate" binding:"required,gte=2"`
 	//required: true
 	NumberOfPost int64 `json:"number_of_post"`
 	//required: true
@@ -52,6 +70,18 @@ type GetOtherUserInfoResponse struct {
 type UpdateUserInfoRequest struct {
 	File string `json:"file"`
 
+	//原圖長
+	// required: true
+	Length float32 `json:"length" binding:"required"`
+
+	//原圖寬
+	// required: true
+	Width float32 `json:"width" binding:"required"`
+
+	//座標 [左上XY, 右下XY]
+	// required: true
+	Coordinate []Coordinate `json:"coordinate" binding:"required,gte=2"`
+
 	// name for this user
 	// required: true
 	// example: Feen Lin
@@ -61,6 +91,13 @@ type UpdateUserInfoRequest struct {
 	// required: true
 	// example: false
 	IsCollectionPublic bool `json:"is_collection_public"`
+}
+
+type Coordinate struct {
+	// required: true
+	X float32 `json:"x"`
+	// required: true
+	Y float32 `json:"y"`
 }
 
 type UpdateUserInfoResponse struct {

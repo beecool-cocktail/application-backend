@@ -179,10 +179,22 @@ func (u *UserHandler) GetUserInfo(c *gin.Context) {
 	}
 
 	response = viewmodels.GetUserInfoResponse{
-		UserID:             user.ID,
-		Name:               user.Name,
-		Email:              user.Email,
-		Photo:              user.Photo,
+		UserID: user.ID,
+		Name:   user.Name,
+		Email:  user.Email,
+		Photo:  user.Photo,
+		Length: user.Length,
+		Width:  user.Width,
+		Coordinate: []viewmodels.Coordinate{
+			{
+				X: user.CoordinateX1,
+				Y: user.CoordinateY1,
+			},
+			{
+				X: user.CoordinateX2,
+				Y: user.CoordinateY2,
+			},
+		},
 		NumberOfPost:       numberOfPost,
 		NumberOfCollection: numberOfCollection,
 		IsCollectionPublic: user.IsCollectionPublic,
@@ -245,9 +257,21 @@ func (u *UserHandler) GetOtherUserInfo(c *gin.Context) {
 	}
 
 	response = viewmodels.GetOtherUserInfoResponse{
-		UserID:             user.ID,
-		Name:               user.Name,
-		Photo:              user.Photo,
+		UserID: user.ID,
+		Name:   user.Name,
+		Photo:  user.Photo,
+		Length: user.Length,
+		Width:  user.Width,
+		Coordinate: []viewmodels.Coordinate{
+			{
+				X: user.CoordinateX1,
+				Y: user.CoordinateY1,
+			},
+			{
+				X: user.CoordinateX2,
+				Y: user.CoordinateY2,
+			},
+		},
 		NumberOfPost:       numberOfPost,
 		NumberOfCollection: numberOfCollection,
 		IsCollectionPublic: user.IsCollectionPublic,
@@ -298,11 +322,22 @@ func (u *UserHandler) UpdateUserInfo(c *gin.Context) {
 		// user didn't update photo
 	}
 
+	if len(request.Coordinate) != 2 {
+		service.GetLoggerEntry(u.Logger, api, request).Errorf("parameter illegal")
+		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
+		return
+	}
 	err := u.UserUsecase.UpdateUserInfo(c,
 		&domain.User{
 			ID:                 userId,
 			Name:               request.Name,
 			IsCollectionPublic: request.IsCollectionPublic,
+			Length:             request.Length,
+			Width:              request.Width,
+			CoordinateX1:       request.Coordinate[0].X,
+			CoordinateY1:       request.Coordinate[0].Y,
+			CoordinateX2:       request.Coordinate[1].X,
+			CoordinateY2:       request.Coordinate[1].Y,
 		},
 		&userImage)
 	if err != nil {

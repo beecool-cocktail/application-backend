@@ -73,15 +73,23 @@ func Test_userMySQLRepository_UpdateBasicInfo(t *testing.T) {
 	mockUser := &domain.User{
 		ID:                 1,
 		Name:               "user-name",
+		Length:             10,
+		Width:              20,
+		CoordinateX1:       10,
+		CoordinateY1:       20,
+		CoordinateX2:       30,
+		CoordinateY2:       40,
 		IsCollectionPublic: true,
 	}
 
-	sqlUpdate := "UPDATE `users` SET `is_collection_public`=?,`name`=? WHERE id = ?"
+	sqlUpdate := "UPDATE `users` SET `coordinate_x1`=?,`coordinate_x2`=?,`coordinate_y1`=?,`coordinate_y2`=?," +
+		"`is_collection_public`=?,`length`=?,`name`=?,`width`=? WHERE id = ?"
 
 	t.Run("Success", func(t *testing.T) {
 		mock.ExpectBegin()
 		mock.ExpectExec(regexp.QuoteMeta(sqlUpdate)).
-			WithArgs(mockUser.IsCollectionPublic, mockUser.Name, mockUser.ID).
+			WithArgs(mockUser.CoordinateX1, mockUser.CoordinateX2, mockUser.CoordinateY1, mockUser.CoordinateY2,
+				mockUser.IsCollectionPublic, mockUser.Length, mockUser.Name, mockUser.Width, mockUser.ID).
 			WillReturnResult(sqlmock.NewResult(0, 1))
 		mock.ExpectCommit()
 		d := NewMySQLUserRepository(db)
@@ -132,15 +140,23 @@ func Test_userMySQLRepository_UpdateBasicInfoTx(t *testing.T) {
 	mockUser := &domain.User{
 		ID:                 1,
 		Name:               "user-name",
+		Length:             10,
+		Width:              20,
+		CoordinateX1:       10,
+		CoordinateY1:       20,
+		CoordinateX2:       30,
+		CoordinateY2:       40,
 		IsCollectionPublic: true,
 	}
 
-	sqlUpdate := "UPDATE `users` SET `is_collection_public`=?,`name`=? WHERE id = ?"
+	sqlUpdate := "UPDATE `users` SET `coordinate_x1`=?,`coordinate_x2`=?,`coordinate_y1`=?,`coordinate_y2`=?," +
+		"`is_collection_public`=?,`length`=?,`name`=?,`width`=? WHERE id = ?"
 
 	t.Run("Success", func(t *testing.T) {
 		mock.ExpectBegin()
 		mock.ExpectExec(regexp.QuoteMeta(sqlUpdate)).
-			WithArgs(mockUser.IsCollectionPublic, mockUser.Name, mockUser.ID).
+			WithArgs(mockUser.CoordinateX1, mockUser.CoordinateX2, mockUser.CoordinateY1, mockUser.CoordinateY2,
+				mockUser.IsCollectionPublic, mockUser.Length, mockUser.Name, mockUser.Width, mockUser.ID).
 			WillReturnResult(sqlmock.NewResult(0, 1))
 		mock.ExpectCommit()
 		d := NewMySQLUserRepository(db)

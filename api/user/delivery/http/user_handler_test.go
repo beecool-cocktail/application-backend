@@ -165,6 +165,12 @@ func TestUserHandler_GetUserInfo(t *testing.T) {
 			Name:               "name",
 			Email:              "email",
 			Photo:              "photo",
+			Length:             10,
+			Width:              20,
+			CoordinateX1:       10,
+			CoordinateY1:       20,
+			CoordinateX2:       30,
+			CoordinateY2:       40,
 			NumberOfPost:       1,
 			NumberOfCollection: 2,
 			NumberOfDraft:      3,
@@ -196,10 +202,22 @@ func TestUserHandler_GetUserInfo(t *testing.T) {
 
 		var responseData viewmodels.ResponseData
 		responseData.Data = viewmodels.GetUserInfoResponse{
-			UserID:             mockUser.ID,
-			Name:               mockUser.Name,
-			Email:              mockUser.Email,
-			Photo:              mockUser.Photo,
+			UserID: mockUser.ID,
+			Name:   mockUser.Name,
+			Email:  mockUser.Email,
+			Photo:  mockUser.Photo,
+			Length: mockUser.Length,
+			Width:  mockUser.Width,
+			Coordinate: []viewmodels.Coordinate{
+				{
+					X: mockUser.CoordinateX1,
+					Y: mockUser.CoordinateY1,
+				},
+				{
+					X: mockUser.CoordinateX2,
+					Y: mockUser.CoordinateY2,
+				},
+			},
 			NumberOfPost:       mockNumberOfPost,
 			NumberOfCollection: mockNumberOfCollection,
 			IsCollectionPublic: mockUser.IsCollectionPublic,
