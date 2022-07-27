@@ -49,7 +49,7 @@ func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase, socialAc
 	s.HTTP.GET("/api/users/current/favorite-cocktails", middlewareHandler.JWTAuthMiddleware(), handler.GetUserFavoriteList)
 	s.HTTP.GET("/api/users/:userID/favorite-cocktails", handler.GetOtherUserFavoriteList)
 	s.HTTP.GET("/api/users/current/cocktails", middlewareHandler.JWTAuthMiddleware(), handler.SelfCocktailList)
-	s.HTTP.GET("/api/users/:userID/cocktails", handler.OtherCocktailList)
+	s.HTTP.GET("/api/users/:userID/cocktails", middlewareHandler.JWTAuthMiddlewareIfExist(), handler.OtherCocktailList)
 }
 
 // swagger:route GET /auth/google-login login googleLogin
@@ -535,7 +535,7 @@ func (u *UserHandler) SelfCocktailList(c *gin.Context) {
 	filter := make(map[string]interface{})
 	filter["category"] = cockarticletype.Formal
 	filter["user_id"] = userId
-	cocktails, err := u.CocktailUsecase.QueryFormalByUserID(c, userId)
+	cocktails, err := u.CocktailUsecase.QueryFormalByUserID(c, userId, 0)
 	if err != nil {
 		service.GetLoggerEntry(u.Logger, api, nil).Errorf("get cocktails with filter failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
@@ -588,9 +588,10 @@ func (u *UserHandler) SelfCocktailList(c *gin.Context) {
 //    "$ref": "#/responses/getOtherCocktailListResponse"
 func (u *UserHandler) OtherCocktailList(c *gin.Context) {
 	api := "/self-cocktails"
-	userID := c.Param("userID")
+	targetUserID := c.Param("userID")
+	selfUserID := c.GetInt64("user_id")
 
-	userIDNumber, err := strconv.ParseInt(userID, 10, 64)
+	userIDNumber, err := strconv.ParseInt(targetUserID, 10, 64)
 	if err != nil {
 		service.GetLoggerEntry(u.Logger, api, nil).Errorf("parameter illegal - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
@@ -602,7 +603,7 @@ func (u *UserHandler) OtherCocktailList(c *gin.Context) {
 	filter := make(map[string]interface{})
 	filter["category"] = cockarticletype.Formal
 	filter["user_id"] = userIDNumber
-	cocktails, err := u.CocktailUsecase.QueryFormalByUserID(c, userIDNumber)
+	cocktails, err := u.CocktailUsecase.QueryFormalByUserID(c, userIDNumber, selfUserID)
 	if err != nil {
 		service.GetLoggerEntry(u.Logger, api, nil).Errorf("get cocktails with filter failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
@@ -621,10 +622,11 @@ func (u *UserHandler) OtherCocktailList(c *gin.Context) {
 		}
 
 		out := viewmodels.OtherCocktailList{
-			CocktailID: cocktail.CocktailID,
-			UserName:   cocktail.UserName,
-			Title:      cocktail.Title,
-			Photo:      cocktail.CoverPhoto.Photo,
+			CocktailID:  cocktail.CocktailID,
+			UserName:    cocktail.UserName,
+			Title:       cocktail.Title,
+			IsCollected: cocktail.IsCollected,
+			Photo:       cocktail.CoverPhoto.Photo,
 		}
 
 		cocktailList = append(cocktailList, out)

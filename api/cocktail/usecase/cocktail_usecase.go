@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/beecool-cocktail/application-backend/domain"
 	"github.com/beecool-cocktail/application-backend/enum/cockarticletype"
 	"github.com/beecool-cocktail/application-backend/enum/httpaction"
@@ -176,7 +175,8 @@ func (c *cocktailUsecase) fillCollectionStatusInDetails(ctx context.Context, coc
 	return cocktail, nil
 }
 
-func (c *cocktailUsecase) fillCollectionStatusInList(ctx context.Context, cocktails []domain.APICocktail, userID int64) ([]domain.APICocktail, error) {
+func (c *cocktailUsecase) fillCollectionStatusInList(ctx context.Context, cocktails []domain.APICocktail,
+	userID int64) ([]domain.APICocktail, error) {
 
 	var apiCocktails []domain.APICocktail
 	favoriteCocktails, _, err := c.favoriteCocktailMySQL.QueryByUserID(ctx, userID, domain.PaginationMySQLRepository{})
@@ -452,7 +452,6 @@ func (c *cocktailUsecase) QueryByCocktailID(ctx context.Context, cocktailID, use
 	if err != nil {
 		return domain.APICocktail{}, err
 	}
-	fmt.Printf("user_id: %d\n", userID)
 
 	if userID != 0 {
 		apiCocktail, err = c.fillCollectionStatusInDetails(ctx, apiCocktail, userID)
@@ -464,9 +463,10 @@ func (c *cocktailUsecase) QueryByCocktailID(ctx context.Context, cocktailID, use
 	return apiCocktail, nil
 }
 
-func (c *cocktailUsecase) QueryFormalByUserID(ctx context.Context, id int64) ([]domain.APICocktail, error) {
+func (c *cocktailUsecase) QueryFormalByUserID(ctx context.Context, targetUserID int64,
+	queryUserID int64) ([]domain.APICocktail, error) {
 
-	cocktails, err := c.cocktailMySQLRepo.QueryFormalByUserID(ctx, id)
+	cocktails, err := c.cocktailMySQLRepo.QueryFormalByUserID(ctx, targetUserID)
 	if err != nil {
 		return []domain.APICocktail{}, err
 	}
@@ -486,6 +486,13 @@ func (c *cocktailUsecase) QueryFormalByUserID(ctx context.Context, id int64) ([]
 	apiCocktails, err = c.fillCocktailList(ctx, apiCocktails)
 	if err != nil {
 		return []domain.APICocktail{}, err
+	}
+
+	if queryUserID != 0 {
+		apiCocktails, err = c.fillCollectionStatusInList(ctx, apiCocktails, queryUserID)
+		if err != nil {
+			return []domain.APICocktail{}, err
+		}
 	}
 
 	return apiCocktails, nil

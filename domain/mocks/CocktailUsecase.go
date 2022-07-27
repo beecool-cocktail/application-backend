@@ -28,13 +28,13 @@ func (_m *CocktailUsecase) Delete(ctx context.Context, cocktailID int64, userID 
 	return r0
 }
 
-// GetAllWithFilter provides a mock function with given fields: ctx, filter, pagination, userID
-func (_m *CocktailUsecase) GetAllWithFilter(ctx context.Context, filter map[string]interface{}, pagination domain.PaginationUsecase, userID int64) ([]domain.APICocktail, int64, error) {
-	ret := _m.Called(ctx, filter, pagination, userID)
+// GetAllWithFilter provides a mock function with given fields: ctx, filter, pagination, needCollectedStatusUserID
+func (_m *CocktailUsecase) GetAllWithFilter(ctx context.Context, filter map[string]interface{}, pagination domain.PaginationUsecase, needCollectedStatusUserID int64) ([]domain.APICocktail, int64, error) {
+	ret := _m.Called(ctx, filter, pagination, needCollectedStatusUserID)
 
 	var r0 []domain.APICocktail
 	if rf, ok := ret.Get(0).(func(context.Context, map[string]interface{}, domain.PaginationUsecase, int64) []domain.APICocktail); ok {
-		r0 = rf(ctx, filter, pagination, userID)
+		r0 = rf(ctx, filter, pagination, needCollectedStatusUserID)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]domain.APICocktail)
@@ -43,14 +43,14 @@ func (_m *CocktailUsecase) GetAllWithFilter(ctx context.Context, filter map[stri
 
 	var r1 int64
 	if rf, ok := ret.Get(1).(func(context.Context, map[string]interface{}, domain.PaginationUsecase, int64) int64); ok {
-		r1 = rf(ctx, filter, pagination, userID)
+		r1 = rf(ctx, filter, pagination, needCollectedStatusUserID)
 	} else {
 		r1 = ret.Get(1).(int64)
 	}
 
 	var r2 error
 	if rf, ok := ret.Get(2).(func(context.Context, map[string]interface{}, domain.PaginationUsecase, int64) error); ok {
-		r2 = rf(ctx, filter, pagination, userID)
+		r2 = rf(ctx, filter, pagination, needCollectedStatusUserID)
 	} else {
 		r2 = ret.Error(2)
 	}
@@ -72,20 +72,20 @@ func (_m *CocktailUsecase) MakeDraftToFormal(ctx context.Context, cocktailID int
 	return r0
 }
 
-// QueryByCocktailID provides a mock function with given fields: ctx, cocktailID, userID
-func (_m *CocktailUsecase) QueryByCocktailID(ctx context.Context, cocktailID int64, userID int64) (domain.APICocktail, error) {
-	ret := _m.Called(ctx, cocktailID, userID)
+// QueryByCocktailID provides a mock function with given fields: ctx, cocktailID, needCollectedStatusUserID
+func (_m *CocktailUsecase) QueryByCocktailID(ctx context.Context, cocktailID int64, needCollectedStatusUserID int64) (domain.APICocktail, error) {
+	ret := _m.Called(ctx, cocktailID, needCollectedStatusUserID)
 
 	var r0 domain.APICocktail
 	if rf, ok := ret.Get(0).(func(context.Context, int64, int64) domain.APICocktail); ok {
-		r0 = rf(ctx, cocktailID, userID)
+		r0 = rf(ctx, cocktailID, needCollectedStatusUserID)
 	} else {
 		r0 = ret.Get(0).(domain.APICocktail)
 	}
 
 	var r1 error
 	if rf, ok := ret.Get(1).(func(context.Context, int64, int64) error); ok {
-		r1 = rf(ctx, cocktailID, userID)
+		r1 = rf(ctx, cocktailID, needCollectedStatusUserID)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -114,13 +114,13 @@ func (_m *CocktailUsecase) QueryDraftByCocktailID(ctx context.Context, cocktailI
 	return r0, r1
 }
 
-// QueryFormalByUserID provides a mock function with given fields: ctx, id
-func (_m *CocktailUsecase) QueryFormalByUserID(ctx context.Context, id int64) ([]domain.APICocktail, error) {
-	ret := _m.Called(ctx, id)
+// QueryFormalByUserID provides a mock function with given fields: ctx, targetUserID, needCollectedStatusUserID
+func (_m *CocktailUsecase) QueryFormalByUserID(ctx context.Context, targetUserID int64, needCollectedStatusUserID int64) ([]domain.APICocktail, error) {
+	ret := _m.Called(ctx, targetUserID, needCollectedStatusUserID)
 
 	var r0 []domain.APICocktail
-	if rf, ok := ret.Get(0).(func(context.Context, int64) []domain.APICocktail); ok {
-		r0 = rf(ctx, id)
+	if rf, ok := ret.Get(0).(func(context.Context, int64, int64) []domain.APICocktail); ok {
+		r0 = rf(ctx, targetUserID, needCollectedStatusUserID)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]domain.APICocktail)
@@ -128,8 +128,8 @@ func (_m *CocktailUsecase) QueryFormalByUserID(ctx context.Context, id int64) ([
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
-		r1 = rf(ctx, id)
+	if rf, ok := ret.Get(1).(func(context.Context, int64, int64) error); ok {
+		r1 = rf(ctx, targetUserID, needCollectedStatusUserID)
 	} else {
 		r1 = ret.Error(1)
 	}

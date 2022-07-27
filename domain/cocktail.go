@@ -128,10 +128,10 @@ type CocktailElasticSearchRepository interface {
 }
 
 type CocktailUsecase interface {
-	GetAllWithFilter(ctx context.Context, filter map[string]interface{}, pagination PaginationUsecase, userID int64) ([]APICocktail, int64, error)
+	GetAllWithFilter(ctx context.Context, filter map[string]interface{}, pagination PaginationUsecase, needCollectedStatusUserID int64) ([]APICocktail, int64, error)
 	Search(ctx context.Context, keyword string, from, size int, userID int64) ([]APICocktail, int64, error)
-	QueryByCocktailID(ctx context.Context, cocktailID, userID int64) (APICocktail, error)
-	QueryFormalByUserID(ctx context.Context, id int64) ([]APICocktail, error)
+	QueryByCocktailID(ctx context.Context, cocktailID, needCollectedStatusUserID int64) (APICocktail, error)
+	QueryFormalByUserID(ctx context.Context, targetUserID int64, needCollectedStatusUserID int64) ([]APICocktail, error)
 	QueryDraftByCocktailID(ctx context.Context, cocktailID, userID int64) (APICocktail, error)
 	QueryFormalCountsByUserID(ctx context.Context, id int64) (int64, error)
 	Store(ctx context.Context, c *Cocktail, cig []CocktailIngredient, cs []CocktailStep, ci []CocktailImage, userID int64) error
