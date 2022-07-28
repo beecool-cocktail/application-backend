@@ -109,10 +109,22 @@ func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 	}
 
 	response = viewmodels.GetCocktailByIDResponse{
-		CocktailID:     cocktail.CocktailID,
-		UserID:         cocktail.UserID,
-		UserName:       cocktail.UserName,
-		UserPhoto:      cocktailUser.Photo,
+		CocktailID: cocktail.CocktailID,
+		UserID:     cocktail.UserID,
+		UserName:   cocktail.UserName,
+		UserPhoto:  cocktailUser.Photo,
+		Length:     cocktailUser.Length,
+		Width:      cocktailUser.Width,
+		Coordinate: []viewmodels.Coordinate{
+			{
+				X: cocktailUser.CoordinateX1,
+				Y: cocktailUser.CoordinateY1,
+			},
+			{
+				X: cocktailUser.CoordinateX2,
+				Y: cocktailUser.CoordinateY2,
+			},
+		},
 		Title:          cocktail.Title,
 		Description:    cocktail.Description,
 		IngredientList: ingredients,
@@ -351,6 +363,7 @@ func (co *CocktailHandler) CocktailDraftList(c *gin.Context) {
 			CocktailID:  cocktail.CocktailID,
 			Title:       cocktail.Title,
 			Photo:       cocktail.CoverPhoto.Photo,
+			Description: cocktail.Description,
 			CreatedDate: cocktail.CreatedDate,
 		}
 

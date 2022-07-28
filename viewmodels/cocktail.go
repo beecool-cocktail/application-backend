@@ -63,6 +63,8 @@ type DraftCocktailList struct {
 	//required: true
 	Title string `json:"title"`
 	//required: true
+	Description string `json:"description"`
+	//required: true
 	CreatedDate string `json:"created_date"`
 }
 
@@ -192,6 +194,15 @@ type GetCocktailByIDResponse struct {
 	UserName string `json:"user_name"`
 	//required: true
 	UserPhoto string `json:"user_photo"`
+	//原圖長
+	// required: true
+	Length float32 `json:"length" binding:"required"`
+	//原圖寬
+	// required: true
+	Width float32 `json:"width" binding:"required"`
+	//座標 [左上XY, 右下XY]
+	// required: true
+	Coordinate []Coordinate `json:"coordinate" binding:"required,gte=2"`
 	//required: true
 	Photos []CocktailPhotoWithIDInResponse `json:"photos"`
 	//required: true
