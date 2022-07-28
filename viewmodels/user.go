@@ -130,6 +130,8 @@ type FavoriteCocktail struct {
 	Photo string `json:"photo"`
 	//required: true
 	Title string `json:"title"`
+	//required: true
+	IsCollected bool `json:"is_collected"`
 }
 
 type DeleteFavoriteCocktailResponse struct {

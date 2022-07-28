@@ -47,7 +47,7 @@ func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase, socialAc
 	s.HTTP.POST("/api/users/current/favorite-cocktails", middlewareHandler.JWTAuthMiddleware(), handler.CollectArticle)
 	s.HTTP.DELETE("/api/users/current/favorite-cocktails/:cocktailID", middlewareHandler.JWTAuthMiddleware(), handler.RemoveCollectionArticle)
 	s.HTTP.GET("/api/users/current/favorite-cocktails", middlewareHandler.JWTAuthMiddleware(), handler.GetUserFavoriteList)
-	s.HTTP.GET("/api/users/:userID/favorite-cocktails", handler.GetOtherUserFavoriteList)
+	s.HTTP.GET("/api/users/:userID/favorite-cocktails", middlewareHandler.JWTAuthMiddlewareIfExist(), handler.GetOtherUserFavoriteList)
 	s.HTTP.GET("/api/users/current/cocktails", middlewareHandler.JWTAuthMiddleware(), handler.SelfCocktailList)
 	s.HTTP.GET("/api/users/:userID/cocktails", middlewareHandler.JWTAuthMiddlewareIfExist(), handler.OtherCocktailList)
 }
@@ -448,7 +448,8 @@ func (u *UserHandler) GetUserFavoriteList(c *gin.Context) {
 	var response viewmodels.GetUserFavoriteCocktailListResponse
 	userId := c.GetInt64("user_id")
 
-	favoriteCocktails, total, err := u.FavoriteCocktailUsecase.QueryByUserID(c, userId, domain.PaginationUsecase{})
+	favoriteCocktails, total, err := u.FavoriteCocktailUsecase.QueryByUserID(c, userId, domain.PaginationUsecase{},
+		0)
 	if err != nil {
 		service.GetLoggerEntry(u.Logger, api, nil).Errorf("query by id failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
@@ -496,6 +497,8 @@ func (u *UserHandler) GetUserFavoriteList(c *gin.Context) {
 func (u *UserHandler) GetOtherUserFavoriteList(c *gin.Context) {
 	api := "/users/{id}/favorite-cocktails"
 	userID := c.Param("userID")
+	selfUserID := c.GetInt64("user_id")
+
 	var response viewmodels.GetUserFavoriteCocktailListResponse
 
 	userIDNumber, err := strconv.ParseInt(userID, 10, 64)
@@ -523,7 +526,8 @@ func (u *UserHandler) GetOtherUserFavoriteList(c *gin.Context) {
 		return
 	}
 
-	favoriteCocktails, total, err := u.FavoriteCocktailUsecase.QueryByUserID(c, userIDNumber, domain.PaginationUsecase{})
+	favoriteCocktails, total, err := u.FavoriteCocktailUsecase.QueryByUserID(c, userIDNumber,
+		domain.PaginationUsecase{}, selfUserID)
 	if err != nil {
 		service.GetLoggerEntry(u.Logger, api, nil).Errorf("query favorite cocktail by user id failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
@@ -532,10 +536,11 @@ func (u *UserHandler) GetOtherUserFavoriteList(c *gin.Context) {
 
 	for _, cocktail := range favoriteCocktails {
 		out := viewmodels.FavoriteCocktail{
-			CocktailID: cocktail.CocktailID,
-			UserName:   cocktail.UserName,
-			Photo:      cocktail.CoverPhoto,
-			Title:      cocktail.Title,
+			CocktailID:  cocktail.CocktailID,
+			UserName:    cocktail.UserName,
+			Photo:       cocktail.CoverPhoto,
+			Title:       cocktail.Title,
+			IsCollected: cocktail.IsCollected,
 		}
 
 		list = append(list, out)

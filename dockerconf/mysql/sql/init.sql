@@ -309,6 +309,18 @@ CREATE TABLE `favorite_cocktails`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_general_ci;
 
+LOCK TABLES `favorite_cocktails` WRITE;
+/*!40000 ALTER TABLE `favorite_cocktails`
+    DISABLE KEYS */;
+
+INSERT INTO `favorite_cocktails` (`id`, `cocktail_id`, `user_id`, `created_date`)
+VALUES (1, 1111111, 6, '2021-01-15 18:38:30'),
+       (2, 222222, 6, '2021-02-15 18:38:30');
+
+/*!40000 ALTER TABLE `favorite_cocktails`
+    ENABLE KEYS */;
+UNLOCK TABLES;
+
 
 
 /*!40111 SET SQL_NOTES = @OLD_SQL_NOTES */;

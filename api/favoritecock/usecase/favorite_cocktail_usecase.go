@@ -79,6 +79,33 @@ func (f *favoriteCocktailUsecase) fillFavoriteCocktailList(ctx context.Context,
 	return apiFavoriteCocktails, nil
 }
 
+func (f *favoriteCocktailUsecase) fillCollectionStatusInList(ctx context.Context, cocktails []domain.APIFavoriteCocktail,
+	userID int64) ([]domain.APIFavoriteCocktail, error) {
+
+	var apiCocktails []domain.APIFavoriteCocktail
+	favoriteCocktails, _, err := f.favoriteCocktailMySQL.QueryByUserID(ctx, userID, domain.PaginationMySQLRepository{})
+	if err != nil {
+		return []domain.APIFavoriteCocktail{}, err
+	}
+
+	favoriteCocktailsMap := make(map[int64]bool)
+	for _, favoriteCocktail := range favoriteCocktails {
+		favoriteCocktailsMap[favoriteCocktail.CocktailID] = true
+	}
+
+	for _, cocktail := range cocktails {
+		if _, ok := favoriteCocktailsMap[cocktail.CocktailID]; ok {
+			cocktail.IsCollected = true
+		} else {
+			cocktail.IsCollected = false
+		}
+
+		apiCocktails = append(apiCocktails, cocktail)
+	}
+
+	return apiCocktails, nil
+}
+
 func (f *favoriteCocktailUsecase) Store(ctx context.Context, c *domain.FavoriteCocktail) error {
 
 	if err := f.transactionRepo.Transaction(func(i interface{}) error {
@@ -105,8 +132,8 @@ func (f *favoriteCocktailUsecase) Store(ctx context.Context, c *domain.FavoriteC
 	return nil
 }
 
-func (f *favoriteCocktailUsecase) QueryByUserID(ctx context.Context, id int64,
-	pagination domain.PaginationUsecase) ([]domain.APIFavoriteCocktail, int64, error) {
+func (f *favoriteCocktailUsecase) QueryByUserID(ctx context.Context, targetUserID int64,
+	pagination domain.PaginationUsecase, queryUserID int64) ([]domain.APIFavoriteCocktail, int64, error) {
 
 	var apiFavoriteCocktails []domain.APIFavoriteCocktail
 
@@ -117,7 +144,7 @@ func (f *favoriteCocktailUsecase) QueryByUserID(ctx context.Context, id int64,
 
 	sortByDir["created_date"] = sortbydir.ParseSortByDirByInt(1)
 
-	cocktails, total, err := f.favoriteCocktailMySQL.QueryByUserID(ctx, id,
+	cocktails, total, err := f.favoriteCocktailMySQL.QueryByUserID(ctx, targetUserID,
 		domain.PaginationMySQLRepository{
 			Page:      pagination.Page,
 			PageSize:  pagination.PageSize,
@@ -139,6 +166,13 @@ func (f *favoriteCocktailUsecase) QueryByUserID(ctx context.Context, id int64,
 	apiFavoriteCocktail, err := f.fillFavoriteCocktailList(ctx, apiFavoriteCocktails)
 	if err != nil {
 		return []domain.APIFavoriteCocktail{}, total, err
+	}
+
+	if queryUserID != 0 {
+		apiFavoriteCocktail, err = f.fillCollectionStatusInList(ctx, apiFavoriteCocktail, queryUserID)
+		if err != nil {
+			return []domain.APIFavoriteCocktail{}, 0, err
+		}
 	}
 
 	return apiFavoriteCocktail, total, nil

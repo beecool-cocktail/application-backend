@@ -35,13 +35,13 @@ func (_m *FavoriteCocktailUsecase) Delete(ctx context.Context, cocktailID int64,
 	return r0, r1
 }
 
-// QueryByUserID provides a mock function with given fields: ctx, id, pagination
-func (_m *FavoriteCocktailUsecase) QueryByUserID(ctx context.Context, id int64, pagination domain.PaginationUsecase) ([]domain.APIFavoriteCocktail, int64, error) {
-	ret := _m.Called(ctx, id, pagination)
+// QueryByUserID provides a mock function with given fields: ctx, targetUserID, pagination, needCollectedStatusUserID
+func (_m *FavoriteCocktailUsecase) QueryByUserID(ctx context.Context, targetUserID int64, pagination domain.PaginationUsecase, needCollectedStatusUserID int64) ([]domain.APIFavoriteCocktail, int64, error) {
+	ret := _m.Called(ctx, targetUserID, pagination, needCollectedStatusUserID)
 
 	var r0 []domain.APIFavoriteCocktail
-	if rf, ok := ret.Get(0).(func(context.Context, int64, domain.PaginationUsecase) []domain.APIFavoriteCocktail); ok {
-		r0 = rf(ctx, id, pagination)
+	if rf, ok := ret.Get(0).(func(context.Context, int64, domain.PaginationUsecase, int64) []domain.APIFavoriteCocktail); ok {
+		r0 = rf(ctx, targetUserID, pagination, needCollectedStatusUserID)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]domain.APIFavoriteCocktail)
@@ -49,15 +49,15 @@ func (_m *FavoriteCocktailUsecase) QueryByUserID(ctx context.Context, id int64, 
 	}
 
 	var r1 int64
-	if rf, ok := ret.Get(1).(func(context.Context, int64, domain.PaginationUsecase) int64); ok {
-		r1 = rf(ctx, id, pagination)
+	if rf, ok := ret.Get(1).(func(context.Context, int64, domain.PaginationUsecase, int64) int64); ok {
+		r1 = rf(ctx, targetUserID, pagination, needCollectedStatusUserID)
 	} else {
 		r1 = ret.Get(1).(int64)
 	}
 
 	var r2 error
-	if rf, ok := ret.Get(2).(func(context.Context, int64, domain.PaginationUsecase) error); ok {
-		r2 = rf(ctx, id, pagination)
+	if rf, ok := ret.Get(2).(func(context.Context, int64, domain.PaginationUsecase, int64) error); ok {
+		r2 = rf(ctx, targetUserID, pagination, needCollectedStatusUserID)
 	} else {
 		r2 = ret.Error(2)
 	}
