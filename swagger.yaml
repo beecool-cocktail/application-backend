@@ -99,6 +99,9 @@ definitions:
         format: float
         type: number
         x-go-name: "Y"
+    required:
+    - x
+    - "y"
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   DeleteDraftArticleRequest:
@@ -139,6 +142,9 @@ definitions:
       created_date:
         type: string
         x-go-name: CreatedDate
+      description:
+        type: string
+        x-go-name: Description
       photo:
         type: string
         x-go-name: Photo
@@ -149,6 +155,7 @@ definitions:
     - cocktail_id
     - photo
     - title
+    - description
     - created_date
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
@@ -192,6 +199,12 @@ definitions:
         format: int64
         type: integer
         x-go-name: CocktailID
+      coordinate:
+        description: 座標 [左上XY, 右下XY]
+        items:
+          $ref: '#/definitions/Coordinate'
+        type: array
+        x-go-name: Coordinate
       created_date:
         type: string
         x-go-name: CreatedDate
@@ -206,6 +219,11 @@ definitions:
       is_collected:
         type: boolean
         x-go-name: IsCollected
+      length:
+        description: 原圖長
+        format: float
+        type: number
+        x-go-name: Length
       photos:
         items:
           $ref: '#/definitions/CocktailPhotoWithIDInResponse'
@@ -229,11 +247,19 @@ definitions:
       user_photo:
         type: string
         x-go-name: UserPhoto
+      width:
+        description: 原圖寬
+        format: float
+        type: number
+        x-go-name: Width
     required:
     - cocktail_id
     - user_id
     - user_name
     - user_photo
+    - length
+    - width
+    - coordinate
     - photos
     - title
     - description
@@ -341,10 +367,21 @@ definitions:
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   GetOtherUserInfoResponse:
     properties:
+      coordinate:
+        description: 座標 [左上XY, 右下XY]
+        items:
+          $ref: '#/definitions/Coordinate'
+        type: array
+        x-go-name: Coordinate
       is_collection_public:
         description: 是否公開收藏 false=不公開, true=公開
         type: boolean
         x-go-name: IsCollectionPublic
+      length:
+        description: 原圖長
+        format: float
+        type: number
+        x-go-name: Length
       number_of_collection:
         format: int64
         type: integer
@@ -363,10 +400,18 @@ definitions:
       user_name:
         type: string
         x-go-name: Name
+      width:
+        description: 原圖寬
+        format: float
+        type: number
+        x-go-name: Width
     required:
     - user_id
     - user_name
     - photo
+    - length
+    - width
+    - coordinate
     - number_of_post
     - number_of_collection
     - is_collection_public
@@ -438,6 +483,12 @@ definitions:
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
   GetUserInfoResponse:
     properties:
+      coordinate:
+        description: 座標 [左上XY, 右下XY]
+        items:
+          $ref: '#/definitions/Coordinate'
+        type: array
+        x-go-name: Coordinate
       email:
         type: string
         x-go-name: Email
@@ -445,6 +496,11 @@ definitions:
         description: 是否公開收藏 false=不公開, true=公開
         type: boolean
         x-go-name: IsCollectionPublic
+      length:
+        description: 原圖長
+        format: float
+        type: number
+        x-go-name: Length
       number_of_collection:
         format: int64
         type: integer
@@ -463,11 +519,19 @@ definitions:
       user_name:
         type: string
         x-go-name: Name
+      width:
+        description: 原圖寬
+        format: float
+        type: number
+        x-go-name: Width
     required:
     - user_id
     - user_name
     - email
     - photo
+    - length
+    - width
+    - coordinate
     - number_of_post
     - number_of_collection
     - is_collection_public
@@ -761,6 +825,9 @@ definitions:
         type: number
         x-go-name: Width
     required:
+    - length
+    - width
+    - coordinate
     - name
     - is_collection_public
     type: object
