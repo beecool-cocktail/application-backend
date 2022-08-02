@@ -457,10 +457,11 @@ func (u *UserHandler) GetUserFavoriteList(c *gin.Context) {
 	list := make([]viewmodels.FavoriteCocktail, 0)
 	for _, cocktail := range favoriteCocktails {
 		out := viewmodels.FavoriteCocktail{
-			CocktailID: cocktail.CocktailID,
-			UserName:   cocktail.UserName,
-			Photo:      cocktail.CoverPhoto,
-			Title:      cocktail.Title,
+			CocktailID:  cocktail.CocktailID,
+			UserName:    cocktail.UserName,
+			Photo:       cocktail.CoverPhoto,
+			Title:       cocktail.Title,
+			IsCollected: true,
 		}
 
 		list = append(list, out)
