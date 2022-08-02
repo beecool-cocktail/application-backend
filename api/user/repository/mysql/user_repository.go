@@ -10,8 +10,8 @@ import (
 type basicInfo struct {
 	Name               string  `structs:"name"`
 	IsCollectionPublic bool    `structs:"is_collection_public"`
-	Length             float32 `structs:"length"`
-	Width              float32 `structs:"width"`
+	Height             int     `structs:"height,omitempty"`
+	Width              int     `structs:"width,omitempty"`
 	CoordinateX1       float32 `structs:"coordinate_x1"`
 	CoordinateY1       float32 `structs:"coordinate_y1"`
 	CoordinateX2       float32 `structs:"coordinate_x2"`
@@ -63,7 +63,7 @@ func (u *userMySQLRepository) UpdateBasicInfo(ctx context.Context, d *domain.Use
 	updateColumn := basicInfo{
 		Name:               d.Name,
 		IsCollectionPublic: d.IsCollectionPublic,
-		Length:             d.Length,
+		Height:             d.Height,
 		Width:              d.Width,
 		CoordinateX1:       d.CoordinateX1,
 		CoordinateY1:       d.CoordinateY1,
@@ -92,7 +92,7 @@ func (u *userMySQLRepository) UpdateBasicInfoTx(ctx context.Context, tx *gorm.DB
 	updateColumn := basicInfo{
 		Name:               d.Name,
 		IsCollectionPublic: d.IsCollectionPublic,
-		Length:             d.Length,
+		Height:             d.Height,
 		Width:              d.Width,
 		CoordinateX1:       d.CoordinateX1,
 		CoordinateY1:       d.CoordinateY1,

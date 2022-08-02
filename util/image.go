@@ -32,28 +32,31 @@ func ValidateImageType(fileType string) bool {
 	}
 }
 
-func DecodeBase64AndSaveAsWebp(base64EncodedData string, dst string) error {
+func DecodeBase64AndSaveAsWebp(base64EncodedData string, dst string) (int, int, error) {
 	dst = dst + ".webp"
 	options, err := encoder.NewLossyEncoderOptions(encoder.PresetDefault, 100)
 	if err != nil {
-		return err
+		return 0, 0, err
 	}
 
 	img, _, err := image.Decode(bytes.NewReader([]byte(base64EncodedData)))
 	if err != nil {
-		return err
+		return 0, 0, err
 	}
+
+	width := img.Bounds().Max.X
+	height := img.Bounds().Max.Y
 
 	out, err := os.Create(dst)
 	if err != nil {
-		return err
+		return 0, 0, err
 	}
 
 	if err := webp.Encode(out, img, options); err != nil {
-		return err
+		return 0, 0, err
 	}
 
-	return nil
+	return width, height, nil
 }
 
 func DecodeBase64AndUpdateAsWebp(base64EncodedData string, dst string) error {

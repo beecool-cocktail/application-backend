@@ -15,15 +15,29 @@ type UserFileRepository struct {
 }
 
 // SaveAsWebp provides a mock function with given fields: ctx, ui
-func (_m *UserFileRepository) SaveAsWebp(ctx context.Context, ui *domain.UserImage) error {
+func (_m *UserFileRepository) SaveAsWebp(ctx context.Context, ui *domain.UserImage) (int, int, error) {
 	ret := _m.Called(ctx, ui)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *domain.UserImage) error); ok {
+	var r0 int
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.UserImage) int); ok {
 		r0 = rf(ctx, ui)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(int)
 	}
 
-	return r0
+	var r1 int
+	if rf, ok := ret.Get(1).(func(context.Context, *domain.UserImage) int); ok {
+		r1 = rf(ctx, ui)
+	} else {
+		r1 = ret.Get(1).(int)
+	}
+
+	var r2 error
+	if rf, ok := ret.Get(2).(func(context.Context, *domain.UserImage) error); ok {
+		r2 = rf(ctx, ui)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
 }

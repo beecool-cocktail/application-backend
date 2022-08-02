@@ -183,7 +183,7 @@ func (u *UserHandler) GetUserInfo(c *gin.Context) {
 		Name:   user.Name,
 		Email:  user.Email,
 		Photo:  user.Photo,
-		Length: user.Length,
+		Height: user.Height,
 		Width:  user.Width,
 		Coordinate: []viewmodels.Coordinate{
 			{
@@ -260,7 +260,7 @@ func (u *UserHandler) GetOtherUserInfo(c *gin.Context) {
 		UserID: user.ID,
 		Name:   user.Name,
 		Photo:  user.Photo,
-		Length: user.Length,
+		Height: user.Height,
 		Width:  user.Width,
 		Coordinate: []viewmodels.Coordinate{
 			{
@@ -332,8 +332,6 @@ func (u *UserHandler) UpdateUserInfo(c *gin.Context) {
 			ID:                 userId,
 			Name:               request.Name,
 			IsCollectionPublic: request.IsCollectionPublic,
-			Length:             request.Length,
-			Width:              request.Width,
 			CoordinateX1:       request.Coordinate[0].X,
 			CoordinateY1:       request.Coordinate[0].Y,
 			CoordinateX2:       request.Coordinate[1].X,

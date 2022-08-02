@@ -165,7 +165,7 @@ func TestUserHandler_GetUserInfo(t *testing.T) {
 			Name:               "name",
 			Email:              "email",
 			Photo:              "photo",
-			Length:             10,
+			Height:             10,
 			Width:              20,
 			CoordinateX1:       10,
 			CoordinateY1:       20,
@@ -206,7 +206,7 @@ func TestUserHandler_GetUserInfo(t *testing.T) {
 			Name:   mockUser.Name,
 			Email:  mockUser.Email,
 			Photo:  mockUser.Photo,
-			Length: mockUser.Length,
+			Height: mockUser.Height,
 			Width:  mockUser.Width,
 			Coordinate: []viewmodels.Coordinate{
 				{

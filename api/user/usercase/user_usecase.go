@@ -73,10 +73,12 @@ func (u *userUsecase) UpdateUserInfo(ctx context.Context, d *domain.User, ui *do
 
 		if ui.Data != "" {
 			ui.Destination = savePath + newFileName
-			err := u.userFileRepo.SaveAsWebp(ctx, ui)
+			width, height, err := u.userFileRepo.SaveAsWebp(ctx, ui)
 			if err != nil {
 				return err
 			}
+			d.Width = width
+			d.Height = height
 
 			ui.Destination = urlPath + newFileName + ".webp"
 			_, err = u.userMySQLRepo.UpdateImageTx(ctx, tx, ui)

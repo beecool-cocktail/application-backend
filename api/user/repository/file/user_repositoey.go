@@ -13,12 +13,12 @@ func NewFileUserRepository() domain.UserFileRepository {
 	return &userFileRepository{}
 }
 
-func (u *userFileRepository) SaveAsWebp(ctx context.Context, ui *domain.UserImage) error {
+func (u *userFileRepository) SaveAsWebp(ctx context.Context, ui *domain.UserImage) (int, int, error) {
 
-	err := util.DecodeBase64AndSaveAsWebp(ui.Data, "/"+ui.Destination)
+	width, height, err := util.DecodeBase64AndSaveAsWebp(ui.Data, "/"+ui.Destination)
 	if err != nil {
-		return err
+		return 0, 0, err
 	}
 
-	return nil
+	return width, height, nil
 }

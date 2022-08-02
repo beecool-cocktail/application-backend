@@ -114,6 +114,8 @@ func Test_userUsecase_UpdateUserInfo(t *testing.T) {
 			Name:               "name",
 			Email:              "email",
 			Photo:              "photo",
+			Height:             0,
+			Width:              0,
 			NumberOfPost:       1,
 			NumberOfCollection: 2,
 			NumberOfDraft:      3,
@@ -170,6 +172,8 @@ func Test_userUsecase_UpdateUserInfo(t *testing.T) {
 			Name:               "name",
 			Email:              "email",
 			Photo:              "photo",
+			Width:              10,
+			Height:             20,
 			NumberOfPost:       1,
 			NumberOfCollection: 2,
 			NumberOfDraft:      3,
@@ -197,7 +201,7 @@ func Test_userUsecase_UpdateUserInfo(t *testing.T) {
 			On("SaveAsWebp",
 				mock.Anything,
 				&mockUserImage).
-			Return(nil).Once()
+			Return(10, 20, nil).Once()
 
 		mockUserImage.Destination = svc.Configure.Others.File.Image.PathInURL + mockFileName + ".webp"
 		mockUserMySQLRepo.

@@ -70,26 +70,57 @@ func Test_userMySQLRepository_UpdateBasicInfo(t *testing.T) {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 
-	mockUser := &domain.User{
-		ID:                 1,
-		Name:               "user-name",
-		Length:             10,
-		Width:              20,
-		CoordinateX1:       10,
-		CoordinateY1:       20,
-		CoordinateX2:       30,
-		CoordinateY2:       40,
-		IsCollectionPublic: true,
-	}
-
-	sqlUpdate := "UPDATE `users` SET `coordinate_x1`=?,`coordinate_x2`=?,`coordinate_y1`=?,`coordinate_y2`=?," +
-		"`is_collection_public`=?,`length`=?,`name`=?,`width`=? WHERE id = ?"
-
 	t.Run("Success", func(t *testing.T) {
+		mockUser := &domain.User{
+			ID:                 1,
+			Name:               "user-name",
+			Height:             10,
+			Width:              20,
+			CoordinateX1:       10,
+			CoordinateY1:       20,
+			CoordinateX2:       30,
+			CoordinateY2:       40,
+			IsCollectionPublic: true,
+		}
+
+		sqlUpdate := "UPDATE `users` SET `coordinate_x1`=?,`coordinate_x2`=?,`coordinate_y1`=?,`coordinate_y2`=?," +
+			"`height`=?,`is_collection_public`=?,`name`=?,`width`=? WHERE id = ?"
+
 		mock.ExpectBegin()
 		mock.ExpectExec(regexp.QuoteMeta(sqlUpdate)).
 			WithArgs(mockUser.CoordinateX1, mockUser.CoordinateX2, mockUser.CoordinateY1, mockUser.CoordinateY2,
-				mockUser.IsCollectionPublic, mockUser.Length, mockUser.Name, mockUser.Width, mockUser.ID).
+				mockUser.Height, mockUser.IsCollectionPublic, mockUser.Name, mockUser.Width, mockUser.ID).
+			WillReturnResult(sqlmock.NewResult(0, 1))
+		mock.ExpectCommit()
+		d := NewMySQLUserRepository(db)
+		rowsAffected, _ := d.UpdateBasicInfo(context.TODO(), mockUser)
+		assert.Equal(t, int64(1), rowsAffected)
+
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("there were unfulfilled expectations: %s", err)
+		}
+	})
+
+	t.Run("Success - have empty height and width", func(t *testing.T) {
+		mockUser := &domain.User{
+			ID:                 1,
+			Name:               "user-name",
+			Height:             0,
+			Width:              0,
+			CoordinateX1:       10,
+			CoordinateY1:       20,
+			CoordinateX2:       30,
+			CoordinateY2:       40,
+			IsCollectionPublic: true,
+		}
+
+		sqlUpdate := "UPDATE `users` SET `coordinate_x1`=?,`coordinate_x2`=?,`coordinate_y1`=?,`coordinate_y2`=?," +
+			"`is_collection_public`=?,`name`=? WHERE id = ?"
+
+		mock.ExpectBegin()
+		mock.ExpectExec(regexp.QuoteMeta(sqlUpdate)).
+			WithArgs(mockUser.CoordinateX1, mockUser.CoordinateX2, mockUser.CoordinateY1, mockUser.CoordinateY2,
+				mockUser.IsCollectionPublic, mockUser.Name, mockUser.ID).
 			WillReturnResult(sqlmock.NewResult(0, 1))
 		mock.ExpectCommit()
 		d := NewMySQLUserRepository(db)
@@ -140,7 +171,7 @@ func Test_userMySQLRepository_UpdateBasicInfoTx(t *testing.T) {
 	mockUser := &domain.User{
 		ID:                 1,
 		Name:               "user-name",
-		Length:             10,
+		Height:             10,
 		Width:              20,
 		CoordinateX1:       10,
 		CoordinateY1:       20,
@@ -150,13 +181,13 @@ func Test_userMySQLRepository_UpdateBasicInfoTx(t *testing.T) {
 	}
 
 	sqlUpdate := "UPDATE `users` SET `coordinate_x1`=?,`coordinate_x2`=?,`coordinate_y1`=?,`coordinate_y2`=?," +
-		"`is_collection_public`=?,`length`=?,`name`=?,`width`=? WHERE id = ?"
+		"`height`=?,`is_collection_public`=?,`name`=?,`width`=? WHERE id = ?"
 
 	t.Run("Success", func(t *testing.T) {
 		mock.ExpectBegin()
 		mock.ExpectExec(regexp.QuoteMeta(sqlUpdate)).
 			WithArgs(mockUser.CoordinateX1, mockUser.CoordinateX2, mockUser.CoordinateY1, mockUser.CoordinateY2,
-				mockUser.IsCollectionPublic, mockUser.Length, mockUser.Name, mockUser.Width, mockUser.ID).
+				mockUser.Height, mockUser.IsCollectionPublic, mockUser.Name, mockUser.Width, mockUser.ID).
 			WillReturnResult(sqlmock.NewResult(0, 1))
 		mock.ExpectCommit()
 		d := NewMySQLUserRepository(db)

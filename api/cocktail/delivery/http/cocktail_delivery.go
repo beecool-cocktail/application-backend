@@ -113,7 +113,7 @@ func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 		UserID:     cocktail.UserID,
 		UserName:   cocktail.UserName,
 		UserPhoto:  cocktailUser.Photo,
-		Length:     cocktailUser.Length,
+		Height:     cocktailUser.Height,
 		Width:      cocktailUser.Width,
 		Coordinate: []viewmodels.Coordinate{
 			{

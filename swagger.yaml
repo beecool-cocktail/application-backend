@@ -215,6 +215,11 @@ definitions:
       description:
         type: string
         x-go-name: Description
+      height:
+        description: 原圖長
+        format: int64
+        type: integer
+        x-go-name: Height
       ingredient_list:
         items:
           $ref: '#/definitions/CocktailIngredientWithoutIDInResponse'
@@ -223,11 +228,6 @@ definitions:
       is_collected:
         type: boolean
         x-go-name: IsCollected
-      length:
-        description: 原圖長
-        format: float
-        type: number
-        x-go-name: Length
       photos:
         items:
           $ref: '#/definitions/CocktailPhotoWithIDInResponse'
@@ -253,15 +253,15 @@ definitions:
         x-go-name: UserPhoto
       width:
         description: 原圖寬
-        format: float
-        type: number
+        format: int64
+        type: integer
         x-go-name: Width
     required:
     - cocktail_id
     - user_id
     - user_name
     - user_photo
-    - length
+    - height
     - width
     - coordinate
     - photos
@@ -377,15 +377,15 @@ definitions:
           $ref: '#/definitions/Coordinate'
         type: array
         x-go-name: Coordinate
+      height:
+        description: 原圖長
+        format: int64
+        type: integer
+        x-go-name: Height
       is_collection_public:
         description: 是否公開收藏 false=不公開, true=公開
         type: boolean
         x-go-name: IsCollectionPublic
-      length:
-        description: 原圖長
-        format: float
-        type: number
-        x-go-name: Length
       number_of_collection:
         format: int64
         type: integer
@@ -406,14 +406,14 @@ definitions:
         x-go-name: Name
       width:
         description: 原圖寬
-        format: float
-        type: number
+        format: int64
+        type: integer
         x-go-name: Width
     required:
     - user_id
     - user_name
     - photo
-    - length
+    - height
     - width
     - coordinate
     - number_of_post
@@ -496,15 +496,15 @@ definitions:
       email:
         type: string
         x-go-name: Email
+      height:
+        description: 原圖長
+        format: int64
+        type: integer
+        x-go-name: Height
       is_collection_public:
         description: 是否公開收藏 false=不公開, true=公開
         type: boolean
         x-go-name: IsCollectionPublic
-      length:
-        description: 原圖長
-        format: float
-        type: number
-        x-go-name: Length
       number_of_collection:
         format: int64
         type: integer
@@ -525,15 +525,15 @@ definitions:
         x-go-name: Name
       width:
         description: 原圖寬
-        format: float
-        type: number
+        format: int64
+        type: integer
         x-go-name: Width
     required:
     - user_id
     - user_name
     - email
     - photo
-    - length
+    - height
     - width
     - coordinate
     - number_of_post
@@ -813,24 +813,12 @@ definitions:
         example: false
         type: boolean
         x-go-name: IsCollectionPublic
-      length:
-        description: 原圖長
-        format: float
-        type: number
-        x-go-name: Length
       name:
         description: name for this user
         example: Feen Lin
         type: string
         x-go-name: Name
-      width:
-        description: 原圖寬
-        format: float
-        type: number
-        x-go-name: Width
     required:
-    - length
-    - width
     - coordinate
     - name
     - is_collection_public

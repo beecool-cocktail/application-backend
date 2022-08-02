@@ -15,7 +15,7 @@ func NewFileUserRepository() domain.CocktailFileRepository {
 
 func (u *cocktailFileRepository) SaveAsWebp(ctx context.Context, ci *domain.CocktailImage) error {
 
-	err := util.DecodeBase64AndSaveAsWebp(ci.Data, "/"+ci.Destination)
+	_, _, err := util.DecodeBase64AndSaveAsWebp(ci.Data, "/"+ci.Destination)
 	if err != nil {
 		return err
 	}

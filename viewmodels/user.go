@@ -26,10 +26,10 @@ type GetUserInfoResponse struct {
 	Photo string `json:"photo"`
 	//原圖長
 	// required: true
-	Length float32 `json:"length" binding:"required"`
+	Height int `json:"height" binding:"required"`
 	//原圖寬
 	// required: true
-	Width float32 `json:"width" binding:"required"`
+	Width int `json:"width" binding:"required"`
 	//座標 [左上XY, 右下XY]
 	// required: true
 	Coordinate []Coordinate `json:"coordinate" binding:"required,gte=2"`
@@ -51,10 +51,10 @@ type GetOtherUserInfoResponse struct {
 	Photo string `json:"photo"`
 	//原圖長
 	// required: true
-	Length float32 `json:"length" binding:"required"`
+	Height int `json:"height" binding:"required"`
 	//原圖寬
 	// required: true
-	Width float32 `json:"width" binding:"required"`
+	Width int `json:"width" binding:"required"`
 	//座標 [左上XY, 右下XY]
 	// required: true
 	Coordinate []Coordinate `json:"coordinate" binding:"required,gte=2"`
@@ -69,14 +69,6 @@ type GetOtherUserInfoResponse struct {
 
 type UpdateUserInfoRequest struct {
 	File string `json:"file"`
-
-	//原圖長
-	// required: true
-	Length float32 `json:"length" binding:"required"`
-
-	//原圖寬
-	// required: true
-	Width float32 `json:"width" binding:"required"`
 
 	//座標 [左上XY, 右下XY]
 	// required: true
