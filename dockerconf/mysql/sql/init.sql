@@ -83,9 +83,9 @@ LOCK TABLES `users` WRITE;
 INSERT INTO `users` (`id`, `account`, `password`, `status`, `name`, `email`, `photo`, `height`, `width`,
                      `coordinate_x1`, `coordinate_y1`, `coordinate_x2`, `coordinate_y2`, `number_of_post`,
                      `number_of_collection`, `number_of_draft`, `is_collection_public`, `remark`, `created_date`)
-VALUES (1, 'mockAccount1', '', 1, 'mockUser1', '', '', 30, 10, 5, 5, 10, 10, 0, 0, 0, 1, '', '2022-03-12 13:36:24'),
-       (2, 'mockAccount2', '', 1, 'mockUser2', '', '', 30, 10, 5, 5, 10, 10, 0, 0, 0, 1, '', '2022-03-12 13:36:24'),
-       (3, 'mockAccount3', '', 1, 'mockUser3', '', '', 30, 10, 5, 5, 10, 10, 0, 0, 0, 1, '', '2022-03-12 13:36:24'),
+VALUES (1, 'mockAccount1', '', 1, 'mockUser1', '', '', 30, 10, 5, 5, 10, 10, 0, 0, 0, 0, '', '2022-03-12 13:36:24'),
+       (2, 'mockAccount2', '', 1, 'mockUser2', '', '', 30, 10, 5, 5, 10, 10, 0, 0, 0, 0, '', '2022-03-12 13:36:24'),
+       (3, 'mockAccount3', '', 1, 'mockUser3', '', '', 30, 10, 5, 5, 10, 10, 0, 0, 0, 0, '', '2022-03-12 13:36:24'),
        (4, 'mockAccount4', '', 1, 'mockUser4', '', '', 30, 10, 5, 5, 10, 10, 0, 0, 0, 1, '', '2022-03-12 13:36:24'),
        (5, 'mockAccount5', '', 1, 'mockUser5', '', '', 30, 10, 5, 5, 10, 10, 0, 0, 0, 1, '', '2022-03-12 13:36:24'),
        (6, 'mockAccount6', '', 1, 'mockUser6', '', '', 30, 10, 5, 5, 10, 10, 0, 0, 0, 1, '', '2022-03-12 13:36:24');
