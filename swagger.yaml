@@ -377,6 +377,9 @@ definitions:
           $ref: '#/definitions/Coordinate'
         type: array
         x-go-name: Coordinate
+      crop_avatar:
+        type: string
+        x-go-name: CropAvatar
       height:
         description: 原圖長
         format: int64
@@ -394,9 +397,6 @@ definitions:
         format: int64
         type: integer
         x-go-name: NumberOfPost
-      photo:
-        type: string
-        x-go-name: Photo
       user_id:
         format: int64
         type: integer
@@ -412,7 +412,7 @@ definitions:
     required:
     - user_id
     - user_name
-    - photo
+    - crop_avatar
     - height
     - width
     - coordinate
@@ -493,6 +493,9 @@ definitions:
           $ref: '#/definitions/Coordinate'
         type: array
         x-go-name: Coordinate
+      crop_avatar:
+        type: string
+        x-go-name: CropAvatar
       email:
         type: string
         x-go-name: Email
@@ -513,9 +516,9 @@ definitions:
         format: int64
         type: integer
         x-go-name: NumberOfPost
-      photo:
+      origin_avatar:
         type: string
-        x-go-name: Photo
+        x-go-name: OriginAvatar
       user_id:
         format: int64
         type: integer
@@ -532,7 +535,8 @@ definitions:
     - user_id
     - user_name
     - email
-    - photo
+    - origin_avatar
+    - crop_avatar
     - height
     - width
     - coordinate
@@ -797,7 +801,7 @@ definitions:
     - description
     type: object
     x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  UpdateUserInfoRequest:
+  UpdateUserAvatarRequest:
     properties:
       coordinate:
         description: 座標 [左上XY, 右下XY]
@@ -805,9 +809,31 @@ definitions:
           $ref: '#/definitions/Coordinate'
         type: array
         x-go-name: Coordinate
-      file:
+      crop_avatar:
+        description: 裁切後照片
         type: string
-        x-go-name: File
+        x-go-name: CropAvatar
+      origin_avatar:
+        description: 原始照片
+        type: string
+        x-go-name: OriginAvatar
+    required:
+    - origin_avatar
+    - crop_avatar
+    - coordinate
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  UpdateUserAvatarResponse:
+    properties:
+      photo:
+        type: string
+        x-go-name: Photo
+    required:
+    - photo
+    type: object
+    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+  UpdateUserInfoRequest:
+    properties:
       is_collection_public:
         description: public user collection post
         example: false
@@ -819,7 +845,6 @@ definitions:
         type: string
         x-go-name: Name
     required:
-    - coordinate
     - name
     - is_collection_public
     type: object
@@ -1223,21 +1248,22 @@ paths:
       summary: Get user information.
       tags:
       - user
+  /users/current/avatar:
     put:
-      description: Edit user name and collection of publicity status.
-      operationId: updateUserInfoRequest
+      description: Edit user avatar.
+      operationId: updateUserAvatarRequest
       parameters:
       - in: body
         name: Body
         schema:
-          $ref: '#/definitions/UpdateUserInfoRequest'
+          $ref: '#/definitions/UpdateUserAvatarRequest'
       responses:
         "200":
-          $ref: '#/responses/updateUserPhotoResponse'
+          $ref: '#/responses/updateUserAvatarResponse'
       security:
       - Bearer:
         - apiKey
-      summary: Edit user information.
+      summary: Edit user avatar.
       tags:
       - user
   /users/current/cocktails:
@@ -1298,6 +1324,24 @@ paths:
       - Bearer:
         - apiKey
       summary: Remove cocktail article from favorite list.
+      tags:
+      - user
+  /users/current/info:
+    put:
+      description: Edit user name and collection of publicity status.
+      operationId: updateUserInfoRequest
+      parameters:
+      - in: body
+        name: Body
+        schema:
+          $ref: '#/definitions/UpdateUserInfoRequest'
+      responses:
+        "200":
+          $ref: '#/responses/updateUserPhotoResponse'
+      security:
+      - Bearer:
+        - apiKey
+      summary: Edit user information.
       tags:
       - user
 responses:
@@ -1477,6 +1521,23 @@ responses:
       properties:
         data:
           $ref: '#/definitions/GetPopularCocktailListResponse'
+        error_code:
+          type: string
+          x-go-name: ErrorCode
+        error_message:
+          type: string
+          x-go-name: ErrorMessage
+      required:
+      - error_code
+      - error_message
+      - data
+      type: object
+  updateUserAvatarResponse:
+    description: ""
+    schema:
+      properties:
+        data:
+          $ref: '#/definitions/UpdateUserAvatarResponse'
         error_code:
           type: string
           x-go-name: ErrorCode

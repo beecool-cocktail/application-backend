@@ -43,7 +43,8 @@ func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase, socialAc
 	s.HTTP.POST("/api/auth/logout", handler.Logout)
 	s.HTTP.GET("/api/users/current", middlewareHandler.JWTAuthMiddleware(), handler.GetUserInfo)
 	s.HTTP.GET("/api/users/:userID", handler.GetOtherUserInfo)
-	s.HTTP.PUT("/api/users/current", middlewareHandler.JWTAuthMiddleware(), handler.UpdateUserInfo)
+	s.HTTP.PUT("/api/users/current/info", middlewareHandler.JWTAuthMiddleware(), handler.UpdateUserInfo)
+	s.HTTP.PUT("/api/users/current/avatar", middlewareHandler.JWTAuthMiddleware(), handler.UpdateUserAvatar)
 	s.HTTP.POST("/api/users/current/favorite-cocktails", middlewareHandler.JWTAuthMiddleware(), handler.CollectArticle)
 	s.HTTP.DELETE("/api/users/current/favorite-cocktails/:cocktailID", middlewareHandler.JWTAuthMiddleware(), handler.RemoveCollectionArticle)
 	s.HTTP.GET("/api/users/current/favorite-cocktails", middlewareHandler.JWTAuthMiddleware(), handler.GetUserFavoriteList)
@@ -179,12 +180,13 @@ func (u *UserHandler) GetUserInfo(c *gin.Context) {
 	}
 
 	response = viewmodels.GetUserInfoResponse{
-		UserID: user.ID,
-		Name:   user.Name,
-		Email:  user.Email,
-		Photo:  user.Photo,
-		Height: user.Height,
-		Width:  user.Width,
+		UserID:       user.ID,
+		Name:         user.Name,
+		Email:        user.Email,
+		OriginAvatar: user.OriginAvatar,
+		CropAvatar:   user.CropAvatar,
+		Height:       user.Height,
+		Width:        user.Width,
 		Coordinate: []viewmodels.Coordinate{
 			{
 				X: user.CoordinateX1,
@@ -257,11 +259,11 @@ func (u *UserHandler) GetOtherUserInfo(c *gin.Context) {
 	}
 
 	response = viewmodels.GetOtherUserInfoResponse{
-		UserID: user.ID,
-		Name:   user.Name,
-		Photo:  user.Photo,
-		Height: user.Height,
-		Width:  user.Width,
+		UserID:     user.ID,
+		Name:       user.Name,
+		CropAvatar: user.CropAvatar,
+		Height:     user.Height,
+		Width:      user.Width,
 		Coordinate: []viewmodels.Coordinate{
 			{
 				X: user.CoordinateX1,
@@ -280,7 +282,7 @@ func (u *UserHandler) GetOtherUserInfo(c *gin.Context) {
 	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
 }
 
-// swagger:operation PUT /users/current user updateUserInfoRequest
+// swagger:operation PUT /users/current/info user updateUserInfoRequest
 // ---
 // summary: Edit user information.
 // description: Edit user name and collection of publicity status.
@@ -295,8 +297,6 @@ func (u *UserHandler) UpdateUserInfo(c *gin.Context) {
 	api := "/user/edit-info"
 
 	var request viewmodels.UpdateUserInfoRequest
-	var response viewmodels.UpdateUserInfoResponse
-	var userImage domain.UserImage
 	if err := c.ShouldBindJSON(&request); err != nil {
 		service.GetLoggerEntry(u.Logger, api, request).Errorf("parameter illegal - %s", err)
 		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
@@ -305,21 +305,55 @@ func (u *UserHandler) UpdateUserInfo(c *gin.Context) {
 
 	userId := c.GetInt64("user_id")
 
-	//user update photo
-	if request.File != "" {
-		dataURL, err := dataurl.DecodeString(request.File)
+	if request.Name != nil {
+		err := u.UserUsecase.UpdateUserName(c,
+			&domain.User{
+				ID:   userId,
+				Name: *request.Name,
+			})
 		if err != nil {
-			service.GetLoggerEntry(u.Logger, api, request).Errorf("decode data url failed - %s", err)
+			service.GetLoggerEntry(u.Logger, api, nil).Errorf("update user name failed - %s", err)
 			util.PackResponseWithError(c, err, err.Error())
 			return
 		}
-		userImage = domain.UserImage{
-			ID:   userId,
-			Data: string(dataURL.Data),
-			Type: dataURL.MediaType.ContentType(),
+	}
+
+	if request.IsCollectionPublic != nil {
+		err := u.UserUsecase.UpdateUserCollectionStatus(c,
+			&domain.User{
+				ID:                 userId,
+				IsCollectionPublic: *request.IsCollectionPublic,
+			})
+		if err != nil {
+			service.GetLoggerEntry(u.Logger, api, nil).Errorf("update collection status failed - %s", err)
+			util.PackResponseWithError(c, err, err.Error())
+			return
 		}
-	} else {
-		// user didn't update photo
+	}
+
+	util.PackResponseWithData(c, http.StatusOK, nil, domain.GetErrorCode(nil), "")
+}
+
+// swagger:operation PUT /users/current/avatar user updateUserAvatarRequest
+// ---
+// summary: Edit user avatar.
+// description: Edit user avatar.
+//
+// security:
+// - Bearer: [apiKey]
+//
+// responses:
+//  "200":
+//    "$ref": "#/responses/updateUserAvatarResponse"
+func (u *UserHandler) UpdateUserAvatar(c *gin.Context) {
+	api := "/user/edit-info"
+
+	var request viewmodels.UpdateUserAvatarRequest
+	var userImage domain.UserAvatar
+	if err := c.ShouldBindJSON(&request); err != nil {
+		service.GetLoggerEntry(u.Logger, api, request).Errorf("parameter illegal - %s", err)
+		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
+		return
 	}
 
 	if len(request.Coordinate) != 2 {
@@ -327,28 +361,54 @@ func (u *UserHandler) UpdateUserInfo(c *gin.Context) {
 		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
 		return
 	}
-	err := u.UserUsecase.UpdateUserInfo(c,
-		&domain.User{
-			ID:                 userId,
-			Name:               request.Name,
-			IsCollectionPublic: request.IsCollectionPublic,
-			CoordinateX1:       request.Coordinate[0].X,
-			CoordinateY1:       request.Coordinate[0].Y,
-			CoordinateX2:       request.Coordinate[1].X,
-			CoordinateY2:       request.Coordinate[1].Y,
-		},
-		&userImage)
+
+	userId := c.GetInt64("user_id")
+	userImage.UserID = userId
+
+	if request.OriginAvatar != "" {
+		originAvatarDataUrl, err := dataurl.DecodeString(request.OriginAvatar)
+		if err != nil {
+			service.GetLoggerEntry(u.Logger, api, request).Errorf("decode data url failed - %s", err)
+			util.PackResponseWithError(c, err, err.Error())
+			return
+		}
+
+		originAvatar := domain.OriginAvatar{
+			DataURL: string(originAvatarDataUrl.Data),
+			Type:    originAvatarDataUrl.MediaType.ContentType(),
+		}
+		userImage.OriginAvatar = originAvatar
+	}
+
+	cropAvatarDataURL, err := dataurl.DecodeString(request.CropAvatar)
 	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, nil).Errorf("update basic info failed - %s", err)
+		service.GetLoggerEntry(u.Logger, api, request).Errorf("decode data url failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
 
-	response = viewmodels.UpdateUserInfoResponse{
-		Photo: userImage.Destination,
+	cropAvatar := domain.CropAvatar{
+		DataURL: string(cropAvatarDataURL.Data),
+		Type:    cropAvatarDataURL.MediaType.ContentType(),
+	}
+	userImage.CropAvatar = cropAvatar
+
+	err = u.UserUsecase.UpdateUserAvatar(c,
+		&domain.User{
+			ID:           userId,
+			CoordinateX1: request.Coordinate[0].X,
+			CoordinateY1: request.Coordinate[0].Y,
+			CoordinateX2: request.Coordinate[1].X,
+			CoordinateY2: request.Coordinate[1].Y,
+		},
+		&userImage)
+	if err != nil {
+		service.GetLoggerEntry(u.Logger, api, nil).Errorf("update user avatar failed - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
 	}
 
-	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
+	util.PackResponseWithData(c, http.StatusOK, nil, domain.GetErrorCode(nil), "")
 }
 
 // swagger:operation POST /users/current/favorite-cocktails user collectArticleRequest

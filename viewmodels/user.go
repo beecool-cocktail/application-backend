@@ -23,7 +23,9 @@ type GetUserInfoResponse struct {
 	//required: true
 	Email string `json:"email"`
 	//required: true
-	Photo string `json:"photo"`
+	OriginAvatar string `json:"origin_avatar"`
+	//required: true
+	CropAvatar string `json:"crop_avatar"`
 	//原圖長
 	// required: true
 	Height int `json:"height" binding:"required"`
@@ -48,7 +50,7 @@ type GetOtherUserInfoResponse struct {
 	//required: true
 	Name string `json:"user_name"`
 	//required: true
-	Photo string `json:"photo"`
+	CropAvatar string `json:"crop_avatar"`
 	//原圖長
 	// required: true
 	Height int `json:"height" binding:"required"`
@@ -68,28 +70,15 @@ type GetOtherUserInfoResponse struct {
 }
 
 type UpdateUserInfoRequest struct {
-	File string `json:"file"`
-
-	//座標 [左上XY, 右下XY]
-	// required: true
-	Coordinate []Coordinate `json:"coordinate" binding:"required,gte=2"`
-
 	// name for this user
 	// required: true
 	// example: Feen Lin
-	Name string `json:"name" binding:"required"`
+	Name *string `json:"name"`
 
 	// public user collection post
 	// required: true
 	// example: false
-	IsCollectionPublic bool `json:"is_collection_public"`
-}
-
-type Coordinate struct {
-	// required: true
-	X float32 `json:"x"`
-	// required: true
-	Y float32 `json:"y"`
+	IsCollectionPublic *bool `json:"is_collection_public"`
 }
 
 type UpdateUserInfoResponse struct {
@@ -129,4 +118,30 @@ type FavoriteCocktail struct {
 type DeleteFavoriteCocktailResponse struct {
 	//required: true
 	CommandID string `json:"command_id"`
+}
+
+type UpdateUserAvatarRequest struct {
+	//原始照片
+	// required: true
+	OriginAvatar string `json:"origin_avatar"`
+
+	//裁切後照片
+	// required: true
+	CropAvatar string `json:"crop_avatar" binding:"required"`
+
+	//座標 [左上XY, 右下XY]
+	// required: true
+	Coordinate []Coordinate `json:"coordinate" binding:"required,gte=2"`
+}
+
+type Coordinate struct {
+	// required: true
+	X float32 `json:"x"`
+	// required: true
+	Y float32 `json:"y"`
+}
+
+type UpdateUserAvatarResponse struct {
+	//required: true
+	Photo string `json:"photo"`
 }

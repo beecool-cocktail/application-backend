@@ -7,19 +7,29 @@ import (
 	"gorm.io/gorm"
 )
 
-type basicInfo struct {
-	Name               string  `structs:"name"`
-	IsCollectionPublic bool    `structs:"is_collection_public"`
-	Height             int     `structs:"height,omitempty"`
-	Width              int     `structs:"width,omitempty"`
-	CoordinateX1       float32 `structs:"coordinate_x1"`
-	CoordinateY1       float32 `structs:"coordinate_y1"`
-	CoordinateX2       float32 `structs:"coordinate_x2"`
-	CoordinateY2       float32 `structs:"coordinate_y2"`
+type name struct {
+	Name string `structs:"name"`
 }
 
-type photo struct {
-	Photo string `structs:"photo"`
+type isCollectionPublic struct {
+	IsCollectionPublic bool `structs:"is_collection_public"`
+}
+
+type photoInfo struct {
+	Height       int     `structs:"height,omitempty"`
+	Width        int     `structs:"width,omitempty"`
+	CoordinateX1 float32 `structs:"coordinate_x1"`
+	CoordinateY1 float32 `structs:"coordinate_y1"`
+	CoordinateX2 float32 `structs:"coordinate_x2"`
+	CoordinateY2 float32 `structs:"coordinate_y2"`
+}
+
+type originAvatar struct {
+	OriginAvatar string `structs:"origin_avatar"`
+}
+
+type cropAvatar struct {
+	CropAvatar string `structs:"crop_avatar"`
 }
 
 type postNumbers struct {
@@ -58,46 +68,10 @@ func (u *userMySQLRepository) QueryById(ctx context.Context, id int64) (domain.U
 	return user, res.Error
 }
 
-func (u *userMySQLRepository) UpdateBasicInfo(ctx context.Context, d *domain.User) (int64, error) {
+func (u *userMySQLRepository) UpdateUserNameTx(ctx context.Context, tx *gorm.DB, d *domain.User) (int64, error) {
 	var user domain.User
-	updateColumn := basicInfo{
-		Name:               d.Name,
-		IsCollectionPublic: d.IsCollectionPublic,
-		Height:             d.Height,
-		Width:              d.Width,
-		CoordinateX1:       d.CoordinateX1,
-		CoordinateY1:       d.CoordinateY1,
-		CoordinateX2:       d.CoordinateX2,
-		CoordinateY2:       d.CoordinateY2,
-	}
-
-	res := u.db.Model(&user).Where("id = ?", d.ID).Updates(structs.Map(updateColumn))
-
-	return res.RowsAffected, res.Error
-}
-
-func (u *userMySQLRepository) UpdateImage(ctx context.Context, d *domain.UserImage) (int64, error) {
-	var user domain.User
-	updateColumn := photo{
-		Photo: d.Destination,
-	}
-
-	res := u.db.Model(&user).Where("id = ?", d.ID).Updates(structs.Map(updateColumn))
-
-	return res.RowsAffected, res.Error
-}
-
-func (u *userMySQLRepository) UpdateBasicInfoTx(ctx context.Context, tx *gorm.DB, d *domain.User) (int64, error) {
-	var user domain.User
-	updateColumn := basicInfo{
-		Name:               d.Name,
-		IsCollectionPublic: d.IsCollectionPublic,
-		Height:             d.Height,
-		Width:              d.Width,
-		CoordinateX1:       d.CoordinateX1,
-		CoordinateY1:       d.CoordinateY1,
-		CoordinateX2:       d.CoordinateX2,
-		CoordinateY2:       d.CoordinateY2,
+	updateColumn := name{
+		Name: d.Name,
 	}
 
 	res := tx.Model(&user).Where("id = ?", d.ID).Updates(structs.Map(updateColumn))
@@ -105,10 +79,48 @@ func (u *userMySQLRepository) UpdateBasicInfoTx(ctx context.Context, tx *gorm.DB
 	return res.RowsAffected, res.Error
 }
 
-func (u *userMySQLRepository) UpdateImageTx(ctx context.Context, tx *gorm.DB, d *domain.UserImage) (int64, error) {
+func (u *userMySQLRepository) UpdateUserCollectionStatus(ctx context.Context, d *domain.User) (int64, error) {
 	var user domain.User
-	updateColumn := photo{
-		Photo: d.Destination,
+	updateColumn := isCollectionPublic{
+		IsCollectionPublic: d.IsCollectionPublic,
+	}
+
+	res := u.db.Model(&user).Where("id = ?", d.ID).Updates(structs.Map(updateColumn))
+
+	return res.RowsAffected, res.Error
+}
+
+func (u *userMySQLRepository) UpdateUserOriginAvatarTx(ctx context.Context, tx *gorm.DB, d *domain.UserAvatar) (int64, error) {
+	var user domain.User
+	updateColumn := originAvatar{
+		OriginAvatar: d.OriginAvatar.Destination,
+	}
+
+	res := tx.Model(&user).Where("id = ?", d.UserID).Updates(structs.Map(updateColumn))
+
+	return res.RowsAffected, res.Error
+}
+
+func (u *userMySQLRepository) UpdateUserCropAvatarTx(ctx context.Context, tx *gorm.DB, d *domain.UserAvatar) (int64, error) {
+	var user domain.User
+	updateColumn := cropAvatar{
+		CropAvatar: d.CropAvatar.Destination,
+	}
+
+	res := tx.Model(&user).Where("id = ?", d.UserID).Updates(structs.Map(updateColumn))
+
+	return res.RowsAffected, res.Error
+}
+
+func (u *userMySQLRepository) UpdateUserAvatarInfoTx(ctx context.Context, tx *gorm.DB, d *domain.User) (int64, error) {
+	var user domain.User
+	updateColumn := photoInfo{
+		Height:       d.Height,
+		Width:        d.Width,
+		CoordinateX1: d.CoordinateX1,
+		CoordinateY1: d.CoordinateY1,
+		CoordinateX2: d.CoordinateX2,
+		CoordinateY2: d.CoordinateY2,
 	}
 
 	res := tx.Model(&user).Where("id = ?", d.ID).Updates(structs.Map(updateColumn))

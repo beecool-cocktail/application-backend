@@ -94,18 +94,18 @@ func (_m *UserMySQLRepository) UpdateBasicInfoTx(ctx context.Context, tx *gorm.D
 }
 
 // UpdateImage provides a mock function with given fields: ctx, d
-func (_m *UserMySQLRepository) UpdateImage(ctx context.Context, d *domain.UserImage) (int64, error) {
+func (_m *UserMySQLRepository) UpdateImage(ctx context.Context, d *domain.UserAvatar) (int64, error) {
 	ret := _m.Called(ctx, d)
 
 	var r0 int64
-	if rf, ok := ret.Get(0).(func(context.Context, *domain.UserImage) int64); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.UserAvatar) int64); ok {
 		r0 = rf(ctx, d)
 	} else {
 		r0 = ret.Get(0).(int64)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, *domain.UserImage) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *domain.UserAvatar) error); ok {
 		r1 = rf(ctx, d)
 	} else {
 		r1 = ret.Error(1)
@@ -115,18 +115,18 @@ func (_m *UserMySQLRepository) UpdateImage(ctx context.Context, d *domain.UserIm
 }
 
 // UpdateImageTx provides a mock function with given fields: ctx, tx, d
-func (_m *UserMySQLRepository) UpdateImageTx(ctx context.Context, tx *gorm.DB, d *domain.UserImage) (int64, error) {
+func (_m *UserMySQLRepository) UpdateImageTx(ctx context.Context, tx *gorm.DB, d *domain.UserAvatar) (int64, error) {
 	ret := _m.Called(ctx, tx, d)
 
 	var r0 int64
-	if rf, ok := ret.Get(0).(func(context.Context, *gorm.DB, *domain.UserImage) int64); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *gorm.DB, *domain.UserAvatar) int64); ok {
 		r0 = rf(ctx, tx, d)
 	} else {
 		r0 = ret.Get(0).(int64)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, *gorm.DB, *domain.UserImage) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *gorm.DB, *domain.UserAvatar) error); ok {
 		r1 = rf(ctx, tx, d)
 	} else {
 		r1 = ret.Error(1)

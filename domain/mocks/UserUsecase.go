@@ -50,11 +50,11 @@ func (_m *UserUsecase) QueryById(ctx context.Context, id int64) (domain.User, er
 }
 
 // UpdateUserInfo provides a mock function with given fields: ctx, d, ui
-func (_m *UserUsecase) UpdateUserInfo(ctx context.Context, d *domain.User, ui *domain.UserImage) error {
+func (_m *UserUsecase) UpdateUserInfo(ctx context.Context, d *domain.User, ui *domain.UserAvatar) error {
 	ret := _m.Called(ctx, d, ui)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *domain.User, *domain.UserImage) error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.User, *domain.UserAvatar) error); ok {
 		r0 = rf(ctx, d, ui)
 	} else {
 		r0 = ret.Error(0)

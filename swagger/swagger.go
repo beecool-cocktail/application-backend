@@ -243,3 +243,22 @@ type swaggerDeleteFavoriteCocktailResponse struct {
 		Data viewmodels.DeleteFavoriteCocktailResponse `json:"data"`
 	}
 }
+
+// swagger:parameters updateUserAvatarRequest
+type swaggerUpdateUserAvatarRequest struct {
+	// in: body
+	Body viewmodels.UpdateUserAvatarRequest
+}
+
+// swagger:response updateUserAvatarResponse
+type swaggerUpdateUserAvatarResponse struct {
+	// in: body
+	Body struct {
+		//required: true
+		ErrorCode string `json:"error_code"`
+		//required: true
+		ErrorMessage string `json:"error_message"`
+		//required: true
+		Data viewmodels.UpdateUserAvatarResponse `json:"data"`
+	}
+}

@@ -55,39 +55,73 @@ func (u *userUsecase) QueryById(ctx context.Context, id int64) (domain.User, err
 	return user, nil
 }
 
-func (u *userUsecase) UpdateUserInfo(ctx context.Context, d *domain.User, ui *domain.UserImage) error {
+func (u *userUsecase) UpdateUserAvatar(ctx context.Context, d *domain.User, ui *domain.UserAvatar) error {
 
 	newFileName := uuid.New().String()
 
 	savePath := u.service.Configure.Others.File.Image.PathInDB
 	urlPath := u.service.Configure.Others.File.Image.PathInURL
 
-	ui.Name = newFileName
-
-	if !util.ValidateImageType(ui.Type) {
-		return domain.ErrCodeFileTypeIllegal
-	}
-
 	err := u.transactionRepo.Transaction(func(i interface{}) error {
 		tx := i.(*gorm.DB)
 
-		if ui.Data != "" {
-			ui.Destination = savePath + newFileName
-			width, height, err := u.userFileRepo.SaveAsWebp(ctx, ui)
+		if ui.OriginAvatar.DataURL != "" {
+			if !util.ValidateImageType(ui.OriginAvatar.Type) {
+				return domain.ErrCodeFileTypeIllegal
+			}
+
+			ui.OriginAvatar.Destination = savePath + newFileName + "_origin"
+			width, height, err := u.userFileRepo.SaveOriginAvatarAsWebp(ctx, &ui.OriginAvatar)
 			if err != nil {
 				return err
 			}
 			d.Width = width
 			d.Height = height
 
-			ui.Destination = urlPath + newFileName + ".webp"
-			_, err = u.userMySQLRepo.UpdateImageTx(ctx, tx, ui)
+			ui.OriginAvatar.Destination = urlPath + newFileName + "_origin.webp"
+			_, err = u.userMySQLRepo.UpdateUserOriginAvatarTx(ctx, tx, ui)
 			if err != nil {
 				return err
 			}
 		}
 
-		_, err := u.userMySQLRepo.UpdateBasicInfoTx(ctx, tx, d)
+		if !util.ValidateImageType(ui.CropAvatar.Type) {
+			return domain.ErrCodeFileTypeIllegal
+		}
+
+		ui.CropAvatar.Destination = savePath + newFileName + "_crop"
+		err := u.userFileRepo.SaveCropAvatarAsWebp(ctx, &ui.CropAvatar)
+		if err != nil {
+			return err
+		}
+
+		ui.CropAvatar.Destination = urlPath + newFileName + "_crop.webp"
+		_, err = u.userMySQLRepo.UpdateUserCropAvatarTx(ctx, tx, ui)
+		if err != nil {
+			return err
+		}
+
+		_, err = u.userMySQLRepo.UpdateUserAvatarInfoTx(ctx, tx, d)
+		if err != nil {
+			return err
+		}
+
+		return err
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u *userUsecase) UpdateUserName(ctx context.Context, d *domain.User) error {
+
+	err := u.transactionRepo.Transaction(func(i interface{}) error {
+		tx := i.(*gorm.DB)
+
+		_, err := u.userMySQLRepo.UpdateUserNameTx(ctx, tx, d)
 		if err != nil {
 			return err
 		}
@@ -102,6 +136,15 @@ func (u *userUsecase) UpdateUserInfo(ctx context.Context, d *domain.User, ui *do
 		return err
 	})
 
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *userUsecase) UpdateUserCollectionStatus(ctx context.Context, d *domain.User) error {
+
+	_, err := u.userMySQLRepo.UpdateUserCollectionStatus(ctx, d)
 	if err != nil {
 		return err
 	}

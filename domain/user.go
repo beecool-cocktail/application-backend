@@ -13,7 +13,8 @@ type User struct {
 	Status             int       `gorm:"type:tinyint(1) NOT NULL DEFAULT 0"`
 	Name               string    `gorm:"type:varchar(32) NOT NULL DEFAULT ''"`
 	Email              string    `gorm:"type:varchar(64) NOT NULL DEFAULT ''"`
-	Photo              string    `gorm:"type:varchar(128) NOT NULL"`
+	OriginAvatar       string    `gorm:"type:varchar(128) NOT NULL"`
+	CropAvatar         string    `gorm:"type:varchar(128) NOT NULL"`
 	Height             int       `gorm:"type:int NOT NULL DEFAULT 0; comment:照片長度"`
 	Width              int       `gorm:"type:int NOT NULL DEFAULT 0; comment:照片寬度"`
 	CoordinateX1       float32   `gorm:"type:float NOT NULL DEFAULT 0; comment:照片左上X座標"`
@@ -37,10 +38,20 @@ type UserCache struct {
 	TokenExpire  string `structs:"token_expire"`
 }
 
-type UserImage struct {
-	ID          int64
-	Data        string
-	Name        string
+type UserAvatar struct {
+	UserID       int64
+	OriginAvatar OriginAvatar
+	CropAvatar   CropAvatar
+}
+
+type OriginAvatar struct {
+	DataURL     string
+	Type        string
+	Destination string
+}
+
+type CropAvatar struct {
+	DataURL     string
 	Type        string
 	Destination string
 }
@@ -48,10 +59,11 @@ type UserImage struct {
 type UserMySQLRepository interface {
 	Store(ctx context.Context, d *User) error
 	QueryById(ctx context.Context, id int64) (User, error)
-	UpdateBasicInfo(ctx context.Context, d *User) (int64, error)
-	UpdateImage(ctx context.Context, d *UserImage) (int64, error)
-	UpdateBasicInfoTx(ctx context.Context, tx *gorm.DB, d *User) (int64, error)
-	UpdateImageTx(ctx context.Context, tx *gorm.DB, d *UserImage) (int64, error)
+	UpdateUserOriginAvatarTx(ctx context.Context, tx *gorm.DB, ui *UserAvatar) (int64, error)
+	UpdateUserCropAvatarTx(ctx context.Context, tx *gorm.DB, ui *UserAvatar) (int64, error)
+	UpdateUserAvatarInfoTx(ctx context.Context, tx *gorm.DB, d *User) (int64, error)
+	UpdateUserNameTx(ctx context.Context, tx *gorm.DB, d *User) (int64, error)
+	UpdateUserCollectionStatus(ctx context.Context, d *User) (int64, error)
 	UpdateNumberOfPostTx(ctx context.Context, tx *gorm.DB, d *User) (int64, error)
 	UpdateNumberOfDraftTx(ctx context.Context, tx *gorm.DB, d *User) (int64, error)
 	UpdateNumberOfNumberOfCollectionTx(ctx context.Context, tx *gorm.DB, d *User) (int64, error)
@@ -65,11 +77,14 @@ type UserRedisRepository interface {
 }
 
 type UserFileRepository interface {
-	SaveAsWebp(ctx context.Context, ui *UserImage) (int, int, error)
+	SaveOriginAvatarAsWebp(ctx context.Context, ui *OriginAvatar) (int, int, error)
+	SaveCropAvatarAsWebp(ctx context.Context, ui *CropAvatar) error
 }
 
 type UserUsecase interface {
 	Logout(ctx context.Context, id int64) error
 	QueryById(ctx context.Context, id int64) (User, error)
-	UpdateUserInfo(ctx context.Context, d *User, ui *UserImage) error
+	UpdateUserAvatar(ctx context.Context, d *User, ui *UserAvatar) error
+	UpdateUserName(ctx context.Context, d *User) error
+	UpdateUserCollectionStatus(ctx context.Context, d *User) error
 }
