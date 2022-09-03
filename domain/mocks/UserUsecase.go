@@ -49,13 +49,41 @@ func (_m *UserUsecase) QueryById(ctx context.Context, id int64) (domain.User, er
 	return r0, r1
 }
 
-// UpdateUserInfo provides a mock function with given fields: ctx, d, ui
-func (_m *UserUsecase) UpdateUserInfo(ctx context.Context, d *domain.User, ui *domain.UserAvatar) error {
+// UpdateUserAvatar provides a mock function with given fields: ctx, d, ui
+func (_m *UserUsecase) UpdateUserAvatar(ctx context.Context, d *domain.User, ui *domain.UserAvatar) error {
 	ret := _m.Called(ctx, d, ui)
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(context.Context, *domain.User, *domain.UserAvatar) error); ok {
 		r0 = rf(ctx, d, ui)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// UpdateUserCollectionStatus provides a mock function with given fields: ctx, d
+func (_m *UserUsecase) UpdateUserCollectionStatus(ctx context.Context, d *domain.User) error {
+	ret := _m.Called(ctx, d)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.User) error); ok {
+		r0 = rf(ctx, d)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// UpdateUserName provides a mock function with given fields: ctx, d
+func (_m *UserUsecase) UpdateUserName(ctx context.Context, d *domain.User) error {
+	ret := _m.Called(ctx, d)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.User) error); ok {
+		r0 = rf(ctx, d)
 	} else {
 		r0 = ret.Error(0)
 	}
