@@ -116,6 +116,44 @@ func (u *userUsecase) UpdateUserAvatar(ctx context.Context, d *domain.User, ui *
 	return nil
 }
 
+func (u *userUsecase) DeleteUserAvatar(ctx context.Context, userID int64) error {
+	err := u.transactionRepo.Transaction(func(i interface{}) error {
+		tx := i.(*gorm.DB)
+
+		_, err := u.userMySQLRepo.UpdateUserOriginAvatarTx(ctx, tx,
+			&domain.UserAvatar{
+				UserID: userID,
+			})
+		if err != nil {
+			return err
+		}
+
+		_, err = u.userMySQLRepo.UpdateUserCropAvatarTx(ctx, tx,
+			&domain.UserAvatar{
+				UserID: userID,
+			})
+		if err != nil {
+			return err
+		}
+
+		_, err = u.userMySQLRepo.UpdateUserAvatarInfoTx(ctx, tx,
+			&domain.User{
+				ID: userID,
+			})
+		if err != nil {
+			return err
+		}
+
+		return err
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (u *userUsecase) UpdateUserName(ctx context.Context, d *domain.User) error {
 
 	err := u.transactionRepo.Transaction(func(i interface{}) error {

@@ -87,4 +87,5 @@ type UserUsecase interface {
 	UpdateUserAvatar(ctx context.Context, d *User, ui *UserAvatar) error
 	UpdateUserName(ctx context.Context, d *User) error
 	UpdateUserCollectionStatus(ctx context.Context, d *User) error
+	DeleteUserAvatar(ctx context.Context, userID int64) error
 }

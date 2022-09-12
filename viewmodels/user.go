@@ -120,7 +120,6 @@ type DeleteFavoriteCocktailResponse struct {
 
 type UpdateUserAvatarRequest struct {
 	//原始照片
-	// required: true
 	OriginAvatar string `json:"origin_avatar"`
 
 	//裁切後照片

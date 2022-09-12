@@ -47,6 +47,7 @@ func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase, socialAc
 	s.HTTP.PUT("/api/users/current/avatar", middlewareHandler.JWTAuthMiddleware(), handler.UpdateUserAvatar)
 	s.HTTP.POST("/api/users/current/favorite-cocktails", middlewareHandler.JWTAuthMiddleware(), handler.CollectArticle)
 	s.HTTP.DELETE("/api/users/current/favorite-cocktails/:cocktailID", middlewareHandler.JWTAuthMiddleware(), handler.RemoveCollectionArticle)
+	s.HTTP.DELETE("/api/users/current/avatar", middlewareHandler.JWTAuthMiddleware(), handler.DeleteUserAvatar)
 	s.HTTP.GET("/api/users/current/favorite-cocktails", middlewareHandler.JWTAuthMiddleware(), handler.GetUserFavoriteList)
 	s.HTTP.GET("/api/users/:userID/favorite-cocktails", middlewareHandler.JWTAuthMiddlewareIfExist(), handler.GetOtherUserFavoriteList)
 	s.HTTP.GET("/api/users/current/cocktails", middlewareHandler.JWTAuthMiddleware(), handler.SelfCocktailList)
@@ -343,10 +344,9 @@ func (u *UserHandler) UpdateUserInfo(c *gin.Context) {
 // - Bearer: [apiKey]
 //
 // responses:
-//  "200":
-//    "$ref": "#/responses/updateUserAvatarResponse"
+//  "200": success
 func (u *UserHandler) UpdateUserAvatar(c *gin.Context) {
-	api := "/user/edit-info"
+	api := "/user/edit-avatar"
 
 	var request viewmodels.UpdateUserAvatarRequest
 	var userImage domain.UserAvatar
@@ -404,6 +404,30 @@ func (u *UserHandler) UpdateUserAvatar(c *gin.Context) {
 		&userImage)
 	if err != nil {
 		service.GetLoggerEntry(u.Logger, api, nil).Errorf("update user avatar failed - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
+	util.PackResponseWithData(c, http.StatusOK, nil, domain.GetErrorCode(nil), "")
+}
+
+// swagger:operation DELETE /users/current/avatar user deleteUserAvatar
+// ---
+// summary: Delete user avatar.
+// description: Delete user avatar.
+//
+// security:
+// - Bearer: [apiKey]
+//
+// responses:
+//  "200": success
+func (u *UserHandler) DeleteUserAvatar(c *gin.Context) {
+	userId := c.GetInt64("user_id")
+	api := "/user/delete-avatar"
+
+	err := u.UserUsecase.DeleteUserAvatar(c, userId)
+	if err != nil {
+		service.GetLoggerEntry(u.Logger, api, nil).Errorf("delete user avatar failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
