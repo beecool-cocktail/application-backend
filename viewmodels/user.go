@@ -71,12 +71,10 @@ type GetOtherUserInfoResponse struct {
 
 type UpdateUserInfoRequest struct {
 	// name for this user
-	// required: true
 	// example: Feen Lin
 	Name *string `json:"name"`
 
 	// public user collection post
-	// required: true
 	// example: false
 	IsCollectionPublic *bool `json:"is_collection_public"`
 }
