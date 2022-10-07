@@ -20,4 +20,5 @@ main
 /build
 /mysql_data
 /redis_data
+/elstic_data
 serviceConfigLocal.json
