@@ -67,7 +67,7 @@ func (c *cocktailElasticSearchRepository) Search(ctx context.Context, text strin
 	res, _ := c.es.Search().
 		Index(domain.CocktailsIndex).
 		Query(elastic.NewRawStringQuery(string(data))).
-		From(from - 1).Size(size).
+		From((from - 1) * size).Size(size).
 		Do(ctx)
 
 	total := res.TotalHits()
