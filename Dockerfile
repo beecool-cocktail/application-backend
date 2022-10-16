@@ -1,13 +1,13 @@
 ##
 ## Build
 ##
-FROM golang:1.16-alpine AS build
+FROM golang:1.19-alpine AS build
 
 WORKDIR /app
 
 COPY go.mod ./
 COPY go.sum ./
-RUN go mod download
+RUN go mod tidy
 RUN apk add build-base
 RUN apk add libwebp-dev
 
