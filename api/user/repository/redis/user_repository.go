@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/beecool-cocktail/application-backend/domain"
 	"github.com/fatih/structs"
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v9"
 	"strconv"
 )
 
@@ -27,7 +27,7 @@ func NewRedisUserRepository(redis *redis.Client) domain.UserRedisRepository {
 
 func (u *userRedisRepository) Store(ctx context.Context, r *domain.UserCache) error {
 	key := "user:user_id:" + strconv.FormatInt(r.Id, 10)
-	u.redis.HMSet(key, structs.Map(r))
+	u.redis.HMSet(ctx, key, structs.Map(r))
 
 	return nil
 }
@@ -40,7 +40,7 @@ func (u *userRedisRepository) UpdateToken(ctx context.Context, r *domain.UserCac
 		RefreshToken: r.RefreshToken,
 	}
 
-	u.redis.HMSet(key, structs.Map(token))
+	u.redis.HMSet(ctx, key, structs.Map(token))
 
 	return nil
 }
@@ -52,7 +52,7 @@ func (u *userRedisRepository) UpdateBasicInfo(ctx context.Context, r *domain.Use
 		Name: r.Name,
 	}
 
-	u.redis.HMSet(key, structs.Map(token))
+	u.redis.HMSet(ctx, key, structs.Map(token))
 
 	return nil
 }
@@ -60,7 +60,7 @@ func (u *userRedisRepository) UpdateBasicInfo(ctx context.Context, r *domain.Use
 func (u *userRedisRepository) QueryUserNameByID(ctx context.Context, id int64) (string, error) {
 	key := "user:user_id:" + strconv.FormatInt(id, 10)
 
-	value, err := u.redis.HGet(key, "name").Result()
+	value, err := u.redis.HGet(ctx, key, "name").Result()
 	if err == redis.Nil {
 		return value, err
 	} else if err != nil {

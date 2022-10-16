@@ -26,7 +26,7 @@
   "Redis":{
     "Network":"tcp",
     "Address":"redis:6379",
-    "Password":"",
+    "Password":"whispering_69_Conner",
     "DB":0,
     "DialTimeoutSecond":5,
     "ReadTimeoutSecond":3,

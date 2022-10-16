@@ -109,6 +109,26 @@ func (c *cocktailMySQLRepository) UpdateCategoryTx(ctx context.Context, tx *gorm
 	return res.RowsAffected, res.Error
 }
 
+func (c *cocktailMySQLRepository) IncreaseNumberOfCollectionTx(ctx context.Context, tx *gorm.DB,
+	cocktailID int64) (int64, error) {
+	var cocktail domain.Cocktail
+
+	res := tx.Model(&cocktail).Where("cocktail_id = ?", cocktailID).
+		UpdateColumn("number_of_collection", gorm.Expr("number_of_collection + 1"))
+
+	return res.RowsAffected, res.Error
+}
+
+func (c *cocktailMySQLRepository) DecreaseNumberOfCollectionTx(ctx context.Context, tx *gorm.DB,
+	cocktailID int64) (int64, error) {
+	var cocktail domain.Cocktail
+
+	res := tx.Model(&cocktail).Where("cocktail_id = ?", cocktailID).
+		UpdateColumn("number_of_collection", gorm.Expr("number_of_collection - 1"))
+
+	return res.RowsAffected, res.Error
+}
+
 func (c *cocktailMySQLRepository) DeleteTx(ctx context.Context, tx *gorm.DB, id int64) error {
 	var cocktail domain.Cocktail
 

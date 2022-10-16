@@ -26,6 +26,7 @@ const (
 	CodeFileSizeIllegal                        = "F0002"
 	CodeInternalError                          = "S0001"
 	CodeResponseEncodedFailed                  = "S0002"
+	CodeRedisLockNotObtained                   = "S0003"
 )
 
 var (
@@ -47,6 +48,7 @@ var (
 	ErrCodeFileTypeIllegal                      = errors.New("illegal file type")
 	ErrCodeFileSizeIllegal                      = errors.New("illegal file size")
 	ErrFilePathIllegal                          = errors.New("illegal file path")
+	ErrRedisLockNotObtained                     = errors.New("lock not obtained")
 )
 
 func GetErrorCode(err error) string {
@@ -91,6 +93,8 @@ func GetErrorCode(err error) string {
 		return CodeFileTypeIllegal
 	case ErrCodeFileSizeIllegal:
 		return CodeFileSizeIllegal
+	case ErrRedisLockNotObtained:
+		return CodeRedisLockNotObtained
 
 	default:
 		return CodeInternalError
@@ -136,6 +140,8 @@ func GetStatusCode(err error) int {
 		return http.StatusForbidden
 	case ErrCodeFileSizeIllegal:
 		return http.StatusForbidden
+	case ErrRedisLockNotObtained:
+		return http.StatusOK
 
 	default:
 		return http.StatusInternalServerError

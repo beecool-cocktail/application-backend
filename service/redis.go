@@ -2,7 +2,8 @@ package service
 
 import (
 	"errors"
-	"github.com/go-redis/redis"
+	"fmt"
+	"github.com/go-redis/redis/v9"
 	"time"
 )
 
@@ -11,9 +12,11 @@ func newRedis(configure *Configure) (*redis.Client, error) {
 		return nil, errors.New("redis configure is not initialed")
 	}
 	redisConf := configure.Redis
+	fmt.Println("ddddddfsdfdsfdsfdsfdsfdsfsdfsdfsfdsfdsfdsfdsfdsfdsfdsfdsfdsfdsfdsfdsfdsfdsfdsfdsfsdfdsfdsfdsfdsfdsfdsfdsfdsfds")
+	fmt.Println(redisConf.Password)
 	rdb := redis.NewClient(&redis.Options{
 		Network:      redisConf.Network,
-		Addr:      redisConf.Address,
+		Addr:         redisConf.Address,
 		Password:     redisConf.Password,
 		DB:           redisConf.DB,
 		DialTimeout:  time.Second * time.Duration(redisConf.DialTimeoutSecond),

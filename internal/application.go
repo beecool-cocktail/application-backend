@@ -90,7 +90,7 @@ func initializeRoutes(s *service.Service) {
 
 	//operator
 	operatorHandler := cmdPattern.NewOperatorHandler()
-	favoriteCocktailOperator := cmdPattern.NewFavoriteCocktailOperator(favoriteCocktailMySQLRepo, cocktailRedisRepo, transactionRepo)
+	favoriteCocktailOperator := cmdPattern.NewFavoriteCocktailOperator(favoriteCocktailMySQLRepo, cocktailMySQLRepo, cocktailRedisRepo, transactionRepo)
 	operatorHandler.SetOperator(cmdPattern.FavoriteCocktailDelete, favoriteCocktailOperator)
 
 	// Usecase dependency injection

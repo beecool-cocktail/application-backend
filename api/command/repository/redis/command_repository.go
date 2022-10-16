@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/beecool-cocktail/application-backend/domain"
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v9"
 )
 
 type commandRedisRepository struct {
@@ -22,7 +22,7 @@ func (c *commandRedisRepository) Store(ctx context.Context, dc *domain.Command) 
 		return err
 	}
 
-	_, err = c.redis.Set(key, value, dc.ExpireTime).Result()
+	_, err = c.redis.Set(ctx, key, value, dc.ExpireTime).Result()
 	if err != nil {
 		return err
 	}
@@ -35,7 +35,7 @@ func (c *commandRedisRepository) GetByID(ctx context.Context, id string) (domain
 	var command domain.Command
 
 	key := "command:command_id:" + id
-	value, err := c.redis.Get(key).Result()
+	value, err := c.redis.Get(ctx, key).Result()
 	if err != nil {
 		return domain.Command{}, err
 	}
@@ -51,7 +51,7 @@ func (c *commandRedisRepository) GetByID(ctx context.Context, id string) (domain
 func (c *commandRedisRepository) Delete(ctx context.Context, id string) error {
 	key := "command:command_id:" + id
 
-	_, err := c.redis.Del(key).Result()
+	_, err := c.redis.Del(ctx, key).Result()
 
 	return err
 }

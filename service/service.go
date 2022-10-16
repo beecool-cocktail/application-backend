@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v9"
 	"github.com/olivere/elastic/v7"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"

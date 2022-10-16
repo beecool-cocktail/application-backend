@@ -2,7 +2,6 @@ package util
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/beecool-cocktail/application-backend/domain"
 	"github.com/disintegration/imaging"
 	"github.com/kolesa-team/go-webp/encoder"
@@ -97,7 +96,6 @@ func DecodeBase64AndSaveAsWebpInLQIP(base64EncodedData string, dst string) error
 	src := imaging.Resize(img, 200, 0, imaging.NearestNeighbor)
 
 	blurImage := imaging.Blur(src, 5)
-	fmt.Println(dst)
 	out, err := os.Create(dst)
 	if err != nil {
 		return err

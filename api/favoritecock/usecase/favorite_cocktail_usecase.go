@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"github.com/beecool-cocktail/application-backend/command"
 	"github.com/beecool-cocktail/application-backend/domain"
 	"github.com/beecool-cocktail/application-backend/enum/sortbydir"
@@ -108,18 +109,30 @@ func (f *favoriteCocktailUsecase) fillCollectionStatusInList(ctx context.Context
 
 func (f *favoriteCocktailUsecase) Store(ctx context.Context, c *domain.FavoriteCocktail) error {
 
-	if err := f.transactionRepo.Transaction(func(i interface{}) error {
+	if err := f.transactionRepo.Transaction(func(i interface{}) (err error) {
 		tx := i.(*gorm.DB)
 
-		err := f.favoriteCocktailMySQL.StoreTx(ctx, tx, c)
+		cocktailID := strconv.FormatInt(c.CocktailID, 10)
+		retryInterval := 100 * time.Millisecond
+		retryTimes := 5
+		lock, err := f.cocktailRedisRepo.GetCocktailCollectionNumberLock(ctx, cocktailID, time.Second, retryInterval,
+			retryTimes)
 		if err != nil {
 			return err
 		}
 
-		err = f.cocktailRedisRepo.IncreaseCollectionNumbers(ctx, &domain.CocktailCollection{
-			CocktailID:       c.CocktailID,
-			CollectionCounts: 1,
-		})
+		defer func() {
+			if deferError := f.cocktailRedisRepo.ReleaseCocktailCollectionNumberLock(ctx, lock); deferError != nil {
+				err = fmt.Errorf("error is: %w, and defer error is %s", err, deferError)
+			}
+		}()
+
+		err = f.favoriteCocktailMySQL.StoreTx(ctx, tx, c)
+		if err != nil {
+			return err
+		}
+
+		_, err = f.cocktailMySQL.IncreaseNumberOfCollectionTx(ctx, tx, c.CocktailID)
 		if err != nil {
 			return err
 		}
@@ -192,18 +205,30 @@ func (f *favoriteCocktailUsecase) Delete(ctx context.Context, cocktailID, userID
 
 	commandID := strconv.FormatInt(util.GetID(util.IdGenerator), 10)
 
-	if err := f.transactionRepo.Transaction(func(i interface{}) error {
+	if err := f.transactionRepo.Transaction(func(i interface{}) (err error) {
 		tx := i.(*gorm.DB)
 
-		err := f.favoriteCocktailMySQL.DeleteTx(ctx, tx, cocktailID, userID)
+		cocktailIDKey := strconv.FormatInt(cocktailID, 10)
+		retryInterval := 100 * time.Millisecond
+		retryTimes := 5
+		lock, err := f.cocktailRedisRepo.GetCocktailCollectionNumberLock(ctx, cocktailIDKey, time.Second, retryInterval,
+			retryTimes)
 		if err != nil {
 			return err
 		}
 
-		err = f.cocktailRedisRepo.DecreaseCollectionNumbers(ctx, &domain.CocktailCollection{
-			CocktailID:       cocktailID,
-			CollectionCounts: 1,
-		})
+		defer func() {
+			if deferError := f.cocktailRedisRepo.ReleaseCocktailCollectionNumberLock(ctx, lock); deferError != nil {
+				err = fmt.Errorf("error is: %w, and defer error is %s", err, deferError)
+			}
+		}()
+
+		err = f.favoriteCocktailMySQL.DeleteTx(ctx, tx, cocktailID, userID)
+		if err != nil {
+			return err
+		}
+
+		_, err = f.cocktailMySQL.DecreaseNumberOfCollectionTx(ctx, tx, cocktailID)
 		if err != nil {
 			return err
 		}

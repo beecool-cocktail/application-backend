@@ -36,7 +36,7 @@ services:
         nohup redis-server /etc/redis.conf &
         sleep 5
         echo "adding default key value"
-        redis-cli --eval ./redis_init.lua
+        redis-cli --eval ./redis_init.lua -a ${REDIS_PASSWORD}
         # this will keep container running
         tail -f /dev/null
 

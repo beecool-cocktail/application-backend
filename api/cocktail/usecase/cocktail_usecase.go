@@ -537,7 +537,7 @@ func (c *cocktailUsecase) QueryFormalCountsByUserID(ctx context.Context, id int6
 	return total, nil
 }
 
-//Todo 這裡不需要再傳userID
+// Todo 這裡不需要再傳userID
 func (c *cocktailUsecase) Store(ctx context.Context, co *domain.Cocktail, ingredients []domain.CocktailIngredient,
 	steps []domain.CocktailStep, images []domain.CocktailImage, userID int64) error {
 
@@ -665,14 +665,6 @@ func (c *cocktailUsecase) Store(ctx context.Context, co *domain.Cocktail, ingred
 			if err != nil {
 				return err
 			}
-		}
-
-		err = c.cocktailRedisRepo.InitialCollectionNumbers(ctx, &domain.CocktailCollection{
-			CocktailID:       newCocktailID,
-			CollectionCounts: 0,
-		})
-		if err != nil {
-			return err
 		}
 
 		return nil
@@ -874,13 +866,6 @@ func (c *cocktailUsecase) Delete(ctx context.Context, cocktailID, userID int64) 
 			if err != nil {
 				return err
 			}
-		}
-
-		err = c.cocktailRedisRepo.DeleteCollectionNumbers(ctx, &domain.CocktailCollection{
-			CocktailID: cocktailID,
-		})
-		if err != nil {
-			return err
 		}
 
 		return nil

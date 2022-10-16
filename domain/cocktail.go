@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"github.com/bsm/redislock"
 	"gorm.io/gorm"
 	"time"
 )
@@ -86,13 +87,14 @@ type CocktailCollection struct {
 }
 
 type Cocktail struct {
-	ID          int64     `gorm:"type:bigint(64) NOT NULL auto_increment;primary_key"`
-	CocktailID  int64     `gorm:"type:bigint(64) NOT NULL;uniqueIndex:idx_cocktail_id"`
-	UserID      int64     `gorm:"type:bigint(64) NOT NULL;index:idx_user_id; comment: 作者id"`
-	Title       string    `gorm:"type:varchar(30) NOT NULL;; comment: 調酒名稱"`
-	Description string    `gorm:"type:varchar(512) NOT NULL; comment: 調酒介紹"`
-	Category    int       `gorm:"type:tinyint(1) NOT NULL DEFAULT 0; comment: 類型 0=草稿, 1=正式"`
-	CreatedDate time.Time `gorm:"type:timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;index:idx_date"`
+	ID                 int64     `gorm:"type:bigint(64) NOT NULL auto_increment;primary_key"`
+	CocktailID         int64     `gorm:"type:bigint(64) NOT NULL;uniqueIndex:idx_cocktail_id"`
+	UserID             int64     `gorm:"type:bigint(64) NOT NULL;index:idx_user_id; comment: 作者id"`
+	Title              string    `gorm:"type:varchar(30) NOT NULL;; comment: 調酒名稱"`
+	Description        string    `gorm:"type:varchar(512) NOT NULL; comment: 調酒介紹"`
+	Category           int       `gorm:"type:tinyint(1) NOT NULL DEFAULT 0; comment: 類型 0=草稿, 1=正式"`
+	NumberOfCollection int       `gorm:"type:int unsigned NOT NULL DEFAULT 0; comment: 收藏數"`
+	CreatedDate        time.Time `gorm:"type:timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;index:idx_date"`
 }
 
 type CocktailMySQLRepository interface {
@@ -104,13 +106,14 @@ type CocktailMySQLRepository interface {
 	DeleteTx(ctx context.Context, tx *gorm.DB, id int64) error
 	UpdateTx(ctx context.Context, tx *gorm.DB, c *Cocktail) (int64, error)
 	UpdateCategoryTx(ctx context.Context, tx *gorm.DB, c *Cocktail) (int64, error)
+	IncreaseNumberOfCollectionTx(ctx context.Context, tx *gorm.DB, cocktailID int64) (int64, error)
+	DecreaseNumberOfCollectionTx(ctx context.Context, tx *gorm.DB, cocktailID int64) (int64, error)
 }
 
 type CocktailRedisRepository interface {
-	InitialCollectionNumbers(ctx context.Context, cr *CocktailCollection) error
-	IncreaseCollectionNumbers(ctx context.Context, cr *CocktailCollection) error
-	DecreaseCollectionNumbers(ctx context.Context, cr *CocktailCollection) error
-	DeleteCollectionNumbers(ctx context.Context, cr *CocktailCollection) error
+	GetCocktailCollectionNumberLock(ctx context.Context, key string, ttl, retryInterval time.Duration,
+		retryTimes int) (*redislock.Lock, error)
+	ReleaseCocktailCollectionNumberLock(ctx context.Context, lock *redislock.Lock) error
 }
 
 type CocktailFileRepository interface {
