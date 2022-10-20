@@ -35,6 +35,9 @@ type GetUserInfoResponse struct {
 	//座標 [左上XY, 右下XY]
 	// required: true
 	Coordinate []Coordinate `json:"coordinate" binding:"required,gte=2"`
+	//旋轉角度
+	// required: true
+	Rotation float32 `json:"rotation" binding:"required"`
 	//required: true
 	NumberOfPost int64 `json:"number_of_post"`
 	//required: true
@@ -60,6 +63,9 @@ type GetOtherUserInfoResponse struct {
 	//座標 [左上XY, 右下XY]
 	// required: true
 	Coordinate []Coordinate `json:"coordinate" binding:"required,gte=2"`
+	//旋轉角度
+	// required: true
+	Rotation float32 `json:"rotation" binding:"required"`
 	//required: true
 	NumberOfPost int64 `json:"number_of_post"`
 	//required: true
@@ -129,6 +135,10 @@ type UpdateUserAvatarRequest struct {
 	//座標 [左上XY, 右下XY]
 	// required: true
 	Coordinate []Coordinate `json:"coordinate" binding:"required,gte=2"`
+
+	//旋轉角度
+	// required: true
+	Rotation float32 `json:"rotation"`
 }
 
 type Coordinate struct {

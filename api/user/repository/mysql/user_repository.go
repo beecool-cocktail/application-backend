@@ -22,6 +22,7 @@ type photoInfo struct {
 	CoordinateY1 float32 `structs:"coordinate_y1"`
 	CoordinateX2 float32 `structs:"coordinate_x2"`
 	CoordinateY2 float32 `structs:"coordinate_y2"`
+	Rotation     float32 `structs:"rotation"`
 }
 
 type originAvatar struct {
@@ -121,6 +122,7 @@ func (u *userMySQLRepository) UpdateUserAvatarInfoTx(ctx context.Context, tx *go
 		CoordinateY1: d.CoordinateY1,
 		CoordinateX2: d.CoordinateX2,
 		CoordinateY2: d.CoordinateY2,
+		Rotation:     d.Rotation,
 	}
 
 	res := tx.Model(&user).Where("id = ?", d.ID).Updates(structs.Map(updateColumn))

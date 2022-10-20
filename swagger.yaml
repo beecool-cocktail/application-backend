@@ -1,1581 +1,1581 @@
 basePath: /api
 definitions:
-  CocktailIngredientWithoutIDInRequest:
-    properties:
-      amount:
-        example: 1 cup
-        type: string
-        x-go-name: Amount
-      name:
-        example: Gin Tonic
-        type: string
-        x-go-name: Name
-    required:
-    - name
-    - amount
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  CocktailIngredientWithoutIDInResponse:
-    properties:
-      amount:
-        example: 1 cup
-        type: string
-        x-go-name: Amount
-      name:
-        example: Gin Tonic
-        type: string
-        x-go-name: Name
-    required:
-    - name
-    - amount
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  CocktailPhotoWithIDInRequest:
-    properties:
-      id:
-        format: int64
-        type: integer
-        x-go-name: ID
-      path:
-        type: string
-        x-go-name: Photo
-    required:
-    - path
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  CocktailPhotoWithIDInResponse:
-    properties:
-      id:
-        format: int64
-        type: integer
-        x-go-name: ID
-      path:
-        type: string
-        x-go-name: Photo
-    required:
-    - id
-    - path
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  CocktailStepWithoutIDInRequest:
-    properties:
-      description:
-        example: shake
-        type: string
-        x-go-name: Description
-    required:
-    - description
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  CocktailStepWithoutIDInResponse:
-    properties:
-      description:
-        example: shake
-        type: string
-        x-go-name: Description
-    required:
-    - description
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  CollectArticleRequest:
-    properties:
-      id:
-        description: cocktail id
-        example: 123456
-        format: int64
-        type: integer
-        x-go-name: ID
-    required:
-    - id
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  Coordinate:
-    properties:
-      x:
-        format: float
-        type: number
-        x-go-name: X
-      "y":
-        format: float
-        type: number
-        x-go-name: "Y"
-    required:
-    - x
-    - "y"
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  DeleteDraftArticleRequest:
-    properties:
-      deleted_ids:
-        items:
-          format: int64
-          type: integer
-        type: array
-        x-go-name: DeletedIds
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  DeleteFavoriteCocktailResponse:
-    properties:
-      command_id:
-        type: string
-        x-go-name: CommandID
-    required:
-    - command_id
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  DeleteFormalArticleRequest:
-    properties:
-      deleted_ids:
-        items:
-          format: int64
-          type: integer
-        type: array
-        x-go-name: DeletedIds
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  DraftCocktailList:
-    properties:
-      cocktail_id:
-        format: int64
-        type: integer
-        x-go-name: CocktailID
-      created_date:
-        type: string
-        x-go-name: CreatedDate
-      description:
-        type: string
-        x-go-name: Description
-      photo:
-        type: string
-        x-go-name: Photo
-      title:
-        type: string
-        x-go-name: Title
-    required:
-    - cocktail_id
-    - photo
-    - title
-    - description
-    - created_date
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  FavoriteCocktail:
-    properties:
-      cocktail_id:
-        format: int64
-        type: integer
-        x-go-name: CocktailID
-      is_collected:
-        type: boolean
-        x-go-name: IsCollected
-      photo:
-        type: string
-        x-go-name: Photo
-      title:
-        type: string
-        x-go-name: Title
-      user_name:
-        type: string
-        x-go-name: UserName
-    required:
-    - cocktail_id
-    - user_name
-    - photo
-    - title
-    - is_collected
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  GetCocktailByIDRequest:
-    properties:
-      id:
-        description: |-
-          ID of an cocktail item
-
-          In: path
-        format: int64
-        type: integer
-        x-go-name: ID
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  GetCocktailByIDResponse:
-    properties:
-      cocktail_id:
-        format: int64
-        type: integer
-        x-go-name: CocktailID
-      coordinate:
-        description: 座標 [左上XY, 右下XY]
-        items:
-          $ref: '#/definitions/Coordinate'
-        type: array
-        x-go-name: Coordinate
-      created_date:
-        type: string
-        x-go-name: CreatedDate
-      description:
-        type: string
-        x-go-name: Description
-      height:
-        description: 原圖長
-        format: int64
-        type: integer
-        x-go-name: Height
-      ingredient_list:
-        items:
-          $ref: '#/definitions/CocktailIngredientWithoutIDInResponse'
-        type: array
-        x-go-name: IngredientList
-      is_collected:
-        type: boolean
-        x-go-name: IsCollected
-      photos:
-        items:
-          $ref: '#/definitions/CocktailPhotoWithIDInResponse'
-        type: array
-        x-go-name: Photos
-      step_list:
-        items:
-          $ref: '#/definitions/CocktailStepWithoutIDInResponse'
-        type: array
-        x-go-name: StepList
-      title:
-        type: string
-        x-go-name: Title
-      user_id:
-        format: int64
-        type: integer
-        x-go-name: UserID
-      user_name:
-        type: string
-        x-go-name: UserName
-      user_photo:
-        type: string
-        x-go-name: UserPhoto
-      width:
-        description: 原圖寬
-        format: int64
-        type: integer
-        x-go-name: Width
-    required:
-    - cocktail_id
-    - user_id
-    - user_name
-    - user_photo
-    - height
-    - width
-    - coordinate
-    - photos
-    - title
-    - description
-    - ingredient_list
-    - step_list
-    - is_collected
-    - created_date
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  GetCocktailDraftByIDRequest:
-    properties:
-      id:
-        description: |-
-          ID of an cocktail item
-
-          In: path
-        format: int64
-        type: integer
-        x-go-name: ID
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  GetCocktailDraftByIDResponse:
-    properties:
-      cocktail_id:
-        format: int64
-        type: integer
-        x-go-name: CocktailID
-      created_date:
-        type: string
-        x-go-name: CreatedDate
-      description:
-        type: string
-        x-go-name: Description
-      ingredient_list:
-        items:
-          $ref: '#/definitions/CocktailIngredientWithoutIDInResponse'
-        type: array
-        x-go-name: IngredientList
-      photos:
-        items:
-          $ref: '#/definitions/CocktailPhotoWithIDInResponse'
-        type: array
-        x-go-name: Photos
-      step_list:
-        items:
-          $ref: '#/definitions/CocktailStepWithoutIDInResponse'
-        type: array
-        x-go-name: StepList
-      title:
-        type: string
-        x-go-name: Title
-    required:
-    - cocktail_id
-    - photos
-    - title
-    - description
-    - ingredient_list
-    - step_list
-    - created_date
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  GetDraftCocktailListRequest:
-    properties:
-      page:
-        example: 1
-        format: int64
-        type: integer
-        x-go-name: Page
-      page_size:
-        example: 10
-        format: int64
-        type: integer
-        x-go-name: PageSize
-    required:
-    - page
-    - page_size
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  GetDraftCocktailListResponse:
-    properties:
-      draft_cocktail_list:
-        items:
-          $ref: '#/definitions/DraftCocktailList'
-        type: array
-        x-go-name: DraftCocktailList
-      total:
-        format: int64
-        type: integer
-        x-go-name: Total
-    required:
-    - total
-    - draft_cocktail_list
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  GetOtherCocktailListResponse:
-    properties:
-      cocktail_list:
-        items:
-          $ref: '#/definitions/OtherCocktailList'
-        type: array
-        x-go-name: CocktailList
-    required:
-    - cocktail_list
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  GetOtherUserInfoResponse:
-    properties:
-      coordinate:
-        description: 座標 [左上XY, 右下XY]
-        items:
-          $ref: '#/definitions/Coordinate'
-        type: array
-        x-go-name: Coordinate
-      crop_avatar:
-        type: string
-        x-go-name: CropAvatar
-      height:
-        description: 原圖長
-        format: int64
-        type: integer
-        x-go-name: Height
-      is_collection_public:
-        description: 是否公開收藏 false=不公開, true=公開
-        type: boolean
-        x-go-name: IsCollectionPublic
-      number_of_collection:
-        format: int64
-        type: integer
-        x-go-name: NumberOfCollection
-      number_of_post:
-        format: int64
-        type: integer
-        x-go-name: NumberOfPost
-      user_id:
-        format: int64
-        type: integer
-        x-go-name: UserID
-      user_name:
-        type: string
-        x-go-name: Name
-      width:
-        description: 原圖寬
-        format: int64
-        type: integer
-        x-go-name: Width
-    required:
-    - user_id
-    - user_name
-    - crop_avatar
-    - height
-    - width
-    - coordinate
-    - number_of_post
-    - number_of_collection
-    - is_collection_public
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  GetPopularCocktailListRequest:
-    properties:
-      page:
-        example: 1
-        format: int64
-        type: integer
-        x-go-name: Page
-      page_size:
-        example: 10
-        format: int64
-        type: integer
-        x-go-name: PageSize
-    required:
-    - page
-    - page_size
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  GetPopularCocktailListResponse:
-    properties:
-      popular_cocktail_list:
-        items:
-          $ref: '#/definitions/PopularCocktailList'
-        type: array
-        x-go-name: PopularCocktailList
-      total:
-        format: int64
-        type: integer
-        x-go-name: Total
-    required:
-    - total
-    - popular_cocktail_list
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  GetSelfCocktailListResponse:
-    properties:
-      cocktail_list:
-        items:
-          $ref: '#/definitions/SelfCocktailList'
-        type: array
-        x-go-name: CocktailList
-    required:
-    - cocktail_list
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  GetUserFavoriteCocktailListResponse:
-    properties:
-      favorite_cocktail_list:
-        items:
-          $ref: '#/definitions/FavoriteCocktail'
-        type: array
-        x-go-name: FavoriteCocktailList
-      is_public:
-        type: boolean
-        x-go-name: IsPublic
-      total:
-        format: int64
-        type: integer
-        x-go-name: Total
-    required:
-    - is_public
-    - total
-    - favorite_cocktail_list
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  GetUserInfoResponse:
-    properties:
-      coordinate:
-        description: 座標 [左上XY, 右下XY]
-        items:
-          $ref: '#/definitions/Coordinate'
-        type: array
-        x-go-name: Coordinate
-      crop_avatar:
-        type: string
-        x-go-name: CropAvatar
-      email:
-        type: string
-        x-go-name: Email
-      height:
-        description: 原圖長
-        format: int64
-        type: integer
-        x-go-name: Height
-      is_collection_public:
-        description: 是否公開收藏 false=不公開, true=公開
-        type: boolean
-        x-go-name: IsCollectionPublic
-      number_of_collection:
-        format: int64
-        type: integer
-        x-go-name: NumberOfCollection
-      number_of_post:
-        format: int64
-        type: integer
-        x-go-name: NumberOfPost
-      origin_avatar:
-        type: string
-        x-go-name: OriginAvatar
-      user_id:
-        format: int64
-        type: integer
-        x-go-name: UserID
-      user_name:
-        type: string
-        x-go-name: Name
-      width:
-        description: 原圖寬
-        format: int64
-        type: integer
-        x-go-name: Width
-    required:
-    - user_id
-    - user_name
-    - email
-    - origin_avatar
-    - crop_avatar
-    - height
-    - width
-    - coordinate
-    - number_of_post
-    - number_of_collection
-    - is_collection_public
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  GoogleAuthenticateRequest:
-    properties:
-      code:
-        type: string
-        x-go-name: Code
-    required:
-    - code
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  GoogleAuthenticateResponse:
-    properties:
-      token:
-        type: string
-        x-go-name: Token
-    required:
-    - token
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  LogoutRequest:
-    properties:
-      user_id:
-        format: int64
-        type: integer
-        x-go-name: UserID
-    required:
-    - user_id
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  OtherCocktailList:
-    properties:
-      cocktail_id:
-        format: int64
-        type: integer
-        x-go-name: CocktailID
-      is_collected:
-        type: boolean
-        x-go-name: IsCollected
-      photo:
-        type: string
-        x-go-name: Photo
-      title:
-        type: string
-        x-go-name: Title
-      user_name:
-        type: string
-        x-go-name: UserName
-    required:
-    - cocktail_id
-    - user_name
-    - photo
-    - title
-    - is_collected
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  PopularCocktailList:
-    properties:
-      cocktail_id:
-        format: int64
-        type: integer
-        x-go-name: CocktailID
-      created_date:
-        type: string
-        x-go-name: CreatedDate
-      ingredient_list:
-        items:
-          $ref: '#/definitions/CocktailIngredientWithoutIDInResponse'
-        type: array
-        x-go-name: IngredientList
-      is_collected:
-        type: boolean
-        x-go-name: IsCollected
-      low_quality_photos:
-        items:
-          type: string
-        type: array
-        x-go-name: LowQualityPhotos
-      photos:
-        items:
-          type: string
-        type: array
-        x-go-name: Photos
-      title:
-        type: string
-        x-go-name: Title
-      user_id:
-        format: int64
-        type: integer
-        x-go-name: UserID
-      user_name:
-        type: string
-        x-go-name: UserName
-    required:
-    - cocktail_id
-    - user_id
-    - user_name
-    - title
-    - photos
-    - low_quality_photos
-    - ingredient_list
-    - is_collected
-    - created_date
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  PostArticleRequest:
-    properties:
-      description:
-        example: Very good to drink
-        type: string
-        x-go-name: Description
-      files:
-        items:
-          type: string
-        type: array
-        x-go-name: Files
-      ingredient_list:
-        items:
-          $ref: '#/definitions/CocktailIngredientWithoutIDInRequest'
-        type: array
-        x-go-name: IngredientList
-      name:
-        example: Gin Tonic
-        type: string
-        x-go-name: Name
-      step_list:
-        items:
-          $ref: '#/definitions/CocktailStepWithoutIDInRequest'
-        type: array
-        x-go-name: StepList
-    required:
-    - name
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  PostDraftArticleRequest:
-    properties:
-      description:
-        example: Very good to drink
-        type: string
-        x-go-name: Description
-      files:
-        items:
-          type: string
-        type: array
-        x-go-name: Files
-      ingredient_list:
-        items:
-          $ref: '#/definitions/CocktailIngredientWithoutIDInRequest'
-        type: array
-        x-go-name: IngredientList
-      name:
-        example: Gin Tonic
-        type: string
-        x-go-name: Name
-      step_list:
-        items:
-          $ref: '#/definitions/CocktailStepWithoutIDInRequest'
-        type: array
-        x-go-name: StepList
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  ResponseData:
-    properties:
-      data:
+    CocktailIngredientWithoutIDInRequest:
+        properties:
+            amount:
+                example: 1 cup
+                type: string
+                x-go-name: Amount
+            name:
+                example: Gin Tonic
+                type: string
+                x-go-name: Name
+        required:
+            - name
+            - amount
         type: object
-        x-go-name: Data
-      error_code:
-        type: string
-        x-go-name: ErrorCode
-      error_message:
-        type: string
-        x-go-name: ErrorMessage
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  SelfCocktailList:
-    properties:
-      cocktail_id:
-        format: int64
-        type: integer
-        x-go-name: CocktailID
-      photo:
-        type: string
-        x-go-name: Photo
-      title:
-        type: string
-        x-go-name: Title
-      user_name:
-        type: string
-        x-go-name: UserName
-    required:
-    - cocktail_id
-    - user_name
-    - photo
-    - title
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  UpdateDraftArticleRequest:
-    properties:
-      description:
-        example: Very good to drink
-        type: string
-        x-go-name: Description
-      ingredient_list:
-        items:
-          $ref: '#/definitions/CocktailIngredientWithoutIDInRequest'
-        type: array
-        x-go-name: IngredientList
-      name:
-        example: Gin Tonic
-        type: string
-        x-go-name: Name
-      photos:
-        items:
-          $ref: '#/definitions/CocktailPhotoWithIDInRequest'
-        type: array
-        x-go-name: Photos
-      step_list:
-        items:
-          $ref: '#/definitions/CocktailStepWithoutIDInRequest'
-        type: array
-        x-go-name: StepList
-    required:
-    - ingredient_list
-    - step_list
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  UpdateFormalArticleRequest:
-    properties:
-      description:
-        example: Very good to drink
-        type: string
-        x-go-name: Description
-      ingredient_list:
-        items:
-          $ref: '#/definitions/CocktailIngredientWithoutIDInRequest'
-        type: array
-        x-go-name: IngredientList
-      name:
-        example: Gin Tonic
-        type: string
-        x-go-name: Name
-      photos:
-        items:
-          $ref: '#/definitions/CocktailPhotoWithIDInRequest'
-        type: array
-        x-go-name: Photos
-      step_list:
-        items:
-          $ref: '#/definitions/CocktailStepWithoutIDInRequest'
-        type: array
-        x-go-name: StepList
-    required:
-    - name
-    - ingredient_list
-    - step_list
-    - description
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  UpdateUserAvatarRequest:
-    properties:
-      coordinate:
-        description: 座標 [左上XY, 右下XY]
-        items:
-          $ref: '#/definitions/Coordinate'
-        type: array
-        x-go-name: Coordinate
-      crop_avatar:
-        description: 裁切後照片
-        type: string
-        x-go-name: CropAvatar
-      origin_avatar:
-        description: 原始照片
-        type: string
-        x-go-name: OriginAvatar
-    required:
-    - crop_avatar
-    - coordinate
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  UpdateUserAvatarResponse:
-    properties:
-      photo:
-        type: string
-        x-go-name: Photo
-    required:
-    - photo
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  UpdateUserInfoRequest:
-    properties:
-      is_collection_public:
-        description: public user collection post
-        example: false
-        type: boolean
-        x-go-name: IsCollectionPublic
-      name:
-        description: name for this user
-        example: Feen Lin
-        type: string
-        x-go-name: Name
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  UpdateUserInfoResponse:
-    properties:
-      photo:
-        type: string
-        x-go-name: Photo
-    required:
-    - photo
-    type: object
-    x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
-  updateDraftArticleRequest:
-    properties:
-      description:
-        example: Very good to drink
-        type: string
-        x-go-name: Description
-      ingredient_list:
-        items:
-          $ref: '#/definitions/CocktailIngredientWithoutIDInRequest'
-        type: array
-        x-go-name: IngredientList
-      name:
-        example: Gin Tonic
-        type: string
-        x-go-name: Name
-      photos:
-        items:
-          $ref: '#/definitions/CocktailPhotoWithIDInRequest'
-        type: array
-        x-go-name: Photos
-      step_list:
-        items:
-          $ref: '#/definitions/CocktailStepWithoutIDInRequest'
-        type: array
-        x-go-name: StepList
-    required:
-    - ingredient_list
-    - step_list
-    type: object
-    x-go-name: swaggerUpdateDraftArticleRequest
-    x-go-package: github.com/beecool-cocktail/application-backend/swagger
-  updateFormalArticleRequest:
-    properties:
-      description:
-        example: Very good to drink
-        type: string
-        x-go-name: Description
-      ingredient_list:
-        items:
-          $ref: '#/definitions/CocktailIngredientWithoutIDInRequest'
-        type: array
-        x-go-name: IngredientList
-      name:
-        example: Gin Tonic
-        type: string
-        x-go-name: Name
-      photos:
-        items:
-          $ref: '#/definitions/CocktailPhotoWithIDInRequest'
-        type: array
-        x-go-name: Photos
-      step_list:
-        items:
-          $ref: '#/definitions/CocktailStepWithoutIDInRequest'
-        type: array
-        x-go-name: StepList
-    required:
-    - name
-    - ingredient_list
-    - step_list
-    - description
-    type: object
-    x-go-name: swaggerUpdateFormalArticleRequest
-    x-go-package: github.com/beecool-cocktail/application-backend/swagger
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    CocktailIngredientWithoutIDInResponse:
+        properties:
+            amount:
+                example: 1 cup
+                type: string
+                x-go-name: Amount
+            name:
+                example: Gin Tonic
+                type: string
+                x-go-name: Name
+        required:
+            - name
+            - amount
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    CocktailPhotoWithIDInRequest:
+        properties:
+            id:
+                format: int64
+                type: integer
+                x-go-name: ID
+            path:
+                type: string
+                x-go-name: Photo
+        required:
+            - path
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    CocktailPhotoWithIDInResponse:
+        properties:
+            id:
+                format: int64
+                type: integer
+                x-go-name: ID
+            path:
+                type: string
+                x-go-name: Photo
+        required:
+            - id
+            - path
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    CocktailStepWithoutIDInRequest:
+        properties:
+            description:
+                example: shake
+                type: string
+                x-go-name: Description
+        required:
+            - description
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    CocktailStepWithoutIDInResponse:
+        properties:
+            description:
+                example: shake
+                type: string
+                x-go-name: Description
+        required:
+            - description
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    CollectArticleRequest:
+        properties:
+            id:
+                description: cocktail id
+                example: 123456
+                format: int64
+                type: integer
+                x-go-name: ID
+        required:
+            - id
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    Coordinate:
+        properties:
+            x:
+                format: float
+                type: number
+                x-go-name: X
+            "y":
+                format: float
+                type: number
+                x-go-name: "Y"
+        required:
+            - x
+            - "y"
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    DeleteDraftArticleRequest:
+        properties:
+            deleted_ids:
+                items:
+                    format: int64
+                    type: integer
+                type: array
+                x-go-name: DeletedIds
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    DeleteFavoriteCocktailResponse:
+        properties:
+            command_id:
+                type: string
+                x-go-name: CommandID
+        required:
+            - command_id
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    DeleteFormalArticleRequest:
+        properties:
+            deleted_ids:
+                items:
+                    format: int64
+                    type: integer
+                type: array
+                x-go-name: DeletedIds
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    DraftCocktailList:
+        properties:
+            cocktail_id:
+                format: int64
+                type: integer
+                x-go-name: CocktailID
+            created_date:
+                type: string
+                x-go-name: CreatedDate
+            description:
+                type: string
+                x-go-name: Description
+            photo:
+                type: string
+                x-go-name: Photo
+            title:
+                type: string
+                x-go-name: Title
+        required:
+            - cocktail_id
+            - photo
+            - title
+            - description
+            - created_date
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    FavoriteCocktail:
+        properties:
+            cocktail_id:
+                format: int64
+                type: integer
+                x-go-name: CocktailID
+            is_collected:
+                type: boolean
+                x-go-name: IsCollected
+            photo:
+                type: string
+                x-go-name: Photo
+            title:
+                type: string
+                x-go-name: Title
+            user_name:
+                type: string
+                x-go-name: UserName
+        required:
+            - cocktail_id
+            - user_name
+            - photo
+            - title
+            - is_collected
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    GetCocktailByIDRequest:
+        properties:
+            id:
+                description: |-
+                    ID of an cocktail item
+
+                    In: path
+                format: int64
+                type: integer
+                x-go-name: ID
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    GetCocktailByIDResponse:
+        properties:
+            cocktail_id:
+                format: int64
+                type: integer
+                x-go-name: CocktailID
+            coordinate:
+                description: 座標 [左上XY, 右下XY]
+                items:
+                    $ref: '#/definitions/Coordinate'
+                type: array
+                x-go-name: Coordinate
+            created_date:
+                type: string
+                x-go-name: CreatedDate
+            description:
+                type: string
+                x-go-name: Description
+            height:
+                description: 原圖長
+                format: int64
+                type: integer
+                x-go-name: Height
+            ingredient_list:
+                items:
+                    $ref: '#/definitions/CocktailIngredientWithoutIDInResponse'
+                type: array
+                x-go-name: IngredientList
+            is_collected:
+                type: boolean
+                x-go-name: IsCollected
+            photos:
+                items:
+                    $ref: '#/definitions/CocktailPhotoWithIDInResponse'
+                type: array
+                x-go-name: Photos
+            rotation:
+                description: 旋轉角度
+                format: float
+                type: number
+                x-go-name: Rotation
+            step_list:
+                items:
+                    $ref: '#/definitions/CocktailStepWithoutIDInResponse'
+                type: array
+                x-go-name: StepList
+            title:
+                type: string
+                x-go-name: Title
+            user_id:
+                format: int64
+                type: integer
+                x-go-name: UserID
+            user_name:
+                type: string
+                x-go-name: UserName
+            user_photo:
+                type: string
+                x-go-name: UserPhoto
+            width:
+                description: 原圖寬
+                format: int64
+                type: integer
+                x-go-name: Width
+        required:
+            - cocktail_id
+            - user_id
+            - user_name
+            - user_photo
+            - height
+            - width
+            - coordinate
+            - rotation
+            - photos
+            - title
+            - description
+            - ingredient_list
+            - step_list
+            - is_collected
+            - created_date
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    GetCocktailDraftByIDRequest:
+        properties:
+            id:
+                description: |-
+                    ID of an cocktail item
+
+                    In: path
+                format: int64
+                type: integer
+                x-go-name: ID
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    GetCocktailDraftByIDResponse:
+        properties:
+            cocktail_id:
+                format: int64
+                type: integer
+                x-go-name: CocktailID
+            created_date:
+                type: string
+                x-go-name: CreatedDate
+            description:
+                type: string
+                x-go-name: Description
+            ingredient_list:
+                items:
+                    $ref: '#/definitions/CocktailIngredientWithoutIDInResponse'
+                type: array
+                x-go-name: IngredientList
+            photos:
+                items:
+                    $ref: '#/definitions/CocktailPhotoWithIDInResponse'
+                type: array
+                x-go-name: Photos
+            step_list:
+                items:
+                    $ref: '#/definitions/CocktailStepWithoutIDInResponse'
+                type: array
+                x-go-name: StepList
+            title:
+                type: string
+                x-go-name: Title
+        required:
+            - cocktail_id
+            - photos
+            - title
+            - description
+            - ingredient_list
+            - step_list
+            - created_date
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    GetDraftCocktailListRequest:
+        properties:
+            page:
+                example: 1
+                format: int64
+                type: integer
+                x-go-name: Page
+            page_size:
+                example: 10
+                format: int64
+                type: integer
+                x-go-name: PageSize
+        required:
+            - page
+            - page_size
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    GetDraftCocktailListResponse:
+        properties:
+            draft_cocktail_list:
+                items:
+                    $ref: '#/definitions/DraftCocktailList'
+                type: array
+                x-go-name: DraftCocktailList
+            total:
+                format: int64
+                type: integer
+                x-go-name: Total
+        required:
+            - total
+            - draft_cocktail_list
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    GetOtherCocktailListResponse:
+        properties:
+            cocktail_list:
+                items:
+                    $ref: '#/definitions/OtherCocktailList'
+                type: array
+                x-go-name: CocktailList
+        required:
+            - cocktail_list
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    GetOtherUserInfoResponse:
+        properties:
+            coordinate:
+                description: 座標 [左上XY, 右下XY]
+                items:
+                    $ref: '#/definitions/Coordinate'
+                type: array
+                x-go-name: Coordinate
+            crop_avatar:
+                type: string
+                x-go-name: CropAvatar
+            height:
+                description: 原圖長
+                format: int64
+                type: integer
+                x-go-name: Height
+            is_collection_public:
+                description: 是否公開收藏 false=不公開, true=公開
+                type: boolean
+                x-go-name: IsCollectionPublic
+            number_of_collection:
+                format: int64
+                type: integer
+                x-go-name: NumberOfCollection
+            number_of_post:
+                format: int64
+                type: integer
+                x-go-name: NumberOfPost
+            rotation:
+                description: 旋轉角度
+                format: float
+                type: number
+                x-go-name: Rotation
+            user_id:
+                format: int64
+                type: integer
+                x-go-name: UserID
+            user_name:
+                type: string
+                x-go-name: Name
+            width:
+                description: 原圖寬
+                format: int64
+                type: integer
+                x-go-name: Width
+        required:
+            - user_id
+            - user_name
+            - crop_avatar
+            - height
+            - width
+            - coordinate
+            - rotation
+            - number_of_post
+            - number_of_collection
+            - is_collection_public
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    GetPopularCocktailListRequest:
+        properties:
+            page:
+                example: 1
+                format: int64
+                type: integer
+                x-go-name: Page
+            page_size:
+                example: 10
+                format: int64
+                type: integer
+                x-go-name: PageSize
+        required:
+            - page
+            - page_size
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    GetPopularCocktailListResponse:
+        properties:
+            popular_cocktail_list:
+                items:
+                    $ref: '#/definitions/PopularCocktailList'
+                type: array
+                x-go-name: PopularCocktailList
+            total:
+                format: int64
+                type: integer
+                x-go-name: Total
+        required:
+            - total
+            - popular_cocktail_list
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    GetSelfCocktailListResponse:
+        properties:
+            cocktail_list:
+                items:
+                    $ref: '#/definitions/SelfCocktailList'
+                type: array
+                x-go-name: CocktailList
+        required:
+            - cocktail_list
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    GetUserFavoriteCocktailListResponse:
+        properties:
+            favorite_cocktail_list:
+                items:
+                    $ref: '#/definitions/FavoriteCocktail'
+                type: array
+                x-go-name: FavoriteCocktailList
+            is_public:
+                type: boolean
+                x-go-name: IsPublic
+            total:
+                format: int64
+                type: integer
+                x-go-name: Total
+        required:
+            - is_public
+            - total
+            - favorite_cocktail_list
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    GetUserInfoResponse:
+        properties:
+            coordinate:
+                description: 座標 [左上XY, 右下XY]
+                items:
+                    $ref: '#/definitions/Coordinate'
+                type: array
+                x-go-name: Coordinate
+            crop_avatar:
+                type: string
+                x-go-name: CropAvatar
+            email:
+                type: string
+                x-go-name: Email
+            height:
+                description: 原圖長
+                format: int64
+                type: integer
+                x-go-name: Height
+            is_collection_public:
+                description: 是否公開收藏 false=不公開, true=公開
+                type: boolean
+                x-go-name: IsCollectionPublic
+            number_of_collection:
+                format: int64
+                type: integer
+                x-go-name: NumberOfCollection
+            number_of_post:
+                format: int64
+                type: integer
+                x-go-name: NumberOfPost
+            origin_avatar:
+                type: string
+                x-go-name: OriginAvatar
+            rotation:
+                description: 旋轉角度
+                format: float
+                type: number
+                x-go-name: Rotation
+            user_id:
+                format: int64
+                type: integer
+                x-go-name: UserID
+            user_name:
+                type: string
+                x-go-name: Name
+            width:
+                description: 原圖寬
+                format: int64
+                type: integer
+                x-go-name: Width
+        required:
+            - user_id
+            - user_name
+            - email
+            - origin_avatar
+            - crop_avatar
+            - height
+            - width
+            - coordinate
+            - rotation
+            - number_of_post
+            - number_of_collection
+            - is_collection_public
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    GoogleAuthenticateRequest:
+        properties:
+            code:
+                type: string
+                x-go-name: Code
+        required:
+            - code
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    GoogleAuthenticateResponse:
+        properties:
+            token:
+                type: string
+                x-go-name: Token
+        required:
+            - token
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    LogoutRequest:
+        properties:
+            user_id:
+                format: int64
+                type: integer
+                x-go-name: UserID
+        required:
+            - user_id
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    OtherCocktailList:
+        properties:
+            cocktail_id:
+                format: int64
+                type: integer
+                x-go-name: CocktailID
+            is_collected:
+                type: boolean
+                x-go-name: IsCollected
+            photo:
+                type: string
+                x-go-name: Photo
+            title:
+                type: string
+                x-go-name: Title
+            user_name:
+                type: string
+                x-go-name: UserName
+        required:
+            - cocktail_id
+            - user_name
+            - photo
+            - title
+            - is_collected
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    PopularCocktailList:
+        properties:
+            cocktail_id:
+                format: int64
+                type: integer
+                x-go-name: CocktailID
+            created_date:
+                type: string
+                x-go-name: CreatedDate
+            ingredient_list:
+                items:
+                    $ref: '#/definitions/CocktailIngredientWithoutIDInResponse'
+                type: array
+                x-go-name: IngredientList
+            is_collected:
+                type: boolean
+                x-go-name: IsCollected
+            low_quality_photos:
+                items:
+                    type: string
+                type: array
+                x-go-name: LowQualityPhotos
+            photos:
+                items:
+                    type: string
+                type: array
+                x-go-name: Photos
+            title:
+                type: string
+                x-go-name: Title
+            user_id:
+                format: int64
+                type: integer
+                x-go-name: UserID
+            user_name:
+                type: string
+                x-go-name: UserName
+        required:
+            - cocktail_id
+            - user_id
+            - user_name
+            - title
+            - photos
+            - low_quality_photos
+            - ingredient_list
+            - is_collected
+            - created_date
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    PostArticleRequest:
+        properties:
+            description:
+                example: Very good to drink
+                type: string
+                x-go-name: Description
+            files:
+                items:
+                    type: string
+                type: array
+                x-go-name: Files
+            ingredient_list:
+                items:
+                    $ref: '#/definitions/CocktailIngredientWithoutIDInRequest'
+                type: array
+                x-go-name: IngredientList
+            name:
+                example: Gin Tonic
+                type: string
+                x-go-name: Name
+            step_list:
+                items:
+                    $ref: '#/definitions/CocktailStepWithoutIDInRequest'
+                type: array
+                x-go-name: StepList
+        required:
+            - name
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    PostDraftArticleRequest:
+        properties:
+            description:
+                example: Very good to drink
+                type: string
+                x-go-name: Description
+            files:
+                items:
+                    type: string
+                type: array
+                x-go-name: Files
+            ingredient_list:
+                items:
+                    $ref: '#/definitions/CocktailIngredientWithoutIDInRequest'
+                type: array
+                x-go-name: IngredientList
+            name:
+                example: Gin Tonic
+                type: string
+                x-go-name: Name
+            step_list:
+                items:
+                    $ref: '#/definitions/CocktailStepWithoutIDInRequest'
+                type: array
+                x-go-name: StepList
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    ResponseData:
+        properties:
+            data:
+                x-go-name: Data
+            error_code:
+                type: string
+                x-go-name: ErrorCode
+            error_message:
+                type: string
+                x-go-name: ErrorMessage
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    SelfCocktailList:
+        properties:
+            cocktail_id:
+                format: int64
+                type: integer
+                x-go-name: CocktailID
+            photo:
+                type: string
+                x-go-name: Photo
+            title:
+                type: string
+                x-go-name: Title
+            user_name:
+                type: string
+                x-go-name: UserName
+        required:
+            - cocktail_id
+            - user_name
+            - photo
+            - title
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    UpdateDraftArticleRequest:
+        properties:
+            description:
+                example: Very good to drink
+                type: string
+                x-go-name: Description
+            ingredient_list:
+                items:
+                    $ref: '#/definitions/CocktailIngredientWithoutIDInRequest'
+                type: array
+                x-go-name: IngredientList
+            name:
+                example: Gin Tonic
+                type: string
+                x-go-name: Name
+            photos:
+                items:
+                    $ref: '#/definitions/CocktailPhotoWithIDInRequest'
+                type: array
+                x-go-name: Photos
+            step_list:
+                items:
+                    $ref: '#/definitions/CocktailStepWithoutIDInRequest'
+                type: array
+                x-go-name: StepList
+        required:
+            - ingredient_list
+            - step_list
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    UpdateFormalArticleRequest:
+        properties:
+            description:
+                example: Very good to drink
+                type: string
+                x-go-name: Description
+            ingredient_list:
+                items:
+                    $ref: '#/definitions/CocktailIngredientWithoutIDInRequest'
+                type: array
+                x-go-name: IngredientList
+            name:
+                example: Gin Tonic
+                type: string
+                x-go-name: Name
+            photos:
+                items:
+                    $ref: '#/definitions/CocktailPhotoWithIDInRequest'
+                type: array
+                x-go-name: Photos
+            step_list:
+                items:
+                    $ref: '#/definitions/CocktailStepWithoutIDInRequest'
+                type: array
+                x-go-name: StepList
+        required:
+            - name
+            - ingredient_list
+            - step_list
+            - description
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    UpdateUserAvatarRequest:
+        properties:
+            coordinate:
+                description: 座標 [左上XY, 右下XY]
+                items:
+                    $ref: '#/definitions/Coordinate'
+                type: array
+                x-go-name: Coordinate
+            crop_avatar:
+                description: 裁切後照片
+                type: string
+                x-go-name: CropAvatar
+            origin_avatar:
+                description: 原始照片
+                type: string
+                x-go-name: OriginAvatar
+            rotation:
+                description: 旋轉角度
+                format: float
+                type: number
+                x-go-name: Rotation
+        required:
+            - crop_avatar
+            - coordinate
+            - rotation
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    UpdateUserAvatarResponse:
+        properties:
+            photo:
+                type: string
+                x-go-name: Photo
+        required:
+            - photo
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    UpdateUserInfoRequest:
+        properties:
+            is_collection_public:
+                description: public user collection post
+                example: false
+                type: boolean
+                x-go-name: IsCollectionPublic
+            name:
+                description: name for this user
+                example: Feen Lin
+                type: string
+                x-go-name: Name
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    UpdateUserInfoResponse:
+        properties:
+            photo:
+                type: string
+                x-go-name: Photo
+        required:
+            - photo
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    updateDraftArticleRequest:
+        properties:
+            description:
+                example: Very good to drink
+                type: string
+                x-go-name: Description
+            ingredient_list:
+                items:
+                    $ref: '#/definitions/CocktailIngredientWithoutIDInRequest'
+                type: array
+                x-go-name: IngredientList
+            name:
+                example: Gin Tonic
+                type: string
+                x-go-name: Name
+            photos:
+                items:
+                    $ref: '#/definitions/CocktailPhotoWithIDInRequest'
+                type: array
+                x-go-name: Photos
+            step_list:
+                items:
+                    $ref: '#/definitions/CocktailStepWithoutIDInRequest'
+                type: array
+                x-go-name: StepList
+        required:
+            - ingredient_list
+            - step_list
+        type: object
+        x-go-name: swaggerUpdateDraftArticleRequest
+        x-go-package: github.com/beecool-cocktail/application-backend/swagger
+    updateFormalArticleRequest:
+        properties:
+            description:
+                example: Very good to drink
+                type: string
+                x-go-name: Description
+            ingredient_list:
+                items:
+                    $ref: '#/definitions/CocktailIngredientWithoutIDInRequest'
+                type: array
+                x-go-name: IngredientList
+            name:
+                example: Gin Tonic
+                type: string
+                x-go-name: Name
+            photos:
+                items:
+                    $ref: '#/definitions/CocktailPhotoWithIDInRequest'
+                type: array
+                x-go-name: Photos
+            step_list:
+                items:
+                    $ref: '#/definitions/CocktailStepWithoutIDInRequest'
+                type: array
+                x-go-name: StepList
+        required:
+            - name
+            - ingredient_list
+            - step_list
+            - description
+        type: object
+        x-go-name: swaggerUpdateFormalArticleRequest
+        x-go-package: github.com/beecool-cocktail/application-backend/swagger
 host: localhost:6969
 info:
-  description: This is api server
-  title: api server
-  version: "0.1"
+    description: This is api server
+    title: api server
+    version: "0.1"
 paths:
-  /auth/google-authenticate:
-    post:
-      description: Use Code to exchange access token.
-      operationId: googleAuthenticateRequest
-      parameters:
-      - in: body
-        name: Body
-        schema:
-          $ref: '#/definitions/GoogleAuthenticateRequest'
-      responses:
-        "201":
-          $ref: '#/responses/googleAuthenticateResponse'
-      summary: Get access token.
-      tags:
-      - login
-  /auth/google-login:
-    get:
-      description: Will redirect with authorization code.
-      operationId: googleLogin
-      responses:
-        "307":
-          description: ' redirect'
-      summary: Login with google OAuth2
-      tags:
-      - login
-  /auth/logout:
-    post:
-      description: make token invalid.
-      operationId: logoutRequest
-      parameters:
-      - in: body
-        name: Body
-        schema:
-          $ref: '#/definitions/LogoutRequest'
-      responses: {}
-      summary: User logout.
-      tags:
-      - login
-  /cocktail-drafts:
-    get:
-      description: Get draft cocktail list order by create date.
-      operationId: getCocktailDraft
-      responses:
-        "200":
-          $ref: '#/responses/getDraftCocktailListResponse'
-      security:
-      - Bearer:
-        - apiKey
-      summary: Get draft cocktail list
-      tags:
-      - cocktail
-    patch:
-      description: DELETE cocktail draft article.
-      operationId: deleteDraftArticleRequest
-      parameters:
-      - in: body
-        name: Body
-        schema:
-          $ref: '#/definitions/DeleteDraftArticleRequest'
-      responses: {}
-      security:
-      - Bearer:
-        - apiKey
-      summary: DELETE cocktail draft article.
-      tags:
-      - cocktail
-    post:
-      description: Post cocktail draft article.
-      operationId: postDraftArticleRequest
-      parameters:
-      - in: body
-        name: Body
-        schema:
-          $ref: '#/definitions/PostDraftArticleRequest'
-      responses: {}
-      security:
-      - Bearer:
-        - apiKey
-      summary: Post cocktail draft article.
-      tags:
-      - cocktail
-  /cocktail-drafts/{id}:
-    get:
-      description: Get cocktail draft photo, steps and ingredient.
-      operationId: getCocktailDraftByIDRequest
-      parameters:
-      - example: 123456
-        in: path
-        name: id
-        required: true
-        schema:
-          $ref: '#/definitions/GetCocktailDraftByIDRequest'
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/getCocktailDraftByIDResponse'
-      security:
-      - Bearer:
-        - apiKey
-      summary: Get cocktail draft detail information
-      tags:
-      - cocktail
-    post:
-      description: Make cocktail draft article to formal article.
-      operationId: makeCocktailDraftToFormal
-      parameters:
-      - example: 123456
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses: {}
-      security:
-      - Bearer:
-        - apiKey
-      summary: Make cocktail draft article to formal article.
-      tags:
-      - cocktail
-    put:
-      description: Edit cocktail draft article.
-      operationId: updateCocktailDraft
-      parameters:
-      - example: 123456
-        in: path
-        name: id
-        required: true
-        type: integer
-      - in: body
-        name: Body
-        schema:
-          $ref: '#/definitions/updateDraftArticleRequest'
-      responses: {}
-      security:
-      - Bearer:
-        - apiKey
-      summary: Edit cocktail draft article.
-      tags:
-      - cocktail
-  /cocktails:
-    get:
-      description: Get popular cocktail list order by create date.
-      operationId: getCocktail
-      parameters:
-      - example: 1
-        in: query
-        name: page
-        required: true
-        type: integer
-      - example: 10
-        in: query
-        name: page_size
-        required: true
-        type: integer
-      - example: search
-        in: query
-        name: keyword
-        type: string
-      responses:
-        "200":
-          $ref: '#/responses/popularCocktailListResponse'
-      summary: Get popular cocktail list
-      tags:
-      - cocktail
-    patch:
-      description: DELETE cocktail formal article.
-      operationId: deleteFormalArticleRequest
-      parameters:
-      - in: body
-        name: Body
-        schema:
-          $ref: '#/definitions/DeleteFormalArticleRequest'
-      responses: {}
-      security:
-      - Bearer:
-        - apiKey
-      summary: DELETE cocktail formal article.
-      tags:
-      - cocktail
-    post:
-      description: Post cocktail article.
-      operationId: postArticleRequest
-      parameters:
-      - in: body
-        name: Body
-        schema:
-          $ref: '#/definitions/PostArticleRequest'
-      responses: {}
-      security:
-      - Bearer:
-        - apiKey
-      summary: Post cocktail article.
-      tags:
-      - cocktail
-  /cocktails/{id}:
-    get:
-      description: Get cocktail photo, steps and ingredient.
-      operationId: getCocktailByIDRequest
-      parameters:
-      - example: 123456
-        in: path
-        name: id
-        required: true
-        schema:
-          $ref: '#/definitions/GetCocktailByIDRequest'
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/getCocktailByIDResponse'
-      summary: Get cocktail detail information
-      tags:
-      - cocktail
-    put:
-      description: Edit cocktail formal article.
-      operationId: updateFormalArticle
-      parameters:
-      - example: 123456
-        in: path
-        name: id
-        required: true
-        type: integer
-      - in: body
-        name: Body
-        schema:
-          $ref: '#/definitions/updateFormalArticleRequest'
-      responses: {}
-      security:
-      - Bearer:
-        - apiKey
-      summary: Edit cocktail formal article.
-      tags:
-      - cocktail
-  /command/{id}/undo:
-    post:
-      description: Undo command.
-      operationId: undoCommand
-      parameters:
-      - example: 1
-        in: path
-        name: id
-        required: true
-        type: string
-      responses: {}
-      security:
-      - Bearer:
-        - apiKey
-      summary: Undo command.
-      tags:
-      - command
-  /users/{id}:
-    get:
-      description: Get other user id, name, email, numberOfPost, numberOfCollection
-        and photo.
-      operationId: getOtherUserInfo
-      parameters:
-      - example: 1
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/getOtherUserInfoResponse'
-      security:
-      - Bearer:
-        - apiKey
-      summary: Get other user information.
-      tags:
-      - user
-  /users/{id}/cocktails:
-    get:
-      description: Get other user cocktail list order by create date.
-      operationId: otherCocktailList
-      parameters:
-      - example: 1
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/getOtherCocktailListResponse'
-      security:
-      - Bearer:
-        - apiKey
-      summary: Get other user cocktail list
-      tags:
-      - user
-  /users/{id}/favorite-cocktails:
-    get:
-      description: Get other user favorite cocktail article list.
-      operationId: getOtherUserFavoriteList
-      parameters:
-      - example: 123456
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/getUserFavoriteCocktailListResponse'
-      security:
-      - Bearer:
-        - apiKey
-      summary: Get other user favorite cocktail article list.
-      tags:
-      - user
-  /users/current:
-    get:
-      description: Get user id, name, email, numberOfPost, numberOfCollection and
-        photo.
-      operationId: info
-      responses:
-        "200":
-          $ref: '#/responses/getUserInfoResponse'
-      security:
-      - Bearer:
-        - apiKey
-      summary: Get user information.
-      tags:
-      - user
-  /users/current/avatar:
-    delete:
-      description: Delete user avatar.
-      operationId: deleteUserAvatar
-      responses: {}
-      security:
-      - Bearer:
-        - apiKey
-      summary: Delete user avatar.
-      tags:
-      - user
-    put:
-      description: Edit user avatar.
-      operationId: updateUserAvatarRequest
-      parameters:
-      - in: body
-        name: Body
-        schema:
-          $ref: '#/definitions/UpdateUserAvatarRequest'
-      responses: {}
-      security:
-      - Bearer:
-        - apiKey
-      summary: Edit user avatar.
-      tags:
-      - user
-  /users/current/cocktails:
-    get:
-      description: Get self cocktail list order by create date.
-      operationId: selfCocktailList
-      responses:
-        "200":
-          $ref: '#/responses/getSelfCocktailListResponse'
-      security:
-      - Bearer:
-        - apiKey
-      summary: Get self cocktail list
-      tags:
-      - user
-  /users/current/favorite-cocktails:
-    get:
-      description: Get current user favorite cocktail article list.
-      operationId: getUserFavoriteList
-      responses:
-        "200":
-          $ref: '#/responses/getUserFavoriteCocktailListResponse'
-      security:
-      - Bearer:
-        - apiKey
-      summary: Get current user favorite cocktail article list.
-      tags:
-      - user
-    post:
-      description: Add cocktail article to favorite list.
-      operationId: collectArticleRequest
-      parameters:
-      - in: body
-        name: Body
-        schema:
-          $ref: '#/definitions/CollectArticleRequest'
-      responses: {}
-      security:
-      - Bearer:
-        - apiKey
-      summary: Add cocktail article to favorite list.
-      tags:
-      - user
-  /users/current/favorite-cocktails/{id}:
-    delete:
-      description: Remove cocktail article from favorite list.
-      operationId: removeCollectionArticle
-      parameters:
-      - example: 123456
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/deleteFavoriteCocktailResponse'
-      security:
-      - Bearer:
-        - apiKey
-      summary: Remove cocktail article from favorite list.
-      tags:
-      - user
-  /users/current/info:
-    put:
-      description: Edit user name and collection of publicity status.
-      operationId: updateUserInfoRequest
-      parameters:
-      - in: body
-        name: Body
-        schema:
-          $ref: '#/definitions/UpdateUserInfoRequest'
-      responses:
-        "200":
-          $ref: '#/responses/updateUserPhotoResponse'
-      security:
-      - Bearer:
-        - apiKey
-      summary: Edit user information.
-      tags:
-      - user
+    /auth/google-authenticate:
+        post:
+            description: Use Code to exchange access token.
+            operationId: googleAuthenticateRequest
+            parameters:
+                - in: body
+                  name: Body
+                  schema:
+                    $ref: '#/definitions/GoogleAuthenticateRequest'
+            responses:
+                "201":
+                    $ref: '#/responses/googleAuthenticateResponse'
+            summary: Get access token.
+            tags:
+                - login
+    /auth/google-login:
+        get:
+            description: Will redirect with authorization code.
+            operationId: googleLogin
+            responses:
+                "307":
+                    description: ' redirect'
+            summary: Login with google OAuth2
+            tags:
+                - login
+    /auth/logout:
+        post:
+            description: make token invalid.
+            operationId: logoutRequest
+            parameters:
+                - in: body
+                  name: Body
+                  schema:
+                    $ref: '#/definitions/LogoutRequest'
+            responses: {}
+            summary: User logout.
+            tags:
+                - login
+    /cocktail-drafts:
+        get:
+            description: Get draft cocktail list order by create date.
+            operationId: getCocktailDraft
+            security:
+                - Bearer:
+                    - apiKey
+            summary: Get draft cocktail list
+            tags:
+                - cocktail
+        patch:
+            description: DELETE cocktail draft article.
+            operationId: deleteDraftArticleRequest
+            parameters:
+                - in: body
+                  name: Body
+                  schema:
+                    $ref: '#/definitions/DeleteDraftArticleRequest'
+            security:
+                - Bearer:
+                    - apiKey
+            summary: DELETE cocktail draft article.
+            tags:
+                - cocktail
+        post:
+            description: Post cocktail draft article.
+            operationId: postDraftArticleRequest
+            parameters:
+                - in: body
+                  name: Body
+                  schema:
+                    $ref: '#/definitions/PostDraftArticleRequest'
+            security:
+                - Bearer:
+                    - apiKey
+            summary: Post cocktail draft article.
+            tags:
+                - cocktail
+    /cocktail-drafts/{id}:
+        get:
+            description: Get cocktail draft photo, steps and ingredient.
+            operationId: getCocktailDraftByIDRequest
+            parameters:
+                - example: 123456
+                  in: path
+                  name: id
+                  required: true
+                  schema:
+                    $ref: '#/definitions/GetCocktailDraftByIDRequest'
+                  type: integer
+            security:
+                - Bearer:
+                    - apiKey
+            summary: Get cocktail draft detail information
+            tags:
+                - cocktail
+        post:
+            description: Make cocktail draft article to formal article.
+            operationId: makeCocktailDraftToFormal
+            parameters:
+                - example: 123456
+                  in: path
+                  name: id
+                  required: true
+                  type: integer
+            security:
+                - Bearer:
+                    - apiKey
+            summary: Make cocktail draft article to formal article.
+            tags:
+                - cocktail
+        put:
+            description: Edit cocktail draft article.
+            operationId: updateCocktailDraft
+            parameters:
+                - example: 123456
+                  in: path
+                  name: id
+                  required: true
+                  type: integer
+                - $ref: '#/definitions/updateDraftArticleRequest'
+                  in: body
+                  name: Body
+            security:
+                - Bearer:
+                    - apiKey
+            summary: Edit cocktail draft article.
+            tags:
+                - cocktail
+    /cocktails:
+        get:
+            description: Get popular cocktail list order by create date.
+            operationId: getCocktail
+            parameters:
+                - example: 1
+                  in: query
+                  name: page
+                  required: true
+                  type: integer
+                - example: 10
+                  in: query
+                  name: page_size
+                  required: true
+                  type: integer
+                - example: search
+                  in: query
+                  name: keyword
+                  type: string
+            summary: Get popular cocktail list
+            tags:
+                - cocktail
+        patch:
+            description: DELETE cocktail formal article.
+            operationId: deleteFormalArticleRequest
+            parameters:
+                - in: body
+                  name: Body
+                  schema:
+                    $ref: '#/definitions/DeleteFormalArticleRequest'
+            security:
+                - Bearer:
+                    - apiKey
+            summary: DELETE cocktail formal article.
+            tags:
+                - cocktail
+        post:
+            description: Post cocktail article.
+            operationId: postArticleRequest
+            parameters:
+                - in: body
+                  name: Body
+                  schema:
+                    $ref: '#/definitions/PostArticleRequest'
+            security:
+                - Bearer:
+                    - apiKey
+            summary: Post cocktail article.
+            tags:
+                - cocktail
+    /cocktails/{id}:
+        get:
+            description: Get cocktail photo, steps and ingredient.
+            operationId: getCocktailByIDRequest
+            parameters:
+                - example: 123456
+                  in: path
+                  name: id
+                  required: true
+                  schema:
+                    $ref: '#/definitions/GetCocktailByIDRequest'
+                  type: integer
+            summary: Get cocktail detail information
+            tags:
+                - cocktail
+        put:
+            description: Edit cocktail formal article.
+            operationId: updateFormalArticle
+            parameters:
+                - example: 123456
+                  in: path
+                  name: id
+                  required: true
+                  type: integer
+                - $ref: '#/definitions/updateFormalArticleRequest'
+                  in: body
+                  name: Body
+            security:
+                - Bearer:
+                    - apiKey
+            summary: Edit cocktail formal article.
+            tags:
+                - cocktail
+    /command/{id}/undo:
+        post:
+            description: Undo command.
+            operationId: undoCommand
+            parameters:
+                - example: 1
+                  in: path
+                  name: id
+                  required: true
+                  type: string
+            responses: {}
+            security:
+                - Bearer:
+                    - apiKey
+            summary: Undo command.
+            tags:
+                - command
+    /users/{id}:
+        get:
+            description: Get other user id, name, email, numberOfPost, numberOfCollection and photo.
+            operationId: getOtherUserInfo
+            parameters:
+                - example: 1
+                  in: path
+                  name: id
+                  required: true
+                  type: integer
+            responses:
+                "200":
+                    $ref: '#/responses/getOtherUserInfoResponse'
+            security:
+                - Bearer:
+                    - apiKey
+            summary: Get other user information.
+            tags:
+                - user
+    /users/{id}/cocktails:
+        get:
+            description: Get other user cocktail list order by create date.
+            operationId: otherCocktailList
+            parameters:
+                - example: 1
+                  in: path
+                  name: id
+                  required: true
+                  type: integer
+            responses:
+                "200":
+                    $ref: '#/responses/getOtherCocktailListResponse'
+            security:
+                - Bearer:
+                    - apiKey
+            summary: Get other user cocktail list
+            tags:
+                - user
+    /users/{id}/favorite-cocktails:
+        get:
+            description: Get other user favorite cocktail article list.
+            operationId: getOtherUserFavoriteList
+            parameters:
+                - example: 123456
+                  in: path
+                  name: id
+                  required: true
+                  type: integer
+            responses:
+                "200":
+                    $ref: '#/responses/getUserFavoriteCocktailListResponse'
+            security:
+                - Bearer:
+                    - apiKey
+            summary: Get other user favorite cocktail article list.
+            tags:
+                - user
+    /users/current:
+        get:
+            description: Get user id, name, email, numberOfPost, numberOfCollection and photo.
+            operationId: info
+            responses:
+                "200":
+                    $ref: '#/responses/getUserInfoResponse'
+            security:
+                - Bearer:
+                    - apiKey
+            summary: Get user information.
+            tags:
+                - user
+    /users/current/avatar:
+        delete:
+            description: Delete user avatar.
+            operationId: deleteUserAvatar
+            responses: {}
+            security:
+                - Bearer:
+                    - apiKey
+            summary: Delete user avatar.
+            tags:
+                - user
+        put:
+            description: Edit user avatar.
+            operationId: updateUserAvatarRequest
+            parameters:
+                - in: body
+                  name: Body
+                  schema:
+                    $ref: '#/definitions/UpdateUserAvatarRequest'
+            responses: {}
+            security:
+                - Bearer:
+                    - apiKey
+            summary: Edit user avatar.
+            tags:
+                - user
+    /users/current/cocktails:
+        get:
+            description: Get self cocktail list order by create date.
+            operationId: selfCocktailList
+            responses:
+                "200":
+                    $ref: '#/responses/getSelfCocktailListResponse'
+            security:
+                - Bearer:
+                    - apiKey
+            summary: Get self cocktail list
+            tags:
+                - user
+    /users/current/favorite-cocktails:
+        get:
+            description: Get current user favorite cocktail article list.
+            operationId: getUserFavoriteList
+            responses:
+                "200":
+                    $ref: '#/responses/getUserFavoriteCocktailListResponse'
+            security:
+                - Bearer:
+                    - apiKey
+            summary: Get current user favorite cocktail article list.
+            tags:
+                - user
+        post:
+            description: Add cocktail article to favorite list.
+            operationId: collectArticleRequest
+            parameters:
+                - in: body
+                  name: Body
+                  schema:
+                    $ref: '#/definitions/CollectArticleRequest'
+            responses: {}
+            security:
+                - Bearer:
+                    - apiKey
+            summary: Add cocktail article to favorite list.
+            tags:
+                - user
+    /users/current/favorite-cocktails/{id}:
+        delete:
+            description: Remove cocktail article from favorite list.
+            operationId: removeCollectionArticle
+            parameters:
+                - example: 123456
+                  in: path
+                  name: id
+                  required: true
+                  type: integer
+            responses:
+                "200":
+                    $ref: '#/responses/deleteFavoriteCocktailResponse'
+            security:
+                - Bearer:
+                    - apiKey
+            summary: Remove cocktail article from favorite list.
+            tags:
+                - user
+    /users/current/info:
+        put:
+            description: Edit user name and collection of publicity status.
+            operationId: updateUserInfoRequest
+            parameters:
+                - in: body
+                  name: Body
+                  schema:
+                    $ref: '#/definitions/UpdateUserInfoRequest'
+            responses:
+                "200":
+                    $ref: '#/responses/updateUserPhotoResponse'
+            security:
+                - Bearer:
+                    - apiKey
+            summary: Edit user information.
+            tags:
+                - user
 responses:
-  deleteFavoriteCocktailResponse:
-    description: ""
-    schema:
-      properties:
-        data:
-          $ref: '#/definitions/DeleteFavoriteCocktailResponse'
-        error_code:
-          type: string
-          x-go-name: ErrorCode
-        error_message:
-          type: string
-          x-go-name: ErrorMessage
-      required:
-      - error_code
-      - error_message
-      - data
-      type: object
-  getCocktailByIDResponse:
-    description: ""
-    schema:
-      properties:
-        data:
-          $ref: '#/definitions/GetCocktailByIDResponse'
-        error_code:
-          type: string
-          x-go-name: ErrorCode
-        error_message:
-          type: string
-          x-go-name: ErrorMessage
-      required:
-      - error_code
-      - error_message
-      - data
-      type: object
-  getCocktailDraftByIDResponse:
-    description: ""
-    schema:
-      properties:
-        data:
-          $ref: '#/definitions/GetCocktailDraftByIDResponse'
-        error_code:
-          type: string
-          x-go-name: ErrorCode
-        error_message:
-          type: string
-          x-go-name: ErrorMessage
-      required:
-      - error_code
-      - error_message
-      - data
-      type: object
-  getDraftCocktailListResponse:
-    description: ""
-    schema:
-      properties:
-        data:
-          $ref: '#/definitions/GetDraftCocktailListResponse'
-        error_code:
-          type: string
-          x-go-name: ErrorCode
-        error_message:
-          type: string
-          x-go-name: ErrorMessage
-      required:
-      - error_code
-      - error_message
-      - data
-      type: object
-  getOtherCocktailListResponse:
-    description: ""
-    schema:
-      properties:
-        data:
-          $ref: '#/definitions/GetOtherCocktailListResponse'
-        error_code:
-          type: string
-          x-go-name: ErrorCode
-        error_message:
-          type: string
-          x-go-name: ErrorMessage
-      required:
-      - error_code
-      - error_message
-      - data
-      type: object
-  getOtherUserInfoResponse:
-    description: ""
-    schema:
-      properties:
-        data:
-          $ref: '#/definitions/GetOtherUserInfoResponse'
-        error_code:
-          type: string
-          x-go-name: ErrorCode
-        error_message:
-          type: string
-          x-go-name: ErrorMessage
-      required:
-      - error_code
-      - error_message
-      - data
-      type: object
-  getSelfCocktailListResponse:
-    description: ""
-    schema:
-      properties:
-        data:
-          $ref: '#/definitions/GetSelfCocktailListResponse'
-        error_code:
-          type: string
-          x-go-name: ErrorCode
-        error_message:
-          type: string
-          x-go-name: ErrorMessage
-      required:
-      - error_code
-      - error_message
-      - data
-      type: object
-  getUserFavoriteCocktailListResponse:
-    description: ""
-    schema:
-      properties:
-        data:
-          $ref: '#/definitions/GetUserFavoriteCocktailListResponse'
-        error_code:
-          type: string
-          x-go-name: ErrorCode
-        error_message:
-          type: string
-          x-go-name: ErrorMessage
-      required:
-      - error_code
-      - error_message
-      - data
-      type: object
-  getUserInfoResponse:
-    description: ""
-    schema:
-      properties:
-        data:
-          $ref: '#/definitions/GetUserInfoResponse'
-        error_code:
-          type: string
-          x-go-name: ErrorCode
-        error_message:
-          type: string
-          x-go-name: ErrorMessage
-      required:
-      - error_code
-      - error_message
-      - data
-      type: object
-  googleAuthenticateResponse:
-    description: ""
-    schema:
-      properties:
-        data:
-          $ref: '#/definitions/GoogleAuthenticateResponse'
-        error_code:
-          type: string
-          x-go-name: ErrorCode
-        error_message:
-          type: string
-          x-go-name: ErrorMessage
-      required:
-      - error_code
-      - error_message
-      - data
-      type: object
-  popularCocktailListResponse:
-    description: ""
-    schema:
-      properties:
-        data:
-          $ref: '#/definitions/GetPopularCocktailListResponse'
-        error_code:
-          type: string
-          x-go-name: ErrorCode
-        error_message:
-          type: string
-          x-go-name: ErrorMessage
-      required:
-      - error_code
-      - error_message
-      - data
-      type: object
-  updateUserAvatarResponse:
-    description: ""
-    schema:
-      properties:
-        data:
-          $ref: '#/definitions/UpdateUserAvatarResponse'
-        error_code:
-          type: string
-          x-go-name: ErrorCode
-        error_message:
-          type: string
-          x-go-name: ErrorMessage
-      required:
-      - error_code
-      - error_message
-      - data
-      type: object
-  updateUserPhotoResponse:
-    description: ""
-    schema:
-      properties:
-        data:
-          $ref: '#/definitions/UpdateUserInfoResponse'
-        error_code:
-          type: string
-          x-go-name: ErrorCode
-        error_message:
-          type: string
-          x-go-name: ErrorMessage
-      required:
-      - error_code
-      - error_message
-      - data
-      type: object
+    deleteFavoriteCocktailResponse:
+        description: ""
+        schema:
+            properties:
+                data:
+                    $ref: '#/definitions/DeleteFavoriteCocktailResponse'
+                error_code:
+                    type: string
+                    x-go-name: ErrorCode
+                error_message:
+                    type: string
+                    x-go-name: ErrorMessage
+            required:
+                - error_code
+                - error_message
+                - data
+            type: object
+    getCocktailByIDResponse:
+        description: ""
+        schema:
+            properties:
+                data:
+                    $ref: '#/definitions/GetCocktailByIDResponse'
+                error_code:
+                    type: string
+                    x-go-name: ErrorCode
+                error_message:
+                    type: string
+                    x-go-name: ErrorMessage
+            required:
+                - error_code
+                - error_message
+                - data
+            type: object
+    getCocktailDraftByIDResponse:
+        description: ""
+        schema:
+            properties:
+                data:
+                    $ref: '#/definitions/GetCocktailDraftByIDResponse'
+                error_code:
+                    type: string
+                    x-go-name: ErrorCode
+                error_message:
+                    type: string
+                    x-go-name: ErrorMessage
+            required:
+                - error_code
+                - error_message
+                - data
+            type: object
+    getDraftCocktailListResponse:
+        description: ""
+        schema:
+            properties:
+                data:
+                    $ref: '#/definitions/GetDraftCocktailListResponse'
+                error_code:
+                    type: string
+                    x-go-name: ErrorCode
+                error_message:
+                    type: string
+                    x-go-name: ErrorMessage
+            required:
+                - error_code
+                - error_message
+                - data
+            type: object
+    getOtherCocktailListResponse:
+        description: ""
+        schema:
+            properties:
+                data:
+                    $ref: '#/definitions/GetOtherCocktailListResponse'
+                error_code:
+                    type: string
+                    x-go-name: ErrorCode
+                error_message:
+                    type: string
+                    x-go-name: ErrorMessage
+            required:
+                - error_code
+                - error_message
+                - data
+            type: object
+    getOtherUserInfoResponse:
+        description: ""
+        schema:
+            properties:
+                data:
+                    $ref: '#/definitions/GetOtherUserInfoResponse'
+                error_code:
+                    type: string
+                    x-go-name: ErrorCode
+                error_message:
+                    type: string
+                    x-go-name: ErrorMessage
+            required:
+                - error_code
+                - error_message
+                - data
+            type: object
+    getSelfCocktailListResponse:
+        description: ""
+        schema:
+            properties:
+                data:
+                    $ref: '#/definitions/GetSelfCocktailListResponse'
+                error_code:
+                    type: string
+                    x-go-name: ErrorCode
+                error_message:
+                    type: string
+                    x-go-name: ErrorMessage
+            required:
+                - error_code
+                - error_message
+                - data
+            type: object
+    getUserFavoriteCocktailListResponse:
+        description: ""
+        schema:
+            properties:
+                data:
+                    $ref: '#/definitions/GetUserFavoriteCocktailListResponse'
+                error_code:
+                    type: string
+                    x-go-name: ErrorCode
+                error_message:
+                    type: string
+                    x-go-name: ErrorMessage
+            required:
+                - error_code
+                - error_message
+                - data
+            type: object
+    getUserInfoResponse:
+        description: ""
+        schema:
+            properties:
+                data:
+                    $ref: '#/definitions/GetUserInfoResponse'
+                error_code:
+                    type: string
+                    x-go-name: ErrorCode
+                error_message:
+                    type: string
+                    x-go-name: ErrorMessage
+            required:
+                - error_code
+                - error_message
+                - data
+            type: object
+    googleAuthenticateResponse:
+        description: ""
+        schema:
+            properties:
+                data:
+                    $ref: '#/definitions/GoogleAuthenticateResponse'
+                error_code:
+                    type: string
+                    x-go-name: ErrorCode
+                error_message:
+                    type: string
+                    x-go-name: ErrorMessage
+            required:
+                - error_code
+                - error_message
+                - data
+            type: object
+    popularCocktailListResponse:
+        description: ""
+        schema:
+            properties:
+                data:
+                    $ref: '#/definitions/GetPopularCocktailListResponse'
+                error_code:
+                    type: string
+                    x-go-name: ErrorCode
+                error_message:
+                    type: string
+                    x-go-name: ErrorMessage
+            required:
+                - error_code
+                - error_message
+                - data
+            type: object
+    updateUserAvatarResponse:
+        description: ""
+        schema:
+            properties:
+                data:
+                    $ref: '#/definitions/UpdateUserAvatarResponse'
+                error_code:
+                    type: string
+                    x-go-name: ErrorCode
+                error_message:
+                    type: string
+                    x-go-name: ErrorMessage
+            required:
+                - error_code
+                - error_message
+                - data
+            type: object
+    updateUserPhotoResponse:
+        description: ""
+        schema:
+            properties:
+                data:
+                    $ref: '#/definitions/UpdateUserInfoResponse'
+                error_code:
+                    type: string
+                    x-go-name: ErrorCode
+                error_message:
+                    type: string
+                    x-go-name: ErrorMessage
+            required:
+                - error_code
+                - error_message
+                - data
+            type: object
 schemes:
-- http
-- https
+    - http
+    - https
 securityDefinitions:
-  Bearer:
-    in: header
-    name: Authorization
-    type: apiKey
+    Bearer:
+        in: header
+        name: Authorization
+        type: apiKey
 swagger: "2.0"

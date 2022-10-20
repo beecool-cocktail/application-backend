@@ -203,6 +203,9 @@ type GetCocktailByIDResponse struct {
 	//座標 [左上XY, 右下XY]
 	// required: true
 	Coordinate []Coordinate `json:"coordinate" binding:"required,gte=2"`
+	//旋轉角度
+	// required: true
+	Rotation float32 `json:"rotation" binding:"required"`
 	//required: true
 	Photos []CocktailPhotoWithIDInResponse `json:"photos"`
 	//required: true

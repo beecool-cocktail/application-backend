@@ -47,15 +47,16 @@ func NewCocktailHandler(s *service.Service, cocktailUsecase domain.CocktailUseca
 // description: Get cocktail photo, steps and ingredient.
 //
 // parameters:
-// - name: id
-//   in: path
-//   required: true
-//   type: integer
-//   example: 123456
+//   - name: id
+//     in: path
+//     required: true
+//     type: integer
+//     example: 123456
 //
 // responses:
-//  "200":
-//    "$ref": "#/responses/getCocktailByIDResponse"
+//
+//	"200":
+//	  "$ref": "#/responses/getCocktailByIDResponse"
 func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 	var response viewmodels.GetCocktailByIDResponse
 	userId := c.GetInt64("user_id")
@@ -125,6 +126,7 @@ func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 				Y: cocktailUser.CoordinateY2,
 			},
 		},
+		Rotation:       cocktailUser.Rotation,
 		Title:          cocktail.Title,
 		Description:    cocktail.Description,
 		IngredientList: ingredients,
@@ -146,15 +148,16 @@ func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 // - Bearer: [apiKey]
 //
 // parameters:
-// - name: id
-//   in: path
-//   required: true
-//   type: integer
-//   example: 123456
+//   - name: id
+//     in: path
+//     required: true
+//     type: integer
+//     example: 123456
 //
 // responses:
-//  "200":
-//    "$ref": "#/responses/getCocktailDraftByIDResponse"
+//
+//	"200":
+//	  "$ref": "#/responses/getCocktailDraftByIDResponse"
 func (co *CocktailHandler) GetCocktailDraftByCocktailID(c *gin.Context) {
 	var response viewmodels.GetCocktailDraftByIDResponse
 	cocktailID := c.Param("cocktailID")
@@ -220,27 +223,28 @@ func (co *CocktailHandler) GetCocktailDraftByCocktailID(c *gin.Context) {
 // description: Get popular cocktail list order by create date.
 //
 // parameters:
-// - name: page
-//   in: query
-//   required: true
-//   type: integer
-//   example: 1
+//   - name: page
+//     in: query
+//     required: true
+//     type: integer
+//     example: 1
 //
-// - name: page_size
-//   in: query
-//   required: true
-//   type: integer
-//   example: 10
+//   - name: page_size
+//     in: query
+//     required: true
+//     type: integer
+//     example: 10
 //
-// - name: keyword
-//   in: query
-//   required: false
-//   type: string
-//   example: search
+//   - name: keyword
+//     in: query
+//     required: false
+//     type: string
+//     example: search
 //
 // responses:
-//  "200":
-//    "$ref": "#/responses/popularCocktailListResponse"
+//
+//	"200":
+//	  "$ref": "#/responses/popularCocktailListResponse"
 func (co *CocktailHandler) CocktailList(c *gin.Context) {
 	api := "/cocktails"
 	userId := c.GetInt64("user_id")
@@ -339,8 +343,9 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 // parameters:
 //
 // responses:
-//  "200":
-//    "$ref": "#/responses/getDraftCocktailListResponse"
+//
+//	"200":
+//	  "$ref": "#/responses/getDraftCocktailListResponse"
 func (co *CocktailHandler) CocktailDraftList(c *gin.Context) {
 	api := "/cocktails"
 	var response viewmodels.GetDraftCocktailListResponse
@@ -385,7 +390,8 @@ func (co *CocktailHandler) CocktailDraftList(c *gin.Context) {
 // - Bearer: [apiKey]
 //
 // responses:
-//  "201": success
+//
+//	"201": success
 func (co *CocktailHandler) PostArticle(c *gin.Context) {
 	api := "cocktail"
 	userId := c.GetInt64("user_id")
@@ -465,7 +471,8 @@ func (co *CocktailHandler) PostArticle(c *gin.Context) {
 // - Bearer: [apiKey]
 //
 // responses:
-//  "201": success
+//
+//	"201": success
 func (co *CocktailHandler) PostDraftArticle(c *gin.Context) {
 	api := "cocktail"
 	userId := c.GetInt64("user_id")
@@ -545,14 +552,15 @@ func (co *CocktailHandler) PostDraftArticle(c *gin.Context) {
 // - Bearer: [apiKey]
 //
 // parameters:
-// - name: id
-//   in: path
-//   required: true
-//   type: integer
-//   example: 123456
+//   - name: id
+//     in: path
+//     required: true
+//     type: integer
+//     example: 123456
 //
 // responses:
-//  "200": success
+//
+//	"200": success
 func (co *CocktailHandler) MakeDraftArticleToFormalArticle(c *gin.Context) {
 	userId := c.GetInt64("user_id")
 	cocktailID := c.Param("cocktailID")
@@ -584,18 +592,19 @@ func (co *CocktailHandler) MakeDraftArticleToFormalArticle(c *gin.Context) {
 // - Bearer: [apiKey]
 //
 // parameters:
-// - name: id
-//   in: path
-//   required: true
-//   type: integer
-//   example: 123456
-// - name: Body
-//   in: body
-//   schema:
+//   - name: id
+//     in: path
+//     required: true
+//     type: integer
+//     example: 123456
+//   - name: Body
+//     in: body
+//     schema:
 //     "$ref": "#/definitions/updateDraftArticleRequest"
 //
 // responses:
-//  "200": success
+//
+//	"200": success
 func (co *CocktailHandler) UpdateDraftArticle(c *gin.Context) {
 	userId := c.GetInt64("user_id")
 	cocktailID := c.Param("cocktailID")
@@ -695,18 +704,19 @@ func (co *CocktailHandler) UpdateDraftArticle(c *gin.Context) {
 // - Bearer: [apiKey]
 //
 // parameters:
-// - name: id
-//   in: path
-//   required: true
-//   type: integer
-//   example: 123456
-// - name: Body
-//   in: body
-//   schema:
+//   - name: id
+//     in: path
+//     required: true
+//     type: integer
+//     example: 123456
+//   - name: Body
+//     in: body
+//     schema:
 //     "$ref": "#/definitions/updateFormalArticleRequest"
 //
 // responses:
-//  "200": success
+//
+//	"200": success
 func (co *CocktailHandler) UpdateFormalArticle(c *gin.Context) {
 	userId := c.GetInt64("user_id")
 	cocktailID := c.Param("cocktailID")
@@ -806,7 +816,8 @@ func (co *CocktailHandler) UpdateFormalArticle(c *gin.Context) {
 // - Bearer: [apiKey]
 //
 // responses:
-//  "200": success
+//
+//	"200": success
 func (co *CocktailHandler) DeleteDraftArticle(c *gin.Context) {
 	userId := c.GetInt64("user_id")
 	cocktailID := c.Param("cocktailID")
@@ -840,7 +851,8 @@ func (co *CocktailHandler) DeleteDraftArticle(c *gin.Context) {
 // - Bearer: [apiKey]
 //
 // responses:
-//  "200": success
+//
+//	"200": success
 func (co *CocktailHandler) DeleteFormalArticle(c *gin.Context) {
 	userId := c.GetInt64("user_id")
 	api := "DELETE /cocktails"

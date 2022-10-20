@@ -198,6 +198,7 @@ func (u *UserHandler) GetUserInfo(c *gin.Context) {
 				Y: user.CoordinateY2,
 			},
 		},
+		Rotation:           user.Rotation,
 		NumberOfPost:       numberOfPost,
 		NumberOfCollection: numberOfCollection,
 		IsCollectionPublic: user.IsCollectionPublic,
@@ -275,6 +276,7 @@ func (u *UserHandler) GetOtherUserInfo(c *gin.Context) {
 				Y: user.CoordinateY2,
 			},
 		},
+		Rotation: user.Rotation,
 		NumberOfPost:       numberOfPost,
 		NumberOfCollection: numberOfCollection,
 		IsCollectionPublic: user.IsCollectionPublic,
@@ -400,6 +402,7 @@ func (u *UserHandler) UpdateUserAvatar(c *gin.Context) {
 			CoordinateY1: request.Coordinate[0].Y,
 			CoordinateX2: request.Coordinate[1].X,
 			CoordinateY2: request.Coordinate[1].Y,
+			Rotation:     request.Rotation,
 		},
 		&userImage)
 	if err != nil {

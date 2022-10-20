@@ -21,6 +21,7 @@ type User struct {
 	CoordinateY1       float32   `gorm:"type:float NOT NULL DEFAULT 0; comment:照片左上Y座標"`
 	CoordinateX2       float32   `gorm:"type:float NOT NULL DEFAULT 0; comment:照片左下X座標"`
 	CoordinateY2       float32   `gorm:"type:float NOT NULL DEFAULT 0; comment:照片左下Y座標"`
+	Rotation           float32   `gorm:"type:float NOT NULL DEFAULT 0; comment:照片選轉角度"`
 	NumberOfPost       int       `gorm:"type:int unsigned NOT NULL DEFAULT 0; comment: 貼文數"`
 	NumberOfCollection int       `gorm:"type:int unsigned NOT NULL DEFAULT 0; comment: 收藏數"`
 	NumberOfDraft      int       `gorm:"type:int unsigned NOT NULL DEFAULT 0; comment: 草稿數"`
