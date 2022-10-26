@@ -57,6 +57,7 @@ func NewCocktailHandler(s *service.Service, cocktailUsecase domain.CocktailUseca
 //
 //	"200":
 //	  "$ref": "#/responses/getCocktailByIDResponse"
+
 func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 	var response viewmodels.GetCocktailByIDResponse
 	userId := c.GetInt64("user_id")
@@ -158,6 +159,7 @@ func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 //
 //	"200":
 //	  "$ref": "#/responses/getCocktailDraftByIDResponse"
+
 func (co *CocktailHandler) GetCocktailDraftByCocktailID(c *gin.Context) {
 	var response viewmodels.GetCocktailDraftByIDResponse
 	cocktailID := c.Param("cocktailID")
@@ -242,9 +244,9 @@ func (co *CocktailHandler) GetCocktailDraftByCocktailID(c *gin.Context) {
 //     example: search
 //
 // responses:
-//
-//	"200":
-//	  "$ref": "#/responses/popularCocktailListResponse"
+//  "200":
+//	   "$ref": "#/responses/popularCocktailListResponse"
+
 func (co *CocktailHandler) CocktailList(c *gin.Context) {
 	api := "/cocktails"
 	userId := c.GetInt64("user_id")
@@ -343,9 +345,9 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 // parameters:
 //
 // responses:
-//
-//	"200":
-//	  "$ref": "#/responses/getDraftCocktailListResponse"
+//   "200":
+//     "$ref": "#/responses/getDraftCocktailListResponse"
+
 func (co *CocktailHandler) CocktailDraftList(c *gin.Context) {
 	api := "/cocktails"
 	var response viewmodels.GetDraftCocktailListResponse
@@ -390,8 +392,9 @@ func (co *CocktailHandler) CocktailDraftList(c *gin.Context) {
 // - Bearer: [apiKey]
 //
 // responses:
-//
-//	"201": success
+//   "201":
+//     description: success
+
 func (co *CocktailHandler) PostArticle(c *gin.Context) {
 	api := "cocktail"
 	userId := c.GetInt64("user_id")
@@ -471,8 +474,9 @@ func (co *CocktailHandler) PostArticle(c *gin.Context) {
 // - Bearer: [apiKey]
 //
 // responses:
-//
-//	"201": success
+//   "201":
+//     description: success
+
 func (co *CocktailHandler) PostDraftArticle(c *gin.Context) {
 	api := "cocktail"
 	userId := c.GetInt64("user_id")
@@ -559,8 +563,9 @@ func (co *CocktailHandler) PostDraftArticle(c *gin.Context) {
 //     example: 123456
 //
 // responses:
-//
-//	"200": success
+//   "201":
+//     description: success
+
 func (co *CocktailHandler) MakeDraftArticleToFormalArticle(c *gin.Context) {
 	userId := c.GetInt64("user_id")
 	cocktailID := c.Param("cocktailID")
@@ -600,11 +605,12 @@ func (co *CocktailHandler) MakeDraftArticleToFormalArticle(c *gin.Context) {
 //   - name: Body
 //     in: body
 //     schema:
-//     "$ref": "#/definitions/updateDraftArticleRequest"
+//       "$ref": "#/definitions/updateDraftArticleRequest"
 //
 // responses:
-//
-//	"200": success
+//   "201":
+//     description: success
+
 func (co *CocktailHandler) UpdateDraftArticle(c *gin.Context) {
 	userId := c.GetInt64("user_id")
 	cocktailID := c.Param("cocktailID")
@@ -712,11 +718,13 @@ func (co *CocktailHandler) UpdateDraftArticle(c *gin.Context) {
 //   - name: Body
 //     in: body
 //     schema:
-//     "$ref": "#/definitions/updateFormalArticleRequest"
+//       "$ref": "#/definitions/updateFormalArticleRequest"
 //
 // responses:
 //
-//	"200": success
+//	"200":
+//	  description: success
+
 func (co *CocktailHandler) UpdateFormalArticle(c *gin.Context) {
 	userId := c.GetInt64("user_id")
 	cocktailID := c.Param("cocktailID")
@@ -816,8 +824,9 @@ func (co *CocktailHandler) UpdateFormalArticle(c *gin.Context) {
 // - Bearer: [apiKey]
 //
 // responses:
-//
-//	"200": success
+//   "200":
+//     description: success
+
 func (co *CocktailHandler) DeleteDraftArticle(c *gin.Context) {
 	userId := c.GetInt64("user_id")
 	cocktailID := c.Param("cocktailID")
@@ -851,8 +860,9 @@ func (co *CocktailHandler) DeleteDraftArticle(c *gin.Context) {
 // - Bearer: [apiKey]
 //
 // responses:
-//
-//	"200": success
+//   "201":
+//     description: success
+
 func (co *CocktailHandler) DeleteFormalArticle(c *gin.Context) {
 	userId := c.GetInt64("user_id")
 	api := "DELETE /cocktails"

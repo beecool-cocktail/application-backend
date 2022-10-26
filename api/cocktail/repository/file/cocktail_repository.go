@@ -15,7 +15,7 @@ func NewFileUserRepository() domain.CocktailFileRepository {
 
 func (u *cocktailFileRepository) SaveAsWebp(ctx context.Context, ci *domain.CocktailImage) error {
 
-	_, _, err := util.DecodeBase64AndSaveAsWebp(ci.Data, "/"+ci.Destination)
+	_, _, err := util.DecodeBase64AndSaveAsWebp(ci.Data, ci.Type, "/"+ci.Destination)
 	if err != nil {
 		return err
 	}
@@ -25,7 +25,7 @@ func (u *cocktailFileRepository) SaveAsWebp(ctx context.Context, ci *domain.Cock
 
 func (u *cocktailFileRepository) SaveAsWebpInLQIP(ctx context.Context, ci *domain.CocktailImage) error {
 
-	err := util.DecodeBase64AndSaveAsWebpInLQIP(ci.Data, "/"+ci.Destination)
+	err := util.DecodeBase64AndSaveAsWebpInLQIP(ci.Data, ci.Type, "/"+ci.Destination)
 	if err != nil {
 		return err
 	}
@@ -35,7 +35,7 @@ func (u *cocktailFileRepository) SaveAsWebpInLQIP(ctx context.Context, ci *domai
 
 func (u *cocktailFileRepository) UpdateAsWebp(ctx context.Context, ci *domain.CocktailImage) error {
 
-	err := util.DecodeBase64AndUpdateAsWebp(ci.Data, "/"+ci.Destination)
+	err := util.DecodeBase64AndUpdateAsWebp(ci.Data, ci.Type, "/"+ci.Destination)
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func (u *cocktailFileRepository) UpdateAsWebp(ctx context.Context, ci *domain.Co
 
 func (u *cocktailFileRepository) UpdateAsWebpInLQIP(ctx context.Context, ci *domain.CocktailImage) error {
 
-	err := util.DecodeBase64AndUpdateAsWebpInLQIP(ci.Data, "/"+ci.Destination)
+	err := util.DecodeBase64AndUpdateAsWebpInLQIP(ci.Data, ci.Type, "/"+ci.Destination)
 	if err != nil {
 		return err
 	}

@@ -78,7 +78,7 @@ func (u *userUsecase) UpdateUserAvatar(ctx context.Context, d *domain.User, ui *
 			d.Width = width
 			d.Height = height
 
-			ui.OriginAvatar.Destination = urlPath + newFileName + "_origin.webp"
+			ui.OriginAvatar.Destination = urlPath + newFileName + "_origin." + util.GetImageType(ui.OriginAvatar.Type)
 			_, err = u.userMySQLRepo.UpdateUserOriginAvatarTx(ctx, tx, ui)
 			if err != nil {
 				return err
@@ -95,7 +95,7 @@ func (u *userUsecase) UpdateUserAvatar(ctx context.Context, d *domain.User, ui *
 			return err
 		}
 
-		ui.CropAvatar.Destination = urlPath + newFileName + "_crop.webp"
+		ui.CropAvatar.Destination = urlPath + newFileName + "_crop." + util.GetImageType(ui.CropAvatar.Type)
 		_, err = u.userMySQLRepo.UpdateUserCropAvatarTx(ctx, tx, ui)
 		if err != nil {
 			return err

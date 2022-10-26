@@ -599,7 +599,7 @@ func (c *cocktailUsecase) Store(ctx context.Context, co *domain.Cocktail, ingred
 				return err
 			}
 
-			image.Destination = urlPath + newFileName + ".webp"
+			image.Destination = urlPath + newFileName + "." + util.GetImageType(image.Type)
 			err = c.cocktailPhotoMySQLRepo.StoreTx(ctx, tx,
 				&domain.CocktailPhoto{
 					CocktailID:         newCocktailID,
@@ -618,7 +618,7 @@ func (c *cocktailUsecase) Store(ctx context.Context, co *domain.Cocktail, ingred
 				return err
 			}
 
-			image.Destination = urlPath + newFileName + "_lq.webp"
+			image.Destination = urlPath + newFileName + "_lq." + util.GetImageType(image.Type)
 			err = c.cocktailPhotoMySQLRepo.StoreTx(ctx, tx,
 				&domain.CocktailPhoto{
 					CocktailID:         newCocktailID,

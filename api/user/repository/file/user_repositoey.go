@@ -15,7 +15,7 @@ func NewFileUserRepository() domain.UserFileRepository {
 
 func (u *userFileRepository) SaveOriginAvatarAsWebp(ctx context.Context, o *domain.OriginAvatar) (int, int, error) {
 
-	width, height, err := util.DecodeBase64AndSaveAsWebp(o.DataURL, "/"+o.Destination)
+	width, height, err := util.DecodeBase64AndSaveAsWebp(o.DataURL, o.Type, "/"+o.Destination)
 	if err != nil {
 		return 0, 0, err
 	}
@@ -25,7 +25,7 @@ func (u *userFileRepository) SaveOriginAvatarAsWebp(ctx context.Context, o *doma
 
 func (u *userFileRepository) SaveCropAvatarAsWebp(ctx context.Context, c *domain.CropAvatar) error {
 
-	_, _, err := util.DecodeBase64AndSaveAsWebp(c.DataURL, "/"+c.Destination)
+	_, _, err := util.DecodeBase64AndSaveAsWebp(c.DataURL, c.Type, "/"+c.Destination)
 	if err != nil {
 		return err
 	}

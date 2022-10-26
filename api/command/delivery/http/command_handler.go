@@ -45,7 +45,9 @@ func NewCommandHandler(s *service.Service,
 //   example: 1
 //
 // responses:
-//  "200": success
+//   "200":
+//     description: success
+
 func (ch *CommandHandler) UndoCommand(c *gin.Context) {
 	commandID := c.Param("commandID")
 

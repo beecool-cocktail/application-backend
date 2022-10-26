@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"github.com/beecool-cocktail/application-backend/domain"
 	"github.com/disintegration/imaging"
-	"github.com/kolesa-team/go-webp/encoder"
-	"github.com/kolesa-team/go-webp/webp"
 	"image"
+	"image/jpeg"
 	_ "image/jpeg"
+	"image/png"
 	_ "image/png"
 	"os"
 	"strings"
@@ -31,12 +31,16 @@ func ValidateImageType(fileType string) bool {
 	}
 }
 
-func DecodeBase64AndSaveAsWebp(base64EncodedData string, dst string) (int, int, error) {
-	dst = dst + ".webp"
-	options, err := encoder.NewLossyEncoderOptions(encoder.PresetDefault, 100)
-	if err != nil {
-		return 0, 0, err
-	}
+func GetImageType(fileType string) string {
+	return strings.Split(fileType, "/")[1]
+}
+
+func DecodeBase64AndSaveAsWebp(base64EncodedData string, imageType string, dst string) (int, int, error) {
+	//dst = dst + ".webp"
+	//options, err := encoder.NewLossyEncoderOptions(encoder.PresetDefault, 100)
+	//if err != nil {
+	//	return 0, 0, err
+	//}
 
 	img, _, err := image.Decode(bytes.NewReader([]byte(base64EncodedData)))
 	if err != nil {
@@ -46,47 +50,108 @@ func DecodeBase64AndSaveAsWebp(base64EncodedData string, dst string) (int, int, 
 	width := img.Bounds().Max.X
 	height := img.Bounds().Max.Y
 
-	out, err := os.Create(dst)
-	if err != nil {
-		return 0, 0, err
+	switch imageType {
+	case "image/png":
+		dst = dst + ".png"
+		f, _ := os.Create(dst)
+		defer f.Close()
+		err := png.Encode(f, img)
+		if err != nil {
+			return 0, 0, err
+		}
+
+	case "image/jpg":
+		dst = dst + ".jpg"
+		f, _ := os.Create(dst)
+		defer f.Close()
+		err := jpeg.Encode(f, img, &jpeg.Options{
+			Quality: 100,
+		})
+		if err != nil {
+			return 0, 0, err
+		}
+
+	case "image/jpeg":
+		dst = dst + ".jpeg"
+		f, _ := os.Create(dst)
+		defer f.Close()
+		err := png.Encode(f, img)
+		if err != nil {
+			return 0, 0, err
+		}
+
+	default:
+		return 0, 0, nil
 	}
 
-	if err := webp.Encode(out, img, options); err != nil {
-		return 0, 0, err
-	}
+	//out, err := os.Create(dst)
+	//if err != nil {
+	//	return 0, 0, err
+	//}
+
+	//if err := webp.Encode(out, img, options); err != nil {
+	//	return 0, 0, err
+	//}
 
 	return width, height, nil
 }
 
-func DecodeBase64AndUpdateAsWebp(base64EncodedData string, dst string) error {
-	options, err := encoder.NewLossyEncoderOptions(encoder.PresetDefault, 100)
-	if err != nil {
-		return err
-	}
+func DecodeBase64AndUpdateAsWebp(base64EncodedData string, imageType string, dst string) error {
+	//options, err := encoder.NewLossyEncoderOptions(encoder.PresetDefault, 100)
+	//if err != nil {
+	//	return err
+	//}
 
 	img, _, err := image.Decode(bytes.NewReader([]byte(base64EncodedData)))
 	if err != nil {
 		return err
 	}
 
-	out, err := os.OpenFile(dst, os.O_RDWR|os.O_TRUNC, 0666)
+	f, err := os.OpenFile(dst, os.O_RDWR|os.O_TRUNC, 0666)
 	if err != nil {
 		return err
 	}
 
-	if err := webp.Encode(out, img, options); err != nil {
-		return err
+	defer f.Close()
+
+	switch imageType {
+	case "image/png":
+		err := png.Encode(f, img)
+		if err != nil {
+			return err
+		}
+
+	case "image/jpg":
+		err := jpeg.Encode(f, img, &jpeg.Options{
+			Quality: 100,
+		})
+		if err != nil {
+			return err
+		}
+
+	case "image/jpeg":
+		err := png.Encode(f, img)
+		if err != nil {
+			return err
+		}
+
+	default:
+		return nil
 	}
+
+	//if err := webp.Encode(out, img, options); err != nil {
+	//	return err
+	//}
 
 	return nil
 }
 
-func DecodeBase64AndSaveAsWebpInLQIP(base64EncodedData string, dst string) error {
-	dst = dst + "_lq.webp"
-	options, err := encoder.NewLossyEncoderOptions(encoder.PresetDefault, 75)
-	if err != nil {
-		return err
-	}
+func DecodeBase64AndSaveAsWebpInLQIP(base64EncodedData string, imageType string, dst string) error {
+	//dst = dst + "_lq.webp"
+	//options, err := encoder.NewLossyEncoderOptions(encoder.PresetDefault, 75)
+	//if err != nil {
+	//	return err
+	//}
 
 	img, _, err := image.Decode(bytes.NewReader([]byte(base64EncodedData)))
 	if err != nil {
@@ -96,23 +161,58 @@ func DecodeBase64AndSaveAsWebpInLQIP(base64EncodedData string, dst string) error
 	src := imaging.Resize(img, 200, 0, imaging.NearestNeighbor)
 
 	blurImage := imaging.Blur(src, 5)
-	out, err := os.Create(dst)
-	if err != nil {
-		return err
+
+	switch imageType {
+	case "image/png":
+		dst = dst + "_lq.png"
+		f, _ := os.Create(dst)
+		defer f.Close()
+		err := png.Encode(f, blurImage)
+		if err != nil {
+			return err
+		}
+
+	case "image/jpg":
+		dst = dst + "_lq.jpg"
+		f, _ := os.Create(dst)
+		defer f.Close()
+		err := jpeg.Encode(f, blurImage, &jpeg.Options{
+			Quality: 100,
+		})
+		if err != nil {
+			return err
+		}
+
+	case "image/jpeg":
+		dst = dst + "_lq.jpeg"
+		f, _ := os.Create(dst)
+		defer f.Close()
+		err := png.Encode(f, blurImage)
+		if err != nil {
+			return err
+		}
+
+	default:
+		return nil
 	}
 
-	if err := webp.Encode(out, blurImage, options); err != nil {
-		return err
-	}
+	//out, err := os.Create(dst)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//if err := webp.Encode(out, blurImage, options); err != nil {
+	//	return err
+	//}
 
 	return nil
 }
 
-func DecodeBase64AndUpdateAsWebpInLQIP(base64EncodedData string, dst string) error {
-	options, err := encoder.NewLossyEncoderOptions(encoder.PresetDefault, 75)
-	if err != nil {
-		return err
-	}
+func DecodeBase64AndUpdateAsWebpInLQIP(base64EncodedData string, imageType string, dst string) error {
+	//options, err := encoder.NewLossyEncoderOptions(encoder.PresetDefault, 75)
+	//if err != nil {
+	//	return err
+	//}
 
 	img, _, err := image.Decode(bytes.NewReader([]byte(base64EncodedData)))
 	if err != nil {
@@ -123,14 +223,39 @@ func DecodeBase64AndUpdateAsWebpInLQIP(base64EncodedData string, dst string) err
 
 	blurImage := imaging.Blur(src, 5)
 
-	out, err := os.OpenFile(dst, os.O_RDWR|os.O_TRUNC, 0666)
+	f, err := os.OpenFile(dst, os.O_RDWR|os.O_TRUNC, 0666)
 	if err != nil {
 		return err
 	}
 
-	if err := webp.Encode(out, blurImage, options); err != nil {
-		return err
+	switch imageType {
+	case "image/png":
+		err := png.Encode(f, blurImage)
+		if err != nil {
+			return err
+		}
+
+	case "image/jpg":
+		err := jpeg.Encode(f, blurImage, &jpeg.Options{
+			Quality: 100,
+		})
+		if err != nil {
+			return err
+		}
+
+	case "image/jpeg":
+		err := png.Encode(f, blurImage)
+		if err != nil {
+			return err
+		}
+
+	default:
+		return nil
 	}
+
+	//if err := webp.Encode(out, blurImage, options); err != nil {
+	//	return err
+	//}
 
 	return nil
 }

@@ -62,6 +62,7 @@ func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase, socialAc
 //
 // responses:
 //  307: description: redirect
+
 func (u *UserHandler) SocialLogin(c *gin.Context) {
 	g := u.Configure.Others.GoogleOAuth2
 	googleOAuth2Config := &oauth2.Config{
@@ -84,6 +85,7 @@ func (u *UserHandler) SocialLogin(c *gin.Context) {
 // responses:
 //  "201":
 //    "$ref": "#/responses/googleAuthenticateResponse"
+
 func (u *UserHandler) GoogleAuthenticate(c *gin.Context) {
 	api := "/google-authenticate"
 	var request viewmodels.GoogleAuthenticateRequest
@@ -120,7 +122,9 @@ func (u *UserHandler) GoogleAuthenticate(c *gin.Context) {
 // summary: User logout.
 // description: make token invalid.
 // responses:
-//  "200": success
+//   "200":
+//     description: success
+
 func (u *UserHandler) Logout(c *gin.Context) {
 	api := "/user/logout"
 	var request viewmodels.LogoutRequest
@@ -152,6 +156,7 @@ func (u *UserHandler) Logout(c *gin.Context) {
 // responses:
 //  "200":
 //    "$ref": "#/responses/getUserInfoResponse"
+
 func (u *UserHandler) GetUserInfo(c *gin.Context) {
 	api := "/user/info"
 	var response viewmodels.GetUserInfoResponse
@@ -225,6 +230,7 @@ func (u *UserHandler) GetUserInfo(c *gin.Context) {
 // responses:
 //  "200":
 //    "$ref": "#/responses/getOtherUserInfoResponse"
+
 func (u *UserHandler) GetOtherUserInfo(c *gin.Context) {
 	api := "/user/info"
 	var response viewmodels.GetOtherUserInfoResponse
@@ -276,7 +282,7 @@ func (u *UserHandler) GetOtherUserInfo(c *gin.Context) {
 				Y: user.CoordinateY2,
 			},
 		},
-		Rotation: user.Rotation,
+		Rotation:           user.Rotation,
 		NumberOfPost:       numberOfPost,
 		NumberOfCollection: numberOfCollection,
 		IsCollectionPublic: user.IsCollectionPublic,
@@ -296,6 +302,7 @@ func (u *UserHandler) GetOtherUserInfo(c *gin.Context) {
 // responses:
 //  "200":
 //    "$ref": "#/responses/updateUserPhotoResponse"
+
 func (u *UserHandler) UpdateUserInfo(c *gin.Context) {
 	api := "/user/edit-info"
 
@@ -346,7 +353,9 @@ func (u *UserHandler) UpdateUserInfo(c *gin.Context) {
 // - Bearer: [apiKey]
 //
 // responses:
-//  "200": success
+//   "200":
+//     description: success
+
 func (u *UserHandler) UpdateUserAvatar(c *gin.Context) {
 	api := "/user/edit-avatar"
 
@@ -423,7 +432,9 @@ func (u *UserHandler) UpdateUserAvatar(c *gin.Context) {
 // - Bearer: [apiKey]
 //
 // responses:
-//  "200": success
+//   "200":
+//     description: success
+
 func (u *UserHandler) DeleteUserAvatar(c *gin.Context) {
 	userId := c.GetInt64("user_id")
 	api := "/user/delete-avatar"
@@ -447,7 +458,9 @@ func (u *UserHandler) DeleteUserAvatar(c *gin.Context) {
 // - Bearer: [apiKey]
 //
 // responses:
-//  "201": success
+//   "201":
+//     description: success
+
 func (u *UserHandler) CollectArticle(c *gin.Context) {
 	userId := c.GetInt64("user_id")
 	api := "POST /users/favorite-cocktails"
@@ -491,6 +504,7 @@ func (u *UserHandler) CollectArticle(c *gin.Context) {
 // responses:
 //  "200":
 //    "$ref": "#/responses/deleteFavoriteCocktailResponse"
+
 func (u *UserHandler) RemoveCollectionArticle(c *gin.Context) {
 	userId := c.GetInt64("user_id")
 	cocktailID := c.Param("cocktailID")
@@ -528,6 +542,7 @@ func (u *UserHandler) RemoveCollectionArticle(c *gin.Context) {
 // responses:
 //  "200":
 //    "$ref": "#/responses/getUserFavoriteCocktailListResponse"
+
 func (u *UserHandler) GetUserFavoriteList(c *gin.Context) {
 	api := "/users/current/favorite-cocktails"
 	var response viewmodels.GetUserFavoriteCocktailListResponse
@@ -580,6 +595,7 @@ func (u *UserHandler) GetUserFavoriteList(c *gin.Context) {
 // responses:
 //  "200":
 //    "$ref": "#/responses/getUserFavoriteCocktailListResponse"
+
 func (u *UserHandler) GetOtherUserFavoriteList(c *gin.Context) {
 	api := "/users/{id}/favorite-cocktails"
 	userID := c.Param("userID")
@@ -652,6 +668,7 @@ func (u *UserHandler) GetOtherUserFavoriteList(c *gin.Context) {
 // responses:
 //  "200":
 //    "$ref": "#/responses/getSelfCocktailListResponse"
+
 func (u *UserHandler) SelfCocktailList(c *gin.Context) {
 	api := "/self-cocktails"
 	userId := c.GetInt64("user_id")
@@ -712,6 +729,7 @@ func (u *UserHandler) SelfCocktailList(c *gin.Context) {
 // responses:
 //  "200":
 //    "$ref": "#/responses/getOtherCocktailListResponse"
+
 func (u *UserHandler) OtherCocktailList(c *gin.Context) {
 	api := "/self-cocktails"
 	targetUserID := c.Param("userID")

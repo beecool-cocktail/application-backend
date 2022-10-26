@@ -981,7 +981,9 @@ paths:
                   name: Body
                   schema:
                     $ref: '#/definitions/LogoutRequest'
-            responses: {}
+            responses:
+                "200":
+                    description: success
             summary: User logout.
             tags:
                 - login
@@ -989,6 +991,9 @@ paths:
         get:
             description: Get draft cocktail list order by create date.
             operationId: getCocktailDraft
+            responses:
+                "200":
+                    $ref: '#/responses/getDraftCocktailListResponse'
             security:
                 - Bearer:
                     - apiKey
@@ -1003,6 +1008,9 @@ paths:
                   name: Body
                   schema:
                     $ref: '#/definitions/DeleteDraftArticleRequest'
+            responses:
+                "200":
+                    description: success
             security:
                 - Bearer:
                     - apiKey
@@ -1017,6 +1025,9 @@ paths:
                   name: Body
                   schema:
                     $ref: '#/definitions/PostDraftArticleRequest'
+            responses:
+                "201":
+                    description: success
             security:
                 - Bearer:
                     - apiKey
@@ -1050,6 +1061,9 @@ paths:
                   name: id
                   required: true
                   type: integer
+            responses:
+                "201":
+                    description: success
             security:
                 - Bearer:
                     - apiKey
@@ -1065,9 +1079,13 @@ paths:
                   name: id
                   required: true
                   type: integer
-                - $ref: '#/definitions/updateDraftArticleRequest'
-                  in: body
+                - in: body
                   name: Body
+                  schema:
+                    $ref: '#/definitions/updateDraftArticleRequest'
+            responses:
+                "201":
+                    description: success
             security:
                 - Bearer:
                     - apiKey
@@ -1093,6 +1111,9 @@ paths:
                   in: query
                   name: keyword
                   type: string
+            responses:
+                "200":
+                    $ref: '#/responses/popularCocktailListResponse'
             summary: Get popular cocktail list
             tags:
                 - cocktail
@@ -1104,6 +1125,9 @@ paths:
                   name: Body
                   schema:
                     $ref: '#/definitions/DeleteFormalArticleRequest'
+            responses:
+                "201":
+                    description: success
             security:
                 - Bearer:
                     - apiKey
@@ -1118,6 +1142,9 @@ paths:
                   name: Body
                   schema:
                     $ref: '#/definitions/PostArticleRequest'
+            responses:
+                "201":
+                    description: success
             security:
                 - Bearer:
                     - apiKey
@@ -1148,9 +1175,10 @@ paths:
                   name: id
                   required: true
                   type: integer
-                - $ref: '#/definitions/updateFormalArticleRequest'
-                  in: body
+                - in: body
                   name: Body
+                  schema:
+                    $ref: '#/definitions/updateFormalArticleRequest'
             security:
                 - Bearer:
                     - apiKey
@@ -1248,7 +1276,9 @@ paths:
         delete:
             description: Delete user avatar.
             operationId: deleteUserAvatar
-            responses: {}
+            responses:
+                "200":
+                    description: success
             security:
                 - Bearer:
                     - apiKey
@@ -1263,7 +1293,9 @@ paths:
                   name: Body
                   schema:
                     $ref: '#/definitions/UpdateUserAvatarRequest'
-            responses: {}
+            responses:
+                "200":
+                    description: success
             security:
                 - Bearer:
                     - apiKey
@@ -1304,7 +1336,9 @@ paths:
                   name: Body
                   schema:
                     $ref: '#/definitions/CollectArticleRequest'
-            responses: {}
+            responses:
+                "201":
+                    description: success
             security:
                 - Bearer:
                     - apiKey
