@@ -47,16 +47,15 @@ func NewCocktailHandler(s *service.Service, cocktailUsecase domain.CocktailUseca
 // description: Get cocktail photo, steps and ingredient.
 //
 // parameters:
-//   - name: id
-//     in: path
-//     required: true
-//     type: integer
-//     example: 123456
+// - name: id
+//   in: path
+//   required: true
+//   type: integer
+//   example: 123456
 //
 // responses:
-//
-//	"200":
-//	  "$ref": "#/responses/getCocktailByIDResponse"
+//  "200":
+//    "$ref": "#/responses/getCocktailByIDResponse"
 
 func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 	var response viewmodels.GetCocktailByIDResponse
@@ -149,16 +148,15 @@ func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 // - Bearer: [apiKey]
 //
 // parameters:
-//   - name: id
-//     in: path
-//     required: true
-//     type: integer
-//     example: 123456
+// - name: id
+//   in: path
+//   required: true
+//   type: integer
+//   example: 123456
 //
 // responses:
-//
-//	"200":
-//	  "$ref": "#/responses/getCocktailDraftByIDResponse"
+//  "200":
+//    "$ref": "#/responses/getCocktailDraftByIDResponse"
 
 func (co *CocktailHandler) GetCocktailDraftByCocktailID(c *gin.Context) {
 	var response viewmodels.GetCocktailDraftByIDResponse
@@ -225,23 +223,23 @@ func (co *CocktailHandler) GetCocktailDraftByCocktailID(c *gin.Context) {
 // description: Get popular cocktail list order by create date.
 //
 // parameters:
-//   - name: page
-//     in: query
-//     required: true
-//     type: integer
-//     example: 1
+// - name: page
+//   in: query
+//   required: true
+//   type: integer
+//   example: 1
 //
-//   - name: page_size
-//     in: query
-//     required: true
-//     type: integer
-//     example: 10
+// - name: page_size
+//   in: query
+//   required: true
+//   type: integer
+//   example: 10
 //
-//   - name: keyword
-//     in: query
-//     required: false
-//     type: string
-//     example: search
+// - name: keyword
+//   in: query
+//   required: false
+//   type: string
+//   example: search
 //
 // responses:
 //  "200":
@@ -556,11 +554,11 @@ func (co *CocktailHandler) PostDraftArticle(c *gin.Context) {
 // - Bearer: [apiKey]
 //
 // parameters:
-//   - name: id
-//     in: path
-//     required: true
-//     type: integer
-//     example: 123456
+// - name: id
+//   in: path
+//   required: true
+//   type: integer
+//   example: 123456
 //
 // responses:
 //   "201":
@@ -597,15 +595,15 @@ func (co *CocktailHandler) MakeDraftArticleToFormalArticle(c *gin.Context) {
 // - Bearer: [apiKey]
 //
 // parameters:
-//   - name: id
-//     in: path
-//     required: true
-//     type: integer
-//     example: 123456
-//   - name: Body
-//     in: body
-//     schema:
-//       "$ref": "#/definitions/updateDraftArticleRequest"
+// - name: id
+//   in: path
+//   required: true
+//   type: integer
+//   example: 123456
+// - name: Body
+//   in: body
+//   schema:
+//     "$ref": "#/definitions/updateDraftArticleRequest"
 //
 // responses:
 //   "201":
@@ -710,15 +708,15 @@ func (co *CocktailHandler) UpdateDraftArticle(c *gin.Context) {
 // - Bearer: [apiKey]
 //
 // parameters:
-//   - name: id
-//     in: path
-//     required: true
-//     type: integer
-//     example: 123456
-//   - name: Body
-//     in: body
-//     schema:
-//       "$ref": "#/definitions/updateFormalArticleRequest"
+// - name: id
+//   in: path
+//   required: true
+//   type: integer
+//   example: 123456
+// - name: Body
+//   in: body
+//   schema:
+//     "$ref": "#/definitions/updateFormalArticleRequest"
 //
 // responses:
 //

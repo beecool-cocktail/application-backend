@@ -1046,6 +1046,9 @@ paths:
                   schema:
                     $ref: '#/definitions/GetCocktailDraftByIDRequest'
                   type: integer
+            responses:
+                "200":
+                    $ref: '#/responses/getCocktailDraftByIDResponse'
             security:
                 - Bearer:
                     - apiKey
@@ -1163,6 +1166,9 @@ paths:
                   schema:
                     $ref: '#/definitions/GetCocktailByIDRequest'
                   type: integer
+            responses:
+                "200":
+                    $ref: '#/responses/getCocktailByIDResponse'
             summary: Get cocktail detail information
             tags:
                 - cocktail
@@ -1195,7 +1201,9 @@ paths:
                   name: id
                   required: true
                   type: string
-            responses: {}
+            responses:
+                "200":
+                    description: success
             security:
                 - Bearer:
                     - apiKey
