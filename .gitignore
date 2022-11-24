@@ -22,3 +22,7 @@ main
 /redis_data
 /elstic_data
 serviceConfigLocal.json
+
+/static/images/*
+!/static/images/my_image01.webp
+!/static/images/my_image01_lq.webp
