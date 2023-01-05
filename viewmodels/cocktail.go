@@ -8,6 +8,8 @@ type GetPopularCocktailListRequest struct {
 	//required: true
 	//example: 10
 	PageSize int `json:"page_size"`
+
+	Keyword string `json:"keyword"`
 }
 
 type GetPopularCocktailListResponse struct {
@@ -97,6 +99,13 @@ type PostDraftArticleRequest struct {
 	Description string `json:"description"`
 }
 
+type MakeDraftArticleToFormalArticle struct {
+	// ID of a cocktail item
+	//
+	// In: path
+	ID int64 `uri:"id" binding:"required"`
+}
+
 type CocktailIngredientWithoutIDInRequest struct {
 	//example: Gin Tonic
 	//required: true
@@ -179,10 +188,10 @@ type CocktailPhotoWithIDInResponse struct {
 }
 
 type GetCocktailByIDRequest struct {
-	// ID of an cocktail item
+	// ID of a cocktail item
 	//
 	// In: path
-	ID int64 `json:"id"`
+	ID int64 `uri:"id" binding:"required"`
 }
 
 type GetCocktailByIDResponse struct {
@@ -223,10 +232,10 @@ type GetCocktailByIDResponse struct {
 }
 
 type GetCocktailDraftByIDRequest struct {
-	// ID of an cocktail item
+	// ID of a cocktail item
 	//
 	// In: path
-	ID int64 `json:"id"`
+	ID int64 `uri:"id" binding:"required"`
 }
 
 type GetCocktailDraftByIDResponse struct {
@@ -244,6 +253,13 @@ type GetCocktailDraftByIDResponse struct {
 	StepList []CocktailStepWithoutIDInResponse `json:"step_list"`
 	//required: true
 	CreatedDate string `json:"created_date"`
+}
+
+type UpdateDraftArticleUriRequest struct {
+	// ID of a cocktail item
+	//
+	// In: path
+	ID int64 `uri:"id" binding:"required"`
 }
 
 type UpdateDraftArticleRequest struct {
@@ -268,6 +284,10 @@ type DeleteDraftArticleRequest struct {
 
 type DeleteFormalArticleRequest struct {
 	DeletedIds []int64 `json:"deleted_ids"`
+}
+
+type UpdateFormalArticleUriRequest struct {
+	ID int64 `uri:"id" binding:"required"`
 }
 
 type UpdateFormalArticleRequest struct {
@@ -302,6 +322,10 @@ type SelfCocktailList struct {
 	Photo string `json:"photo"`
 	//required: true
 	Title string `json:"title"`
+}
+
+type GetOtherCocktailListRequest struct {
+	ID int64 `uri:"id" binding:"required"`
 }
 
 type GetOtherCocktailListResponse struct {

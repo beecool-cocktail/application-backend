@@ -8,9 +8,9 @@ import (
 	"github.com/beecool-cocktail/application-backend/util"
 	"github.com/beecool-cocktail/application-backend/viewmodels"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"github.com/vincent-petithory/dataurl"
 	"net/http"
-	"strconv"
 )
 
 type CocktailHandler struct {
@@ -28,15 +28,15 @@ func NewCocktailHandler(s *service.Service, cocktailUsecase domain.CocktailUseca
 		CocktailUsecase: cocktailUsecase,
 	}
 
-	s.HTTP.GET("/api/cocktails/:cocktailID", middlewareHandler.JWTAuthMiddlewareIfExist(), handler.GetCocktailByCocktailID)
-	s.HTTP.GET("/api/cocktail-drafts/:cocktailID", middlewareHandler.JWTAuthMiddleware(), handler.GetCocktailDraftByCocktailID)
+	s.HTTP.GET("/api/cocktails/:id", middlewareHandler.JWTAuthMiddlewareIfExist(), handler.GetCocktailByCocktailID)
+	s.HTTP.GET("/api/cocktail-drafts/:id", middlewareHandler.JWTAuthMiddleware(), handler.GetCocktailDraftByCocktailID)
 	s.HTTP.GET("/api/cocktails", middlewareHandler.JWTAuthMiddlewareIfExist(), handler.CocktailList)
 	s.HTTP.GET("/api/cocktail-drafts", middlewareHandler.JWTAuthMiddleware(), handler.CocktailDraftList)
 	s.HTTP.POST("/api/cocktails", middlewareHandler.JWTAuthMiddleware(), handler.PostArticle)
 	s.HTTP.POST("/api/cocktail-drafts", middlewareHandler.JWTAuthMiddleware(), handler.PostDraftArticle)
-	s.HTTP.POST("/api/cocktail-drafts/:cocktailID", middlewareHandler.JWTAuthMiddleware(), handler.MakeDraftArticleToFormalArticle)
+	s.HTTP.POST("/api/cocktail-drafts/:id", middlewareHandler.JWTAuthMiddleware(), handler.MakeDraftArticleToFormalArticle)
 	s.HTTP.PUT("/api/cocktails/:cocktailID", middlewareHandler.JWTAuthMiddleware(), handler.UpdateFormalArticle)
-	s.HTTP.PUT("/api/cocktail-drafts/:cocktailID", middlewareHandler.JWTAuthMiddleware(), handler.UpdateDraftArticle)
+	s.HTTP.PUT("/api/cocktail-drafts/:id", middlewareHandler.JWTAuthMiddleware(), handler.UpdateDraftArticle)
 	s.HTTP.PATCH("/api/cocktail-drafts", middlewareHandler.JWTAuthMiddleware(), handler.DeleteDraftArticle)
 	s.HTTP.PATCH("/api/cocktails", middlewareHandler.JWTAuthMiddleware(), handler.DeleteFormalArticle)
 }
@@ -58,20 +58,21 @@ func NewCocktailHandler(s *service.Service, cocktailUsecase domain.CocktailUseca
 //    "$ref": "#/responses/getCocktailByIDResponse"
 
 func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
+	var request viewmodels.GetCocktailByIDRequest
 	var response viewmodels.GetCocktailByIDResponse
 	userId := c.GetInt64("user_id")
-	cocktailID := c.Param("cocktailID")
-	api := "/cocktails" + cocktailID
-	cocktailIDNumber, err := strconv.ParseInt(cocktailID, 10, 64)
+	loggerFields := co.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, nil,
+		c.Request.RequestURI)
+
+	err := c.ShouldBindUri(&request)
 	if err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("parameter illegal - %s", err)
+		co.Service.Logger.LogFile(c, logrus.InfoLevel, loggerFields, "parameter illegal - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
-		return
 	}
 
-	cocktail, err := co.CocktailUsecase.QueryByCocktailID(c, cocktailIDNumber, userId)
+	cocktail, err := co.CocktailUsecase.QueryByCocktailID(c, request.ID, userId)
 	if err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("query by cocktail id failed - %s", err)
+		co.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields, "query by cocktail id failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
@@ -104,7 +105,8 @@ func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 
 	cocktailUser, err := co.UserUsecase.QueryById(c, cocktail.UserID)
 	if err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("query user by user id failed - %s", err)
+		co.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+			"query user by user id failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
@@ -159,21 +161,20 @@ func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 //    "$ref": "#/responses/getCocktailDraftByIDResponse"
 
 func (co *CocktailHandler) GetCocktailDraftByCocktailID(c *gin.Context) {
+	var request viewmodels.GetCocktailDraftByIDRequest
 	var response viewmodels.GetCocktailDraftByIDResponse
-	cocktailID := c.Param("cocktailID")
 	userId := c.GetInt64("user_id")
+	loggerFields := co.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, nil,
+		c.Request.RequestURI)
 
-	api := "/cocktail-drafts" + cocktailID
-	cocktailIDNumber, err := strconv.ParseInt(cocktailID, 10, 64)
+	err := c.ShouldBindUri(&request)
 	if err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("parameter illegal - %s", err)
+		co.Service.Logger.LogFile(c, logrus.InfoLevel, loggerFields, "parameter illegal - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
-		return
 	}
-
-	cocktail, err := co.CocktailUsecase.QueryDraftByCocktailID(c, cocktailIDNumber, userId)
+	cocktail, err := co.CocktailUsecase.QueryDraftByCocktailID(c, request.ID, userId)
 	if err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("query by cocktail id failed - %s", err)
+		co.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields, "query by cocktail id failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
@@ -246,32 +247,27 @@ func (co *CocktailHandler) GetCocktailDraftByCocktailID(c *gin.Context) {
 //	   "$ref": "#/responses/popularCocktailListResponse"
 
 func (co *CocktailHandler) CocktailList(c *gin.Context) {
-	api := "/cocktails"
 	userId := c.GetInt64("user_id")
 
+	var request viewmodels.GetPopularCocktailListRequest
 	var response viewmodels.GetPopularCocktailListResponse
-	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
-	if err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("parameter illegal - %s", err)
-		util.PackResponseWithError(c, err, err.Error())
-		return
-	}
-	pageSize, err := strconv.Atoi(c.DefaultQuery("page_size", "10"))
-	if err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("parameter illegal - %s", err)
-		util.PackResponseWithError(c, err, err.Error())
-		return
-	}
 
-	keyword := c.DefaultQuery("keyword", "")
+	err := c.ShouldBind(request)
+	if err != nil {
+		co.Service.Logger.LogFile(c, logrus.InfoLevel, co.Service.Logger.GetLoggerFields(userId, c.ClientIP(),
+			c.Request.Method, nil, c.Request.RequestURI), "parameter illegal - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+	}
+	loggerFields := co.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, request,
+		c.Request.RequestURI)
 
 	var cocktails []domain.APICocktail
 	var total int64
-	if keyword != "" && co.Service.Configure.Elastic.Enable {
-		cocktails, total, err = co.CocktailUsecase.Search(c, keyword, page, pageSize, userId)
+	if request.Keyword != "" && co.Service.Configure.Elastic.Enable {
+		cocktails, total, err = co.CocktailUsecase.Search(c, request.Keyword, request.Page, request.PageSize, userId)
 		if err != nil {
-			service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("get cocktails with keyword "+
-				"failed - %s", err)
+			co.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+				"get cocktails with keyword failed - %s", err)
 			util.PackResponseWithError(c, err, err.Error())
 			return
 		}
@@ -279,12 +275,13 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 		filter := make(map[string]interface{})
 		filter["category"] = cockarticletype.Formal
 		cocktails, total, err = co.CocktailUsecase.GetAllWithFilter(c, filter, domain.PaginationUsecase{
-			Page:     page,
-			PageSize: pageSize,
+			Page:     request.Page,
+			PageSize: request.PageSize,
 		},
 			userId)
 		if err != nil {
-			service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("get cocktails with filter failed - %s", err)
+			co.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+				"get cocktails with filter failed - %s", err)
 			util.PackResponseWithError(c, err, err.Error())
 			return
 		}
@@ -347,9 +344,10 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 //     "$ref": "#/responses/getDraftCocktailListResponse"
 
 func (co *CocktailHandler) CocktailDraftList(c *gin.Context) {
-	api := "/cocktails"
 	var response viewmodels.GetDraftCocktailListResponse
 	userId := c.GetInt64("user_id")
+	loggerFields := co.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, nil,
+		c.Request.RequestURI)
 
 	filter := make(map[string]interface{})
 	filter["user_id"] = userId
@@ -357,7 +355,8 @@ func (co *CocktailHandler) CocktailDraftList(c *gin.Context) {
 	// 草稿沒有收藏功能，userID為0
 	cocktails, total, err := co.CocktailUsecase.GetAllWithFilter(c, filter, domain.PaginationUsecase{}, 0)
 	if err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("get cocktails with filter failed - %s", err)
+		co.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+			"get cocktails with filter failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
@@ -394,15 +393,18 @@ func (co *CocktailHandler) CocktailDraftList(c *gin.Context) {
 //     description: success
 
 func (co *CocktailHandler) PostArticle(c *gin.Context) {
-	api := "cocktail"
 	userId := c.GetInt64("user_id")
 
 	var request viewmodels.PostArticleRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, request).Errorf("parameter illegal - %s", err)
+		co.Service.Logger.LogFile(c, logrus.InfoLevel, co.Service.Logger.GetLoggerFields(userId, c.ClientIP(),
+			c.Request.Method, nil, c.Request.RequestURI),
+			"parameter illegal - %s", err)
 		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
 		return
 	}
+	loggerFields := co.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, request,
+		c.Request.RequestURI)
 
 	var cocktail = domain.Cocktail{
 		UserID:      userId,
@@ -440,7 +442,8 @@ func (co *CocktailHandler) PostArticle(c *gin.Context) {
 
 		dataURL, err := dataurl.DecodeString(file)
 		if err != nil {
-			service.GetLoggerEntry(co.Service.Logger, api, request).Errorf("decode data url failed - %s", err)
+			co.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+				"decode data url failed - %s", err)
 			util.PackResponseWithError(c, err, err.Error())
 			return
 		}
@@ -455,7 +458,8 @@ func (co *CocktailHandler) PostArticle(c *gin.Context) {
 
 	err := co.CocktailUsecase.Store(c, &cocktail, ingredients, steps, images, userId)
 	if err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, request).Errorf("store article failed - %s", err)
+		co.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+			"store article failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
@@ -476,15 +480,17 @@ func (co *CocktailHandler) PostArticle(c *gin.Context) {
 //     description: success
 
 func (co *CocktailHandler) PostDraftArticle(c *gin.Context) {
-	api := "cocktail"
 	userId := c.GetInt64("user_id")
 
 	var request viewmodels.PostDraftArticleRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, request).Errorf("parameter illegal - %s", err)
+		co.Service.Logger.LogFile(c, logrus.InfoLevel, co.Service.Logger.GetLoggerFields(userId, c.ClientIP(),
+			c.Request.Method, nil, c.Request.RequestURI), "parameter illegal - %s", err)
 		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
 		return
 	}
+	loggerFields := co.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, request,
+		c.Request.RequestURI)
 
 	var cocktail = domain.Cocktail{
 		UserID:      userId,
@@ -522,7 +528,8 @@ func (co *CocktailHandler) PostDraftArticle(c *gin.Context) {
 
 		dataURL, err := dataurl.DecodeString(file)
 		if err != nil {
-			service.GetLoggerEntry(co.Service.Logger, api, request).Errorf("decode data url failed - %s", err)
+			co.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+				"decode data url failed - %s", err)
 			util.PackResponseWithError(c, err, err.Error())
 			return
 		}
@@ -537,7 +544,8 @@ func (co *CocktailHandler) PostDraftArticle(c *gin.Context) {
 
 	err := co.CocktailUsecase.Store(c, &cocktail, ingredients, steps, images, userId)
 	if err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, request).Errorf("store article failed - %s", err)
+		co.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+			"store article failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
@@ -566,19 +574,20 @@ func (co *CocktailHandler) PostDraftArticle(c *gin.Context) {
 
 func (co *CocktailHandler) MakeDraftArticleToFormalArticle(c *gin.Context) {
 	userId := c.GetInt64("user_id")
-	cocktailID := c.Param("cocktailID")
-	api := "POST /cocktail-drafts/" + cocktailID
-
-	cocktailIDNumber, err := strconv.ParseInt(cocktailID, 10, 64)
-	if err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("parameter illegal - %s", err)
-		util.PackResponseWithError(c, err, err.Error())
+	var request viewmodels.MakeDraftArticleToFormalArticle
+	if err := c.ShouldBindUri(&request); err != nil {
+		co.Service.Logger.LogFile(c, logrus.ErrorLevel, co.Service.Logger.GetLoggerFields(userId, c.ClientIP(),
+			c.Request.Method, nil, c.Request.RequestURI), "parameter illegal - %s", err)
+		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
 		return
 	}
+	loggerFields := co.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, request,
+		c.Request.RequestURI)
 
-	err = co.CocktailUsecase.MakeDraftToFormal(c, cocktailIDNumber, userId)
+	err := co.CocktailUsecase.MakeDraftToFormal(c, request.ID, userId)
 	if err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("make draft to formal failed - %s", err)
+		co.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+			"make draft to formal failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
@@ -611,33 +620,36 @@ func (co *CocktailHandler) MakeDraftArticleToFormalArticle(c *gin.Context) {
 
 func (co *CocktailHandler) UpdateDraftArticle(c *gin.Context) {
 	userId := c.GetInt64("user_id")
-	cocktailID := c.Param("cocktailID")
-	api := "PUT /cocktail-drafts/" + cocktailID
 
-	cocktailIDNumber, err := strconv.ParseInt(cocktailID, 10, 64)
-	if err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("parameter illegal - %s", err)
-		util.PackResponseWithError(c, err, err.Error())
-		return
-	}
-
-	var request viewmodels.UpdateDraftArticleRequest
-	if err := c.ShouldBindJSON(&request); err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, request).Errorf("parameter illegal - %s", err)
+	var requestUri viewmodels.UpdateDraftArticleUriRequest
+	if err := c.ShouldBindUri(&requestUri); err != nil {
+		co.Service.Logger.LogFile(c, logrus.InfoLevel, co.Service.Logger.GetLoggerFields(userId, c.ClientIP(),
+			c.Request.Method, nil, c.Request.RequestURI), "parameter illegal - %s", err)
 		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
 		return
 	}
 
+	var requestBody viewmodels.UpdateDraftArticleRequest
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		co.Service.Logger.LogFile(c, logrus.InfoLevel, co.Service.Logger.GetLoggerFields(userId, c.ClientIP(),
+			c.Request.Method, nil, c.Request.RequestURI), "parameter illegal - %s", err)
+		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
+		return
+	}
+
+	loggerFields := co.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, requestBody,
+		c.Request.RequestURI)
+
 	var cocktail = domain.Cocktail{
-		CocktailID:  cocktailIDNumber,
-		Title:       request.Name,
-		Description: request.Description,
+		CocktailID:  requestUri.ID,
+		Title:       requestBody.Name,
+		Description: requestBody.Description,
 	}
 
 	var ingredients []domain.CocktailIngredient
-	for _, ingredient := range request.IngredientList {
+	for _, ingredient := range requestBody.IngredientList {
 		out := domain.CocktailIngredient{
-			CocktailID:       cocktailIDNumber,
+			CocktailID:       requestUri.ID,
 			IngredientName:   ingredient.Name,
 			IngredientAmount: ingredient.Amount,
 		}
@@ -645,9 +657,9 @@ func (co *CocktailHandler) UpdateDraftArticle(c *gin.Context) {
 	}
 
 	var steps []domain.CocktailStep
-	for stepNumber, step := range request.StepList {
+	for stepNumber, step := range requestBody.StepList {
 		out := domain.CocktailStep{
-			CocktailID:      cocktailIDNumber,
+			CocktailID:      requestUri.ID,
 			StepNumber:      stepNumber,
 			StepDescription: step.Description,
 		}
@@ -655,7 +667,7 @@ func (co *CocktailHandler) UpdateDraftArticle(c *gin.Context) {
 	}
 
 	var images []domain.CocktailImage
-	for idx, photo := range request.Photos {
+	for idx, photo := range requestBody.Photos {
 		var isCoverPhoto bool
 		if idx == 0 {
 			isCoverPhoto = true
@@ -666,14 +678,15 @@ func (co *CocktailHandler) UpdateDraftArticle(c *gin.Context) {
 		if photo.Photo != "" {
 			dataURL, err := dataurl.DecodeString(photo.Photo)
 			if err != nil {
-				service.GetLoggerEntry(co.Service.Logger, api, request).Errorf("decode data url failed - %s", err)
+				co.Service.Logger.LogFile(c, logrus.InfoLevel, loggerFields,
+					"query by cocktail id failed - %s", err)
 				util.PackResponseWithError(c, err, err.Error())
 				return
 			}
 
 			out := domain.CocktailImage{
 				ImageID:      photo.ID,
-				CocktailID:   cocktailIDNumber,
+				CocktailID:   requestUri.ID,
 				Data:         string(dataURL.Data),
 				Type:         dataURL.MediaType.ContentType(),
 				IsCoverPhoto: isCoverPhoto,
@@ -682,16 +695,16 @@ func (co *CocktailHandler) UpdateDraftArticle(c *gin.Context) {
 		} else {
 			out := domain.CocktailImage{
 				ImageID:      photo.ID,
-				CocktailID:   cocktailIDNumber,
+				CocktailID:   requestUri.ID,
 				IsCoverPhoto: isCoverPhoto,
 			}
 			images = append(images, out)
 		}
 	}
 
-	err = co.CocktailUsecase.Update(c, &cocktail, ingredients, steps, images, userId)
+	err := co.CocktailUsecase.Update(c, &cocktail, ingredients, steps, images, userId)
 	if err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("update draft cocktail failed - %s", err)
+		co.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields, "query by cocktail id failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
@@ -725,33 +738,36 @@ func (co *CocktailHandler) UpdateDraftArticle(c *gin.Context) {
 
 func (co *CocktailHandler) UpdateFormalArticle(c *gin.Context) {
 	userId := c.GetInt64("user_id")
-	cocktailID := c.Param("cocktailID")
-	api := "PUT /cocktails/" + cocktailID
 
-	cocktailIDNumber, err := strconv.ParseInt(cocktailID, 10, 64)
-	if err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("parameter illegal - %s", err)
-		util.PackResponseWithError(c, err, err.Error())
-		return
-	}
-
-	var request viewmodels.UpdateFormalArticleRequest
-	if err := c.ShouldBindJSON(&request); err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, request).Errorf("parameter illegal - %s", err)
+	var requestUri viewmodels.UpdateFormalArticleUriRequest
+	if err := c.ShouldBindUri(&requestUri); err != nil {
+		co.Service.Logger.LogFile(c, logrus.InfoLevel, co.Service.Logger.GetLoggerFields(userId, c.ClientIP(),
+			c.Request.Method, nil, c.Request.RequestURI), "parameter illegal - %s", err)
 		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
 		return
 	}
 
+	var requestBody viewmodels.UpdateFormalArticleRequest
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		co.Service.Logger.LogFile(c, logrus.InfoLevel, co.Service.Logger.GetLoggerFields(userId, c.ClientIP(),
+			c.Request.Method, nil, c.Request.RequestURI), "query by cocktail id failed - %s", err)
+		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
+		return
+	}
+
+	loggerFields := co.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, requestBody,
+		c.Request.RequestURI)
+
 	var cocktail = domain.Cocktail{
-		CocktailID:  cocktailIDNumber,
-		Title:       request.Name,
-		Description: request.Description,
+		CocktailID:  requestUri.ID,
+		Title:       requestBody.Name,
+		Description: requestBody.Description,
 	}
 
 	var ingredients []domain.CocktailIngredient
-	for _, ingredient := range request.IngredientList {
+	for _, ingredient := range requestBody.IngredientList {
 		out := domain.CocktailIngredient{
-			CocktailID:       cocktailIDNumber,
+			CocktailID:       requestUri.ID,
 			IngredientName:   ingredient.Name,
 			IngredientAmount: ingredient.Amount,
 		}
@@ -759,9 +775,9 @@ func (co *CocktailHandler) UpdateFormalArticle(c *gin.Context) {
 	}
 
 	var steps []domain.CocktailStep
-	for stepNumber, step := range request.StepList {
+	for stepNumber, step := range requestBody.StepList {
 		out := domain.CocktailStep{
-			CocktailID:      cocktailIDNumber,
+			CocktailID:      requestUri.ID,
 			StepNumber:      stepNumber,
 			StepDescription: step.Description,
 		}
@@ -769,7 +785,7 @@ func (co *CocktailHandler) UpdateFormalArticle(c *gin.Context) {
 	}
 
 	var images []domain.CocktailImage
-	for idx, photo := range request.Photos {
+	for idx, photo := range requestBody.Photos {
 		var isCoverPhoto bool
 		if idx == 0 {
 			isCoverPhoto = true
@@ -780,14 +796,15 @@ func (co *CocktailHandler) UpdateFormalArticle(c *gin.Context) {
 		if photo.Photo != "" {
 			dataURL, err := dataurl.DecodeString(photo.Photo)
 			if err != nil {
-				service.GetLoggerEntry(co.Service.Logger, api, request).Errorf("decode data url failed - %s", err)
+				co.Service.Logger.LogFile(c, logrus.InfoLevel, loggerFields,
+					"query by cocktail id failed - %s", err)
 				util.PackResponseWithError(c, err, err.Error())
 				return
 			}
 
 			out := domain.CocktailImage{
 				ImageID:      photo.ID,
-				CocktailID:   cocktailIDNumber,
+				CocktailID:   requestUri.ID,
 				Data:         string(dataURL.Data),
 				Type:         dataURL.MediaType.ContentType(),
 				IsCoverPhoto: isCoverPhoto,
@@ -796,16 +813,16 @@ func (co *CocktailHandler) UpdateFormalArticle(c *gin.Context) {
 		} else {
 			out := domain.CocktailImage{
 				ImageID:      photo.ID,
-				CocktailID:   cocktailIDNumber,
+				CocktailID:   requestUri.ID,
 				IsCoverPhoto: isCoverPhoto,
 			}
 			images = append(images, out)
 		}
 	}
 
-	err = co.CocktailUsecase.Update(c, &cocktail, ingredients, steps, images, userId)
+	err := co.CocktailUsecase.Update(c, &cocktail, ingredients, steps, images, userId)
 	if err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("update draft cocktail failed - %s", err)
+		co.Service.Logger.LogFile(c, logrus.InfoLevel, loggerFields, "query by cocktail id failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
@@ -827,20 +844,22 @@ func (co *CocktailHandler) UpdateFormalArticle(c *gin.Context) {
 
 func (co *CocktailHandler) DeleteDraftArticle(c *gin.Context) {
 	userId := c.GetInt64("user_id")
-	cocktailID := c.Param("cocktailID")
-	api := "DELETE /cocktail-drafts/" + cocktailID
 
 	var request viewmodels.DeleteDraftArticleRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, request).Errorf("parameter illegal - %s", err)
+		co.Service.Logger.LogFile(c, logrus.InfoLevel, co.Service.Logger.GetLoggerFields(userId, c.ClientIP(),
+			c.Request.Method, nil, c.Request.RequestURI), "query by cocktail id failed - %s", err)
 		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
 		return
 	}
 
+	loggerFields := co.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, request,
+		c.Request.RequestURI)
+
 	for _, ids := range request.DeletedIds {
 		err := co.CocktailUsecase.Delete(c, ids, userId)
 		if err != nil {
-			service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("delete draft cocktail failed - %s", err)
+			co.Service.Logger.LogFile(c, logrus.InfoLevel, loggerFields, "query by cocktail id failed - %s", err)
 			util.PackResponseWithError(c, err, err.Error())
 			return
 		}
@@ -863,19 +882,22 @@ func (co *CocktailHandler) DeleteDraftArticle(c *gin.Context) {
 
 func (co *CocktailHandler) DeleteFormalArticle(c *gin.Context) {
 	userId := c.GetInt64("user_id")
-	api := "DELETE /cocktails"
 
 	var request viewmodels.DeleteFormalArticleRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		service.GetLoggerEntry(co.Service.Logger, api, request).Errorf("parameter illegal - %s", err)
+		co.Service.Logger.LogFile(c, logrus.InfoLevel, co.Service.Logger.GetLoggerFields(userId, c.ClientIP(),
+			c.Request.Method, nil, c.Request.RequestURI), "query by cocktail id failed - %s", err)
 		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
 		return
 	}
 
+	loggerFields := co.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, request,
+		c.Request.RequestURI)
+
 	for _, ids := range request.DeletedIds {
 		err := co.CocktailUsecase.Delete(c, ids, userId)
 		if err != nil {
-			service.GetLoggerEntry(co.Service.Logger, api, nil).Errorf("delete draft cocktail failed - %s", err)
+			co.Service.Logger.LogFile(c, logrus.InfoLevel, loggerFields, "query by cocktail id failed - %s", err)
 			util.PackResponseWithError(c, err, err.Error())
 			return
 		}

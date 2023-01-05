@@ -52,6 +52,7 @@ services:
     volumes:
       - ${IMAGE_PATH}:/static/images
       - ./serviceConfigSimplification.json:/app/serviceConfigSimplification.json
+      - ./log/:/app/log/
     ports:
       - "${APPLICATION_PORT}:6969"
     command: ./wait-for-it.sh db:3306 -- ./main --config serviceConfigSimplification.json

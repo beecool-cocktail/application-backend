@@ -4,14 +4,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v9"
 	"github.com/olivere/elastic/v7"
-	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
 type Service struct {
 	DB        *gorm.DB
 	Redis     *redis.Client
-	Logger    *logrus.Logger
+	Logger    *Logger
 	HTTP      *gin.Engine
 	Elastic   *elastic.Client
 	Configure *Configure

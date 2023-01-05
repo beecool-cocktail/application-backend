@@ -42,12 +42,17 @@ services:
     restart: always
     volumes:
       - ${IMAGE_PATH}:/static/images
+      - ./log/:/app/log/
     ports:
       - "${APPLICATION_PORT}:6969"
     command: ./wait-for-it.sh db:3306 -- ./main --config serviceConfigDev.json
     depends_on:
       - redis
       - db
+    deploy:
+      resources:
+        limits:
+          cpus: '0.70'
 
   elasticsearch:
     container_name: whispering-elastic
@@ -63,6 +68,10 @@ services:
       - ${DATA_DIR}/elastic_data:/usr/share/elasticsearch/data
     ports:
       - "${ELASTIC_SEARCH_PORT}:9200"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.70'
 
 networks:
   whispering:

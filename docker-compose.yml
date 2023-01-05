@@ -52,6 +52,7 @@ services:
     volumes:
       - ${IMAGE_PATH}:/static/images
       - ./serviceConfig.json:/app/serviceConfig.json
+      - ./log/:/app/log/
     ports:
       - "${APPLICATION_PORT}:6969"
     command: ./wait-for-it.sh elasticsearch:9200 -- ./main --config serviceConfig.json
@@ -81,13 +82,13 @@ services:
     environment:
       - xpack.security.enabled=false
       - "discovery.type=single-node"
+      - "TZ=Asia/Taipei"
     networks:
       whispering:
         ipv4_address: 172.28.0.6
     volumes:
       - ${ELASTIC_PLUGINS}:/usr/share/elasticsearch/plugins
 #      - ${DATA_DIR}/elastic_data:/usr/share/elasticsearch/data
-
     ports:
       - "${ELASTIC_SEARCH_PORT}:9200"
 

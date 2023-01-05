@@ -47,6 +47,10 @@ type GetUserInfoResponse struct {
 	IsCollectionPublic bool `json:"is_collection_public"`
 }
 
+type GetOtherUserInfoRequest struct {
+	ID int64 `uri:"id" binding:"required"`
+}
+
 type GetOtherUserInfoResponse struct {
 	//required: true
 	UserID int64 `json:"user_id"`
@@ -97,6 +101,10 @@ type CollectArticleRequest struct {
 	ID int64 `json:"id" binding:"required"`
 }
 
+type GetUserFavoriteCocktailListRequest struct {
+	ID int64 `uri:"id" binding:"required"`
+}
+
 type GetUserFavoriteCocktailListResponse struct {
 	//required: true
 	IsPublic bool `json:"is_public"`
@@ -117,6 +125,10 @@ type FavoriteCocktail struct {
 	Title string `json:"title"`
 	//required: true
 	IsCollected bool `json:"is_collected"`
+}
+
+type DeleteFavoriteCocktailRequest struct {
+	ID int64 `uri:"id" binding:"required"`
 }
 
 type DeleteFavoriteCocktailResponse struct {

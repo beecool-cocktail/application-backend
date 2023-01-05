@@ -187,14 +187,13 @@ definitions:
         x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
     GetCocktailByIDRequest:
         properties:
-            id:
+            ID:
                 description: |-
-                    ID of an cocktail item
+                    ID of a cocktail item
 
                     In: path
                 format: int64
                 type: integer
-                x-go-name: ID
         type: object
         x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
     GetCocktailByIDResponse:
@@ -281,14 +280,13 @@ definitions:
         x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
     GetCocktailDraftByIDRequest:
         properties:
-            id:
+            ID:
                 description: |-
-                    ID of an cocktail item
+                    ID of a cocktail item
 
                     In: path
                 format: int64
                 type: integer
-                x-go-name: ID
         type: object
         x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
     GetCocktailDraftByIDResponse:
@@ -435,6 +433,9 @@ definitions:
         x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
     GetPopularCocktailListRequest:
         properties:
+            keyword:
+                type: string
+                x-go-name: Keyword
             page:
                 example: 1
                 format: int64

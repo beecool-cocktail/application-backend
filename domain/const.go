@@ -16,6 +16,7 @@ type PaginationMySQLRepository struct {
 
 const (
 	AllUsers = -1
+	NoUser   = 0
 
 	// Elastic search weight
 	TitleWeight       = 4

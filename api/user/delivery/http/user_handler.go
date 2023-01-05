@@ -13,12 +13,10 @@ import (
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"net/http"
-	"strconv"
 )
 
 type UserHandler struct {
-	Configure               *service.Configure
-	Logger                  *logrus.Logger
+	Service                 *service.Service
 	UserUsecase             domain.UserUsecase
 	CocktailUsecase         domain.CocktailUsecase
 	FavoriteCocktailUsecase domain.FavoriteCocktailUsecase
@@ -30,8 +28,7 @@ func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase, socialAc
 	middlewareHandler middleware.Handler) {
 
 	handler := &UserHandler{
-		Configure:               s.Configure,
-		Logger:                  s.Logger,
+		Service:                 s,
 		UserUsecase:             userUsecase,
 		FavoriteCocktailUsecase: favoriteCocktailUsecase,
 		CocktailUsecase:         CocktailUsecase,
@@ -42,16 +39,16 @@ func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase, socialAc
 	s.HTTP.POST("/api/auth/google-authenticate", handler.GoogleAuthenticate)
 	s.HTTP.POST("/api/auth/logout", handler.Logout)
 	s.HTTP.GET("/api/users/current", middlewareHandler.JWTAuthMiddleware(), handler.GetUserInfo)
-	s.HTTP.GET("/api/users/:userID", handler.GetOtherUserInfo)
+	s.HTTP.GET("/api/users/:id", handler.GetOtherUserInfo)
 	s.HTTP.PUT("/api/users/current/info", middlewareHandler.JWTAuthMiddleware(), handler.UpdateUserInfo)
 	s.HTTP.PUT("/api/users/current/avatar", middlewareHandler.JWTAuthMiddleware(), handler.UpdateUserAvatar)
 	s.HTTP.POST("/api/users/current/favorite-cocktails", middlewareHandler.JWTAuthMiddleware(), handler.CollectArticle)
-	s.HTTP.DELETE("/api/users/current/favorite-cocktails/:cocktailID", middlewareHandler.JWTAuthMiddleware(), handler.RemoveCollectionArticle)
+	s.HTTP.DELETE("/api/users/current/favorite-cocktails/:id", middlewareHandler.JWTAuthMiddleware(), handler.RemoveCollectionArticle)
 	s.HTTP.DELETE("/api/users/current/avatar", middlewareHandler.JWTAuthMiddleware(), handler.DeleteUserAvatar)
 	s.HTTP.GET("/api/users/current/favorite-cocktails", middlewareHandler.JWTAuthMiddleware(), handler.GetUserFavoriteList)
-	s.HTTP.GET("/api/users/:userID/favorite-cocktails", middlewareHandler.JWTAuthMiddlewareIfExist(), handler.GetOtherUserFavoriteList)
+	s.HTTP.GET("/api/users/:id/favorite-cocktails", middlewareHandler.JWTAuthMiddlewareIfExist(), handler.GetOtherUserFavoriteList)
 	s.HTTP.GET("/api/users/current/cocktails", middlewareHandler.JWTAuthMiddleware(), handler.SelfCocktailList)
-	s.HTTP.GET("/api/users/:userID/cocktails", middlewareHandler.JWTAuthMiddlewareIfExist(), handler.OtherCocktailList)
+	s.HTTP.GET("/api/users/:id/cocktails", middlewareHandler.JWTAuthMiddlewareIfExist(), handler.OtherCocktailList)
 }
 
 // swagger:route GET /auth/google-login login googleLogin
@@ -64,7 +61,7 @@ func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase, socialAc
 //  307: description: redirect
 
 func (u *UserHandler) SocialLogin(c *gin.Context) {
-	g := u.Configure.Others.GoogleOAuth2
+	g := u.Service.Configure.Others.GoogleOAuth2
 	googleOAuth2Config := &oauth2.Config{
 		ClientID:     g.ClientID,
 		ClientSecret: g.ClientSecret,
@@ -87,28 +84,29 @@ func (u *UserHandler) SocialLogin(c *gin.Context) {
 //    "$ref": "#/responses/googleAuthenticateResponse"
 
 func (u *UserHandler) GoogleAuthenticate(c *gin.Context) {
-	api := "/google-authenticate"
 	var request viewmodels.GoogleAuthenticateRequest
 	var response viewmodels.GoogleAuthenticateResponse
 
 	if err := c.BindJSON(&request); err != nil {
-		service.GetLoggerEntry(u.Logger, api, request).Errorf("parameter illegal - %s", err)
+		u.Service.Logger.LogFile(c, logrus.InfoLevel, u.Service.Logger.GetLoggerFields(domain.NoUser, c.ClientIP(),
+			c.Request.Method, nil, c.Request.RequestURI), "parameter illegal - %s", err)
 		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
 		return
 	}
 
-	service.GetLoggerEntry(u.Logger, api, request).Info()
+	loggerFields := u.Service.Logger.GetLoggerFields(domain.NoUser, c.ClientIP(), c.Request.Method, request,
+		c.Request.RequestURI)
 
 	token, err := u.SocialAccountUsecase.Exchange(c, request.Code)
 	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, request).Errorf("exchange google token failed - %s", err)
+		u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields, "exchange google token failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
 
 	jwtToken, err := u.SocialAccountUsecase.GetUserInfo(c, token)
 	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, request).Errorf("get user info failed - %s", err)
+		u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields, "get user info failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
@@ -126,18 +124,21 @@ func (u *UserHandler) GoogleAuthenticate(c *gin.Context) {
 //     description: success
 
 func (u *UserHandler) Logout(c *gin.Context) {
-	api := "/user/logout"
 	var request viewmodels.LogoutRequest
 
 	if err := c.BindJSON(&request); err != nil {
-		service.GetLoggerEntry(u.Logger, api, request).Errorf("parameter illegal - %s", err)
+		u.Service.Logger.LogFile(c, logrus.InfoLevel, u.Service.Logger.GetLoggerFields(domain.NoUser, c.ClientIP(),
+			c.Request.Method, nil, c.Request.RequestURI), "parameter illegal - %s", err)
 		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
 		return
 	}
 
+	loggerFields := u.Service.Logger.GetLoggerFields(domain.NoUser, c.ClientIP(), c.Request.Method, request,
+		c.Request.RequestURI)
+
 	err := u.UserUsecase.Logout(c, request.UserID)
 	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, request).Errorf("logout failed - %s", err)
+		u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields, "logout failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
@@ -158,29 +159,31 @@ func (u *UserHandler) Logout(c *gin.Context) {
 //    "$ref": "#/responses/getUserInfoResponse"
 
 func (u *UserHandler) GetUserInfo(c *gin.Context) {
-	api := "/user/info"
 	var response viewmodels.GetUserInfoResponse
 	userId := c.GetInt64("user_id")
 
+	loggerFields := u.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, nil,
+		c.Request.RequestURI)
+
 	user, err := u.UserUsecase.QueryById(c, userId)
 	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, nil).Errorf("query by id failed - %s", err)
+		u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields, "query user by id failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
 
 	numberOfPost, err := u.CocktailUsecase.QueryFormalCountsByUserID(c, user.ID)
 	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, nil).Errorf("query formal counts by user_id failed - %s",
-			err)
+		u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+			"query formal counts by user_id failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
 
 	numberOfCollection, err := u.FavoriteCocktailUsecase.QueryCountsByUserID(c, user.ID)
 	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, nil).Errorf("query favotite counts by user_id failed - %s",
-			err)
+		u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+			"query favorite counts by user_id failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
@@ -232,36 +235,37 @@ func (u *UserHandler) GetUserInfo(c *gin.Context) {
 //    "$ref": "#/responses/getOtherUserInfoResponse"
 
 func (u *UserHandler) GetOtherUserInfo(c *gin.Context) {
-	api := "/user/info"
+	var request viewmodels.GetOtherUserInfoRequest
 	var response viewmodels.GetOtherUserInfoResponse
-	userID := c.Param("userID")
 
-	userIDNumber, err := strconv.ParseInt(userID, 10, 64)
+	err := c.ShouldBindUri(&request)
 	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, nil).Errorf("parameter illegal - %s", err)
+		u.Service.Logger.LogFile(c, logrus.InfoLevel, u.Service.Logger.GetLoggerFields(domain.NoUser, c.ClientIP(),
+			c.Request.Method, nil, c.Request.RequestURI), "parameter illegal - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
-		return
 	}
+	loggerFields := u.Service.Logger.GetLoggerFields(domain.NoUser, c.ClientIP(), c.Request.Method, request,
+		c.Request.RequestURI)
 
-	user, err := u.UserUsecase.QueryById(c, userIDNumber)
+	user, err := u.UserUsecase.QueryById(c, request.ID)
 	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, nil).Errorf("query by id failed - %s", err)
+		u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields, "query user by id failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
 
 	numberOfPost, err := u.CocktailUsecase.QueryFormalCountsByUserID(c, user.ID)
 	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, nil).Errorf("query formal counts by user_id failed - %s",
-			err)
+		u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+			"query formal counts by user_id failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
 
 	numberOfCollection, err := u.FavoriteCocktailUsecase.QueryCountsByUserID(c, user.ID)
 	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, nil).Errorf("query favotite counts by user_id failed - %s",
-			err)
+		u.Service.Logger.LogFile(c, logrus.InfoLevel, loggerFields,
+			"query favorite counts by user_id failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
@@ -304,16 +308,18 @@ func (u *UserHandler) GetOtherUserInfo(c *gin.Context) {
 //    "$ref": "#/responses/updateUserPhotoResponse"
 
 func (u *UserHandler) UpdateUserInfo(c *gin.Context) {
-	api := "/user/edit-info"
+	userId := c.GetInt64("user_id")
 
 	var request viewmodels.UpdateUserInfoRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		service.GetLoggerEntry(u.Logger, api, request).Errorf("parameter illegal - %s", err)
+		u.Service.Logger.LogFile(c, logrus.InfoLevel, u.Service.Logger.GetLoggerFields(userId, c.ClientIP(),
+			c.Request.Method, nil, c.Request.RequestURI), "parameter illegal - %s", err)
 		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
 		return
 	}
 
-	userId := c.GetInt64("user_id")
+	loggerFields := u.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, request,
+		c.Request.RequestURI)
 
 	if request.Name != nil {
 		err := u.UserUsecase.UpdateUserName(c,
@@ -322,7 +328,7 @@ func (u *UserHandler) UpdateUserInfo(c *gin.Context) {
 				Name: *request.Name,
 			})
 		if err != nil {
-			service.GetLoggerEntry(u.Logger, api, nil).Errorf("update user name failed - %s", err)
+			u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields, "update user name failed - %s", err)
 			util.PackResponseWithError(c, err, err.Error())
 			return
 		}
@@ -335,7 +341,8 @@ func (u *UserHandler) UpdateUserInfo(c *gin.Context) {
 				IsCollectionPublic: *request.IsCollectionPublic,
 			})
 		if err != nil {
-			service.GetLoggerEntry(u.Logger, api, nil).Errorf("update collection status failed - %s", err)
+			u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+				"update collection status failed - %s", err)
 			util.PackResponseWithError(c, err, err.Error())
 			return
 		}
@@ -357,29 +364,32 @@ func (u *UserHandler) UpdateUserInfo(c *gin.Context) {
 //     description: success
 
 func (u *UserHandler) UpdateUserAvatar(c *gin.Context) {
-	api := "/user/edit-avatar"
+	userId := c.GetInt64("user_id")
 
 	var request viewmodels.UpdateUserAvatarRequest
 	var userImage domain.UserAvatar
 	if err := c.ShouldBindJSON(&request); err != nil {
-		service.GetLoggerEntry(u.Logger, api, request).Errorf("parameter illegal - %s", err)
+		u.Service.Logger.LogFile(c, logrus.InfoLevel, u.Service.Logger.GetLoggerFields(userId, c.ClientIP(),
+			c.Request.Method, nil, c.Request.RequestURI), "parameter illegal - %s", err)
 		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
 		return
 	}
+
+	loggerFields := u.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, request,
+		c.Request.RequestURI)
 
 	if len(request.Coordinate) != 2 {
-		service.GetLoggerEntry(u.Logger, api, request).Errorf("parameter illegal")
+		u.Service.Logger.LogFile(c, logrus.InfoLevel, loggerFields, "parameter illegal")
 		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
 		return
 	}
 
-	userId := c.GetInt64("user_id")
 	userImage.UserID = userId
 
 	if request.OriginAvatar != "" {
 		originAvatarDataUrl, err := dataurl.DecodeString(request.OriginAvatar)
 		if err != nil {
-			service.GetLoggerEntry(u.Logger, api, request).Errorf("decode data url failed - %s", err)
+			u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields, "decode data url failed - %s", err)
 			util.PackResponseWithError(c, err, err.Error())
 			return
 		}
@@ -393,7 +403,7 @@ func (u *UserHandler) UpdateUserAvatar(c *gin.Context) {
 
 	cropAvatarDataURL, err := dataurl.DecodeString(request.CropAvatar)
 	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, request).Errorf("decode data url failed - %s", err)
+		u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields, "decode data url failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
@@ -415,7 +425,7 @@ func (u *UserHandler) UpdateUserAvatar(c *gin.Context) {
 		},
 		&userImage)
 	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, nil).Errorf("update user avatar failed - %s", err)
+		u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields, "update user avatar failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
@@ -437,11 +447,13 @@ func (u *UserHandler) UpdateUserAvatar(c *gin.Context) {
 
 func (u *UserHandler) DeleteUserAvatar(c *gin.Context) {
 	userId := c.GetInt64("user_id")
-	api := "/user/delete-avatar"
+
+	loggerFields := u.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, nil,
+		c.Request.RequestURI)
 
 	err := u.UserUsecase.DeleteUserAvatar(c, userId)
 	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, nil).Errorf("delete user avatar failed - %s", err)
+		u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields, "delete user avatar failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
@@ -463,14 +475,17 @@ func (u *UserHandler) DeleteUserAvatar(c *gin.Context) {
 
 func (u *UserHandler) CollectArticle(c *gin.Context) {
 	userId := c.GetInt64("user_id")
-	api := "POST /users/favorite-cocktails"
 
 	var request viewmodels.CollectArticleRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		service.GetLoggerEntry(u.Logger, api, request).Errorf("parameter illegal - %s", err)
+		u.Service.Logger.LogFile(c, logrus.InfoLevel, u.Service.Logger.GetLoggerFields(userId, c.ClientIP(),
+			c.Request.Method, nil, c.Request.RequestURI), "parameter illegal - %s", err)
 		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
 		return
 	}
+
+	loggerFields := u.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, request,
+		c.Request.RequestURI)
 
 	favoriteCocktail := domain.FavoriteCocktail{
 		CocktailID: request.ID,
@@ -478,7 +493,7 @@ func (u *UserHandler) CollectArticle(c *gin.Context) {
 	}
 	err := u.FavoriteCocktailUsecase.Store(c, &favoriteCocktail)
 	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, nil).Errorf("collect article failed - %s", err)
+		u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields, "collect article failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
@@ -507,21 +522,22 @@ func (u *UserHandler) CollectArticle(c *gin.Context) {
 
 func (u *UserHandler) RemoveCollectionArticle(c *gin.Context) {
 	userId := c.GetInt64("user_id")
-	cocktailID := c.Param("cocktailID")
-	api := "Delete /users/favorite-cocktails/" + cocktailID
 
+	loggerFields := u.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, nil,
+		c.Request.RequestURI)
+
+	var request viewmodels.DeleteFavoriteCocktailRequest
 	var response viewmodels.DeleteFavoriteCocktailResponse
-
-	cocktailIDNumber, err := strconv.ParseInt(cocktailID, 10, 64)
+	err := c.ShouldBindUri(&request)
 	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, nil).Errorf("parameter illegal - %s", err)
+		u.Service.Logger.LogFile(c, logrus.InfoLevel, loggerFields, "parameter illegal - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
-		return
 	}
 
-	commandID, err := u.FavoriteCocktailUsecase.Delete(c, cocktailIDNumber, userId)
+	commandID, err := u.FavoriteCocktailUsecase.Delete(c, request.ID, userId)
 	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, nil).Errorf("delete article from favotite lost failed - %s", err)
+		u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+			"delete article from favorite lost failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
@@ -544,14 +560,17 @@ func (u *UserHandler) RemoveCollectionArticle(c *gin.Context) {
 //    "$ref": "#/responses/getUserFavoriteCocktailListResponse"
 
 func (u *UserHandler) GetUserFavoriteList(c *gin.Context) {
-	api := "/users/current/favorite-cocktails"
-	var response viewmodels.GetUserFavoriteCocktailListResponse
 	userId := c.GetInt64("user_id")
+
+	loggerFields := u.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, nil,
+		c.Request.RequestURI)
+
+	var response viewmodels.GetUserFavoriteCocktailListResponse
 
 	favoriteCocktails, total, err := u.FavoriteCocktailUsecase.QueryByUserID(c, userId, domain.PaginationUsecase{},
 		0)
 	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, nil).Errorf("query by id failed - %s", err)
+		u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields, "query by user id failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
@@ -597,22 +616,22 @@ func (u *UserHandler) GetUserFavoriteList(c *gin.Context) {
 //    "$ref": "#/responses/getUserFavoriteCocktailListResponse"
 
 func (u *UserHandler) GetOtherUserFavoriteList(c *gin.Context) {
-	api := "/users/{id}/favorite-cocktails"
-	userID := c.Param("userID")
 	selfUserID := c.GetInt64("user_id")
 
-	var response viewmodels.GetUserFavoriteCocktailListResponse
+	loggerFields := u.Service.Logger.GetLoggerFields(selfUserID, c.ClientIP(), c.Request.Method, nil,
+		c.Request.RequestURI)
 
-	userIDNumber, err := strconv.ParseInt(userID, 10, 64)
+	var request viewmodels.GetUserFavoriteCocktailListRequest
+	var response viewmodels.GetUserFavoriteCocktailListResponse
+	err := c.ShouldBindUri(&request)
 	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, nil).Errorf("parameter illegal - %s", err)
+		u.Service.Logger.LogFile(c, logrus.InfoLevel, loggerFields, "parameter illegal - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
-		return
 	}
 
-	user, err := u.UserUsecase.QueryById(c, userIDNumber)
+	user, err := u.UserUsecase.QueryById(c, request.ID)
 	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, nil).Errorf("query user by user id failed - %s", err)
+		u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields, "query user by user id failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
@@ -628,10 +647,11 @@ func (u *UserHandler) GetOtherUserFavoriteList(c *gin.Context) {
 		return
 	}
 
-	favoriteCocktails, total, err := u.FavoriteCocktailUsecase.QueryByUserID(c, userIDNumber,
+	favoriteCocktails, total, err := u.FavoriteCocktailUsecase.QueryByUserID(c, request.ID,
 		domain.PaginationUsecase{}, selfUserID)
 	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, nil).Errorf("query favorite cocktail by user id failed - %s", err)
+		u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+			"query favorite cocktail by user id failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
@@ -670,9 +690,10 @@ func (u *UserHandler) GetOtherUserFavoriteList(c *gin.Context) {
 //    "$ref": "#/responses/getSelfCocktailListResponse"
 
 func (u *UserHandler) SelfCocktailList(c *gin.Context) {
-	api := "/self-cocktails"
 	userId := c.GetInt64("user_id")
 
+	loggerFields := u.Service.Logger.GetLoggerFields(domain.NoUser, c.ClientIP(), c.Request.Method, nil,
+		c.Request.RequestURI)
 	var response viewmodels.GetSelfCocktailListResponse
 
 	filter := make(map[string]interface{})
@@ -680,7 +701,8 @@ func (u *UserHandler) SelfCocktailList(c *gin.Context) {
 	filter["user_id"] = userId
 	cocktails, err := u.CocktailUsecase.QueryFormalByUserID(c, userId, 0)
 	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, nil).Errorf("get cocktails with filter failed - %s", err)
+		u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+			"get cocktails with filter failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}
@@ -731,25 +753,26 @@ func (u *UserHandler) SelfCocktailList(c *gin.Context) {
 //    "$ref": "#/responses/getOtherCocktailListResponse"
 
 func (u *UserHandler) OtherCocktailList(c *gin.Context) {
-	api := "/self-cocktails"
-	targetUserID := c.Param("userID")
 	selfUserID := c.GetInt64("user_id")
 
-	userIDNumber, err := strconv.ParseInt(targetUserID, 10, 64)
-	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, nil).Errorf("parameter illegal - %s", err)
-		util.PackResponseWithError(c, err, err.Error())
-		return
-	}
+	loggerFields := u.Service.Logger.GetLoggerFields(selfUserID, c.ClientIP(), c.Request.Method, nil,
+		c.Request.RequestURI)
 
+	var request viewmodels.GetOtherCocktailListRequest
 	var response viewmodels.GetOtherCocktailListResponse
+	err := c.ShouldBindUri(&request)
+	if err != nil {
+		u.Service.Logger.LogFile(c, logrus.InfoLevel, loggerFields, "parameter illegal - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+	}
 
 	filter := make(map[string]interface{})
 	filter["category"] = cockarticletype.Formal
-	filter["user_id"] = userIDNumber
-	cocktails, err := u.CocktailUsecase.QueryFormalByUserID(c, userIDNumber, selfUserID)
+	filter["user_id"] = request.ID
+	cocktails, err := u.CocktailUsecase.QueryFormalByUserID(c, request.ID, selfUserID)
 	if err != nil {
-		service.GetLoggerEntry(u.Logger, api, nil).Errorf("get cocktails with filter failed - %s", err)
+		u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+			"get cocktails with filter failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}

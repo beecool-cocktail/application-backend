@@ -1,8 +1,9 @@
 {
   "Version":"1.0",
   "Logger":{
-    "Path": "",
-    "Level": "debug"
+    "Path": "./log/",
+    "FileName": "backend",
+    "Level": "info"
   },
   "DB":{
     "MainDB":{

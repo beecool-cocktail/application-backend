@@ -5,14 +5,14 @@ import (
 	"github.com/beecool-cocktail/application-backend/middleware"
 	"github.com/beecool-cocktail/application-backend/service"
 	"github.com/beecool-cocktail/application-backend/util"
+	"github.com/beecool-cocktail/application-backend/viewmodels"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"net/http"
 )
 
 type CommandHandler struct {
-	Configure      *service.Configure
-	Logger         *logrus.Logger
+	Service        *service.Service
 	CommandUsecase domain.CommandUsecase
 }
 
@@ -21,12 +21,11 @@ func NewCommandHandler(s *service.Service,
 	middlewareHandler middleware.Handler) {
 
 	handler := &CommandHandler{
-		Configure:      s.Configure,
-		Logger:         s.Logger,
+		Service:        s,
 		CommandUsecase: commandUsecase,
 	}
 
-	s.HTTP.POST("/api/command/:commandID/undo", middlewareHandler.JWTAuthMiddleware(), handler.UndoCommand)
+	s.HTTP.POST("/api/command/:id/undo", middlewareHandler.JWTAuthMiddleware(), handler.UndoCommand)
 }
 
 // swagger:operation POST /command/{id}/undo command undoCommand
@@ -49,13 +48,21 @@ func NewCommandHandler(s *service.Service,
 //     description: success
 
 func (ch *CommandHandler) UndoCommand(c *gin.Context) {
-	commandID := c.Param("commandID")
-
-	api := "/command/" + commandID + "/undo"
-
-	err := ch.CommandUsecase.Undo(c, commandID)
+	userId := c.GetInt64("user_id")
+	var request viewmodels.CommandUndoRequest
+	err := c.ShouldBindUri(&request)
 	if err != nil {
-		service.GetLoggerEntry(ch.Logger, api, nil).Errorf("undo command failed - %s", err)
+		ch.Service.Logger.LogFile(c, logrus.InfoLevel, ch.Service.Logger.GetLoggerFields(userId, c.ClientIP(),
+			c.Request.Method, nil, c.Request.RequestURI), "parameter illegal - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+	}
+
+	loggerFields := ch.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, nil,
+		c.Request.RequestURI)
+
+	err = ch.CommandUsecase.Undo(c, request.ID)
+	if err != nil {
+		ch.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields, "parameter illegal - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}

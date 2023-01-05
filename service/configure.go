@@ -19,8 +19,9 @@ type Configure struct {
 }
 
 type loggerConfig struct {
-	Path  string
-	Level string
+	Path     string
+	FileName string
+	Level    string
 }
 
 type mysqlConfig struct {
