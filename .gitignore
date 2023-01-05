@@ -21,6 +21,7 @@ main
 /mysql_data
 /redis_data
 /elstic_data
+/log
 serviceConfigLocal.json
 
 /static/images/*
