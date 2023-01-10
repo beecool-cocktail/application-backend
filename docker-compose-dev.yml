@@ -73,6 +73,20 @@ services:
         limits:
           cpus: '0.70'
 
+  proxy:
+    container_name: whispering-proxy
+    image: nginx:latest
+    ports:
+      - "${NGINX_PORT}:80"
+    volumes:
+      - ${NGINX_CONFIG}:/etc/nginx/conf.d/default.conf
+      - ${DIC_PATH}:/etc/nginx/elasticsearch
+    networks:
+      whispering:
+        ipv4_address: 172.28.0.7
+    logging:
+      driver: none
+
 networks:
   whispering:
     driver: bridge

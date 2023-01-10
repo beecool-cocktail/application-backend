@@ -11,7 +11,7 @@ cd $BUILD_DIR
 case "$1" in
   runall)
     docker-compose pull
-    docker-compose up -d
+    docker-compose up
     ;;
   runsimplify)
      docker-compose -f docker-compose-simplification.yml pull
