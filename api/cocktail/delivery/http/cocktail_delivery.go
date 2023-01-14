@@ -252,7 +252,7 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 	var request viewmodels.GetPopularCocktailListRequest
 	var response viewmodels.GetPopularCocktailListResponse
 
-	err := c.ShouldBind(request)
+	err := c.ShouldBind(&request)
 	if err != nil {
 		co.Service.Logger.LogFile(c, logrus.InfoLevel, co.Service.Logger.GetLoggerFields(userId, c.ClientIP(),
 			c.Request.Method, nil, c.Request.RequestURI), "parameter illegal - %s", err)

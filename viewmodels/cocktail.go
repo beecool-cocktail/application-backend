@@ -3,13 +3,13 @@ package viewmodels
 type GetPopularCocktailListRequest struct {
 	//required: true
 	//example: 1
-	Page int `json:"page"`
+	Page int `form:"page"`
 
 	//required: true
 	//example: 10
-	PageSize int `json:"page_size"`
+	PageSize int `form:"page_size"`
 
-	Keyword string `json:"keyword"`
+	Keyword string `form:"keyword"`
 }
 
 type GetPopularCocktailListResponse struct {
