@@ -17,6 +17,10 @@ services:
       - ${MYSQL_CONFIG}:/etc/mysql/my.cnf
       - ./dockerconf/mysql/sql:/docker-entrypoint-initdb.d
       - ./mysql_log/error.log:/var/log/mysql/error.log
+    deploy:
+      resources:
+        limits:
+          memory: 400M
 
   redis:
     image: redis:${REDIS_VERSION}
@@ -30,6 +34,10 @@ services:
     volumes:
       - ${DATA_DIR}/redis_data/redis:/data
       - ${REDIS_CONFIG}:/etc/redis.conf
+    deploy:
+      resources:
+        limits:
+          memory: 200M
 
   server:
     image: blawhi2435/whispering-corner:${APPLICATION_VERSION}
@@ -53,6 +61,7 @@ services:
       resources:
         limits:
           cpus: '0.70'
+          memory: 500M
 
   elasticsearch:
     container_name: whispering-elastic
@@ -72,6 +81,7 @@ services:
       resources:
         limits:
           cpus: '0.70'
+          memory: 800M
 
   proxy:
     container_name: whispering-proxy
@@ -86,6 +96,11 @@ services:
         ipv4_address: 172.28.0.7
     logging:
       driver: none
+    deploy:
+      resources:
+        limits:
+          cpus: '0.70'
+          memory: 100M
 
 networks:
   whispering:
