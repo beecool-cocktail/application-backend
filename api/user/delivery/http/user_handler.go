@@ -578,11 +578,12 @@ func (u *UserHandler) GetUserFavoriteList(c *gin.Context) {
 	list := make([]viewmodels.FavoriteCocktail, 0)
 	for _, cocktail := range favoriteCocktails {
 		out := viewmodels.FavoriteCocktail{
-			CocktailID:  cocktail.CocktailID,
-			UserName:    cocktail.UserName,
-			Photo:       cocktail.CoverPhoto,
-			Title:       cocktail.Title,
-			IsCollected: true,
+			CocktailID:    cocktail.CocktailID,
+			UserName:      cocktail.UserName,
+			Photo:         cocktail.CoverPhoto,
+			Title:         cocktail.Title,
+			IsCollected:   true,
+			CollectedDate: cocktail.CollectedDate,
 		}
 
 		list = append(list, out)
@@ -658,11 +659,12 @@ func (u *UserHandler) GetOtherUserFavoriteList(c *gin.Context) {
 
 	for _, cocktail := range favoriteCocktails {
 		out := viewmodels.FavoriteCocktail{
-			CocktailID:  cocktail.CocktailID,
-			UserName:    cocktail.UserName,
-			Photo:       cocktail.CoverPhoto,
-			Title:       cocktail.Title,
-			IsCollected: cocktail.IsCollected,
+			CocktailID:    cocktail.CocktailID,
+			UserName:      cocktail.UserName,
+			Photo:         cocktail.CoverPhoto,
+			Title:         cocktail.Title,
+			IsCollected:   cocktail.IsCollected,
+			CollectedDate: cocktail.CollectedDate,
 		}
 
 		list = append(list, out)
@@ -719,10 +721,11 @@ func (u *UserHandler) SelfCocktailList(c *gin.Context) {
 		}
 
 		out := viewmodels.SelfCocktailList{
-			CocktailID: cocktail.CocktailID,
-			UserName:   cocktail.UserName,
-			Title:      cocktail.Title,
-			Photo:      cocktail.CoverPhoto.Photo,
+			CocktailID:  cocktail.CocktailID,
+			UserName:    cocktail.UserName,
+			Title:       cocktail.Title,
+			Photo:       cocktail.CoverPhoto.Photo,
+			CreatedDate: cocktail.CreatedDate,
 		}
 
 		cocktailList = append(cocktailList, out)
@@ -794,6 +797,7 @@ func (u *UserHandler) OtherCocktailList(c *gin.Context) {
 			Title:       cocktail.Title,
 			IsCollected: cocktail.IsCollected,
 			Photo:       cocktail.CoverPhoto.Photo,
+			CreatedDate: cocktail.CreatedDate,
 		}
 
 		cocktailList = append(cocktailList, out)

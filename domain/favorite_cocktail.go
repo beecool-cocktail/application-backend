@@ -7,12 +7,13 @@ import (
 )
 
 type APIFavoriteCocktail struct {
-	CocktailID  int64
-	UserID      int64
-	UserName    string
-	Title       string
-	CoverPhoto  string
-	IsCollected bool
+	CocktailID    int64
+	UserID        int64
+	UserName      string
+	Title         string
+	CoverPhoto    string
+	IsCollected   bool
+	CollectedDate string
 }
 
 type FavoriteCocktail struct {

@@ -67,11 +67,12 @@ func (f *favoriteCocktailUsecase) fillFavoriteCocktailList(ctx context.Context,
 		}
 
 		out := domain.APIFavoriteCocktail{
-			CocktailID: favoriteCocktail.CocktailID,
-			UserID:     favoriteCocktail.UserID,
-			UserName:   userName,
-			Title:      cocktail.Title,
-			CoverPhoto: photo,
+			CocktailID:    favoriteCocktail.CocktailID,
+			UserID:        favoriteCocktail.UserID,
+			UserName:      userName,
+			Title:         cocktail.Title,
+			CoverPhoto:    photo,
+			CollectedDate: favoriteCocktail.CollectedDate,
 		}
 
 		apiFavoriteCocktails = append(apiFavoriteCocktails, out)
@@ -170,8 +171,9 @@ func (f *favoriteCocktailUsecase) QueryByUserID(ctx context.Context, targetUserI
 
 	for _, cocktail := range cocktails {
 		out := domain.APIFavoriteCocktail{
-			CocktailID: cocktail.CocktailID,
-			UserID:     cocktail.UserID,
+			CocktailID:    cocktail.CocktailID,
+			UserID:        cocktail.UserID,
+			CollectedDate: util.GetFormatTime(cocktail.CreatedDate, "UTC"),
 		}
 		apiFavoriteCocktails = append(apiFavoriteCocktails, out)
 	}

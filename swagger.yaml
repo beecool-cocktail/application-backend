@@ -165,6 +165,9 @@ definitions:
                 format: int64
                 type: integer
                 x-go-name: CocktailID
+            collected_date:
+                type: string
+                x-go-name: CollectedDate
             is_collected:
                 type: boolean
                 x-go-name: IsCollected
@@ -183,6 +186,7 @@ definitions:
             - photo
             - title
             - is_collected
+            - collected_date
         type: object
         x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
     GetCocktailByIDRequest:
@@ -433,22 +437,19 @@ definitions:
         x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
     GetPopularCocktailListRequest:
         properties:
-            keyword:
+            Keyword:
                 type: string
-                x-go-name: Keyword
-            page:
+            Page:
                 example: 1
                 format: int64
                 type: integer
-                x-go-name: Page
-            page_size:
+            PageSize:
                 example: 10
                 format: int64
                 type: integer
-                x-go-name: PageSize
         required:
-            - page
-            - page_size
+            - Page
+            - PageSize
         type: object
         x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
     GetPopularCocktailListResponse:
@@ -598,6 +599,9 @@ definitions:
                 format: int64
                 type: integer
                 x-go-name: CocktailID
+            created_date:
+                type: string
+                x-go-name: CreatedDate
             is_collected:
                 type: boolean
                 x-go-name: IsCollected
@@ -616,6 +620,7 @@ definitions:
             - photo
             - title
             - is_collected
+            - created_date
         type: object
         x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
     PopularCocktailList:
@@ -741,6 +746,9 @@ definitions:
                 format: int64
                 type: integer
                 x-go-name: CocktailID
+            created_date:
+                type: string
+                x-go-name: CreatedDate
             photo:
                 type: string
                 x-go-name: Photo
@@ -755,6 +763,7 @@ definitions:
             - user_name
             - photo
             - title
+            - created_date
         type: object
         x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
     UpdateDraftArticleRequest:

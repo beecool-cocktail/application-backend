@@ -322,6 +322,8 @@ type SelfCocktailList struct {
 	Photo string `json:"photo"`
 	//required: true
 	Title string `json:"title"`
+	//required: true
+	CreatedDate string `json:"created_date"`
 }
 
 type GetOtherCocktailListRequest struct {
@@ -344,4 +346,6 @@ type OtherCocktailList struct {
 	Title string `json:"title"`
 	//required: true
 	IsCollected bool `json:"is_collected"`
+	//required: true
+	CreatedDate string `json:"created_date"`
 }

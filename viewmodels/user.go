@@ -125,6 +125,8 @@ type FavoriteCocktail struct {
 	Title string `json:"title"`
 	//required: true
 	IsCollected bool `json:"is_collected"`
+	//required: true
+	CollectedDate string `json:"collected_date"`
 }
 
 type DeleteFavoriteCocktailRequest struct {
