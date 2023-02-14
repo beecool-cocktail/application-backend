@@ -437,19 +437,22 @@ definitions:
         x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
     GetPopularCocktailListRequest:
         properties:
-            Keyword:
+            keyword:
                 type: string
-            Page:
+                x-go-name: Keyword
+            page:
                 example: 1
                 format: int64
                 type: integer
-            PageSize:
+                x-go-name: Page
+            pageSize:
                 example: 10
                 format: int64
                 type: integer
+                x-go-name: PageSize
         required:
-            - Page
-            - PageSize
+            - page
+            - pageSize
         type: object
         x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
     GetPopularCocktailListResponse:
