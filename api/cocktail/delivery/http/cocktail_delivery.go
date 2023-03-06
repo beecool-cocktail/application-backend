@@ -35,7 +35,7 @@ func NewCocktailHandler(s *service.Service, cocktailUsecase domain.CocktailUseca
 	s.HTTP.POST("/api/cocktails", middlewareHandler.JWTAuthMiddleware(), handler.PostArticle)
 	s.HTTP.POST("/api/cocktail-drafts", middlewareHandler.JWTAuthMiddleware(), handler.PostDraftArticle)
 	s.HTTP.POST("/api/cocktail-drafts/:id", middlewareHandler.JWTAuthMiddleware(), handler.MakeDraftArticleToFormalArticle)
-	s.HTTP.PUT("/api/cocktails/:cocktailID", middlewareHandler.JWTAuthMiddleware(), handler.UpdateFormalArticle)
+	s.HTTP.PUT("/api/cocktails/:id", middlewareHandler.JWTAuthMiddleware(), handler.UpdateFormalArticle)
 	s.HTTP.PUT("/api/cocktail-drafts/:id", middlewareHandler.JWTAuthMiddleware(), handler.UpdateDraftArticle)
 	s.HTTP.PATCH("/api/cocktail-drafts", middlewareHandler.JWTAuthMiddleware(), handler.DeleteDraftArticle)
 	s.HTTP.PATCH("/api/cocktails", middlewareHandler.JWTAuthMiddleware(), handler.DeleteFormalArticle)
