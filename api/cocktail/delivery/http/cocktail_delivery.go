@@ -644,6 +644,7 @@ func (co *CocktailHandler) UpdateDraftArticle(c *gin.Context) {
 		CocktailID:  requestUri.ID,
 		Title:       requestBody.Name,
 		Description: requestBody.Description,
+		Category: cockarticletype.Draft.Int(),
 	}
 
 	var ingredients []domain.CocktailIngredient

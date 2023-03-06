@@ -770,7 +770,7 @@ func (c *cocktailUsecase) Update(ctx context.Context, co *domain.Cocktail, ingre
 			elasticSteps = append(elasticSteps, step.StepDescription)
 		}
 
-		if c.service.Configure.Elastic.Enable {
+		if c.service.Configure.Elastic.Enable && co.Category == cockarticletype.Formal.Int() {
 			err = c.cocktailElasticSearchRepo.Update(ctx, &domain.CocktailElasticSearch{
 				CocktailID:  co.CocktailID,
 				Title:       co.Title,
