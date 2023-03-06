@@ -10,7 +10,6 @@ import (
 	"github.com/beecool-cocktail/application-backend/service"
 	"github.com/beecool-cocktail/application-backend/util"
 	"github.com/google/uuid"
-	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"time"
 )
@@ -718,9 +717,6 @@ func (c *cocktailUsecase) Update(ctx context.Context, co *domain.Cocktail, ingre
 			if err != nil {
 				return err
 			}
-
-			logrus.Infof("update photo photo: %d", image.ImageID)
-			logrus.Infof("update photo action: %s", action.String())
 
 			if action == httpaction.Add {
 				err = c.addPhoto(ctx, tx, &image)
