@@ -11,7 +11,7 @@ func newHTTP(configure *Configure) (*gin.Engine, error) {
 	}
 
 	r := gin.Default()
-	r.MaxMultipartMemory = 8 << 20
+	r.MaxMultipartMemory = 64 << 20
 
 	return r, nil
 }
