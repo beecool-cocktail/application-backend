@@ -2,8 +2,7 @@ package util
 
 import (
 	"bytes"
-	"github.com/beecool-cocktail/application-backend/domain"
-	"github.com/disintegration/imaging"
+	"fmt"
 	"image"
 	"image/jpeg"
 	_ "image/jpeg"
@@ -75,7 +74,9 @@ func DecodeBase64AndSaveAsWebp(base64EncodedData string, imageType string, dst s
 		dst = dst + ".jpeg"
 		f, _ := os.Create(dst)
 		defer f.Close()
-		err := png.Encode(f, img)
+		err := jpeg.Encode(f, img, &jpeg.Options{
+			Quality: 100,
+		})
 		if err != nil {
 			return 0, 0, err
 		}
@@ -130,7 +131,9 @@ func DecodeBase64AndUpdateAsWebp(base64EncodedData string, imageType string, dst
 		}
 
 	case "image/jpeg":
-		err := png.Encode(f, img)
+		err := jpeg.Encode(f, img, &jpeg.Options{
+			Quality: 100,
+		})
 		if err != nil {
 			return err
 		}
