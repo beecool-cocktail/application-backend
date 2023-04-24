@@ -2,7 +2,6 @@ package util
 
 import (
 	"bytes"
-	"fmt"
 	"image"
 	"image/jpeg"
 	_ "image/jpeg"
@@ -10,6 +9,9 @@ import (
 	_ "image/png"
 	"os"
 	"strings"
+
+	"github.com/beecool-cocktail/application-backend/domain"
+	"github.com/disintegration/imaging"
 )
 
 func ValidateImageType(fileType string) bool {
@@ -98,10 +100,6 @@ func DecodeBase64AndSaveAsWebp(base64EncodedData string, imageType string, dst s
 }
 
 func DecodeBase64AndUpdateAsWebp(base64EncodedData string, imageType string, dst string) error {
-	//options, err := encoder.NewLossyEncoderOptions(encoder.PresetDefault, 100)
-	//if err != nil {
-	//	return err
-	//}
 
 	img, _, err := image.Decode(bytes.NewReader([]byte(base64EncodedData)))
 	if err != nil {
@@ -142,19 +140,10 @@ func DecodeBase64AndUpdateAsWebp(base64EncodedData string, imageType string, dst
 		return nil
 	}
 
-	//if err := webp.Encode(out, img, options); err != nil {
-	//	return err
-	//}
-
 	return nil
 }
 
 func DecodeBase64AndSaveAsWebpInLQIP(base64EncodedData string, imageType string, dst string) error {
-	//dst = dst + "_lq.webp"
-	//options, err := encoder.NewLossyEncoderOptions(encoder.PresetDefault, 75)
-	//if err != nil {
-	//	return err
-	//}
 
 	img, _, err := image.Decode(bytes.NewReader([]byte(base64EncodedData)))
 	if err != nil {
@@ -199,23 +188,10 @@ func DecodeBase64AndSaveAsWebpInLQIP(base64EncodedData string, imageType string,
 		return nil
 	}
 
-	//out, err := os.Create(dst)
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//if err := webp.Encode(out, blurImage, options); err != nil {
-	//	return err
-	//}
-
 	return nil
 }
 
 func DecodeBase64AndUpdateAsWebpInLQIP(base64EncodedData string, imageType string, dst string) error {
-	//options, err := encoder.NewLossyEncoderOptions(encoder.PresetDefault, 75)
-	//if err != nil {
-	//	return err
-	//}
 
 	img, _, err := image.Decode(bytes.NewReader([]byte(base64EncodedData)))
 	if err != nil {
@@ -255,10 +231,6 @@ func DecodeBase64AndUpdateAsWebpInLQIP(base64EncodedData string, imageType strin
 	default:
 		return nil
 	}
-
-	//if err := webp.Encode(out, blurImage, options); err != nil {
-	//	return err
-	//}
 
 	return nil
 }
