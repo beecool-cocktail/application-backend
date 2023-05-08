@@ -1,6 +1,8 @@
 package http
 
 import (
+	"net/http"
+
 	"github.com/beecool-cocktail/application-backend/domain"
 	"github.com/beecool-cocktail/application-backend/enum/cockarticletype"
 	"github.com/beecool-cocktail/application-backend/middleware"
@@ -10,7 +12,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/vincent-petithory/dataurl"
-	"net/http"
 )
 
 type CocktailHandler struct {
@@ -97,8 +98,8 @@ func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 	photos := make([]viewmodels.CocktailPhotoWithIDInResponse, 0)
 	for _, photo := range cocktail.Photos {
 		out := viewmodels.CocktailPhotoWithIDInResponse{
-			ID:    photo.ID,
-			Photo: photo.Photo,
+			ID:   photo.ID,
+			File: photo.Photo,
 		}
 		photos = append(photos, out)
 	}
@@ -199,8 +200,8 @@ func (co *CocktailHandler) GetCocktailDraftByCocktailID(c *gin.Context) {
 	photos := make([]viewmodels.CocktailPhotoWithIDInResponse, 0)
 	for _, photo := range cocktail.Photos {
 		out := viewmodels.CocktailPhotoWithIDInResponse{
-			ID:    photo.ID,
-			Photo: photo.Photo,
+			ID:   photo.ID,
+			File: photo.Photo,
 		}
 		photos = append(photos, out)
 	}
@@ -644,7 +645,7 @@ func (co *CocktailHandler) UpdateDraftArticle(c *gin.Context) {
 		CocktailID:  requestUri.ID,
 		Title:       requestBody.Name,
 		Description: requestBody.Description,
-		Category: cockarticletype.Draft.Int(),
+		Category:    cockarticletype.Draft.Int(),
 	}
 
 	var ingredients []domain.CocktailIngredient
@@ -676,8 +677,8 @@ func (co *CocktailHandler) UpdateDraftArticle(c *gin.Context) {
 			isCoverPhoto = false
 		}
 
-		if photo.Photo != "" {
-			dataURL, err := dataurl.DecodeString(photo.Photo)
+		if photo.File != "" {
+			dataURL, err := dataurl.DecodeString(photo.File)
 			if err != nil {
 				co.Service.Logger.LogFile(c, logrus.InfoLevel, loggerFields,
 					"query by cocktail id failed - %s", err)
@@ -794,8 +795,8 @@ func (co *CocktailHandler) UpdateFormalArticle(c *gin.Context) {
 			isCoverPhoto = false
 		}
 
-		if photo.Photo != "" {
-			dataURL, err := dataurl.DecodeString(photo.Photo)
+		if photo.File != "" {
+			dataURL, err := dataurl.DecodeString(photo.File)
 			if err != nil {
 				co.Service.Logger.LogFile(c, logrus.InfoLevel, loggerFields,
 					"query by cocktail id failed - %s", err)

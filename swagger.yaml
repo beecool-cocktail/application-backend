@@ -32,29 +32,27 @@ definitions:
         x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
     CocktailPhotoWithIDInRequest:
         properties:
+            file:
+                type: string
+                x-go-name: File
             id:
                 format: int64
                 type: integer
                 x-go-name: ID
-            path:
-                type: string
-                x-go-name: Photo
-        required:
-            - path
         type: object
         x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
     CocktailPhotoWithIDInResponse:
         properties:
+            file:
+                type: string
+                x-go-name: File
             id:
                 format: int64
                 type: integer
                 x-go-name: ID
-            path:
-                type: string
-                x-go-name: Photo
         required:
             - id
-            - path
+            - file
         type: object
         x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
     CocktailStepWithoutIDInRequest:
