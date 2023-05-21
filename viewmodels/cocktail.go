@@ -175,15 +175,15 @@ type CocktailStepWithIDInResponse struct {
 }
 
 type CocktailPhotoWithIDInRequest struct {
-	ID   int64  `json:"id"`
-	File string `json:"file"`
+	ID        int64  `json:"id"`
+	ImageFile string `json:"image_file"`
 }
 
 type CocktailPhotoWithIDInResponse struct {
 	//required: true
 	ID int64 `json:"id"`
 	//required: true
-	File string `json:"file"`
+	ImagePath string `json:"image_path"`
 }
 
 type GetCocktailByIDRequest struct {

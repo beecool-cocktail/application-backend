@@ -98,8 +98,8 @@ func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 	photos := make([]viewmodels.CocktailPhotoWithIDInResponse, 0)
 	for _, photo := range cocktail.Photos {
 		out := viewmodels.CocktailPhotoWithIDInResponse{
-			ID:   photo.ID,
-			File: photo.Photo,
+			ID:        photo.ID,
+			ImagePath: photo.Photo,
 		}
 		photos = append(photos, out)
 	}
@@ -200,8 +200,8 @@ func (co *CocktailHandler) GetCocktailDraftByCocktailID(c *gin.Context) {
 	photos := make([]viewmodels.CocktailPhotoWithIDInResponse, 0)
 	for _, photo := range cocktail.Photos {
 		out := viewmodels.CocktailPhotoWithIDInResponse{
-			ID:   photo.ID,
-			File: photo.Photo,
+			ID:        photo.ID,
+			ImagePath: photo.Photo,
 		}
 		photos = append(photos, out)
 	}
@@ -677,8 +677,8 @@ func (co *CocktailHandler) UpdateDraftArticle(c *gin.Context) {
 			isCoverPhoto = false
 		}
 
-		if photo.File != "" {
-			dataURL, err := dataurl.DecodeString(photo.File)
+		if photo.ImageFile != "" {
+			dataURL, err := dataurl.DecodeString(photo.ImageFile)
 			if err != nil {
 				co.Service.Logger.LogFile(c, logrus.InfoLevel, loggerFields,
 					"query by cocktail id failed - %s", err)
@@ -795,8 +795,8 @@ func (co *CocktailHandler) UpdateFormalArticle(c *gin.Context) {
 			isCoverPhoto = false
 		}
 
-		if photo.File != "" {
-			dataURL, err := dataurl.DecodeString(photo.File)
+		if photo.ImageFile != "" {
+			dataURL, err := dataurl.DecodeString(photo.ImageFile)
 			if err != nil {
 				co.Service.Logger.LogFile(c, logrus.InfoLevel, loggerFields,
 					"query by cocktail id failed - %s", err)
