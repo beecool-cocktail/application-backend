@@ -21,8 +21,8 @@ func GetService() *service.Service {
 			Others: &service.OtherConfig{
 				File: &service.File{
 					Image: &service.Image{
-						PathInDB:  "mock/images",
-						PathInURL: "mock/",
+						PathInServer: "mock/images",
+						PathInURL:    "mock/",
 					},
 				},
 			},

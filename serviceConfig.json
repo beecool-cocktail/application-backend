@@ -52,7 +52,7 @@
     },
     "File": {
       "Image": {
-        "PathInDB" : "static/images/",
+        "PathInServer" : "static/images/",
         "PathInURL": "static/"
       }
     }

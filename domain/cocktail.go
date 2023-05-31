@@ -2,9 +2,10 @@ package domain
 
 import (
 	"context"
+	"time"
+
 	"github.com/bsm/redislock"
 	"gorm.io/gorm"
-	"time"
 )
 
 const CocktailsIndex = "cocktails"
@@ -58,12 +59,13 @@ type CocktailElasticSearch struct {
 type CocktailImage struct {
 	ImageID      int64
 	CocktailID   int64
-	Data         string
+	File         string
 	Name         string
-	Type         string
-	Destination  string
+	ContentType  string
+	Path         string
 	IsCoverPhoto bool
 	IsLowQuality bool
+	Order        int
 }
 
 type APICocktail struct {
@@ -119,8 +121,8 @@ type CocktailRedisRepository interface {
 type CocktailFileRepository interface {
 	SaveAsWebp(ctx context.Context, ci *CocktailImage) error
 	SaveAsWebpInLQIP(ctx context.Context, ci *CocktailImage) error
-	UpdateAsWebp(ctx context.Context, ci *CocktailImage) error
-	UpdateAsWebpInLQIP(ctx context.Context, ci *CocktailImage) error
+	UpdateAsWebp(ctx context.Context, ci *CocktailImage, destination string) error
+	UpdateAsWebpInLQIP(ctx context.Context, ci *CocktailImage, destination string) error
 }
 
 type CocktailElasticSearchRepository interface {

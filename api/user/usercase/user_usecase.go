@@ -3,6 +3,7 @@ package usercase
 import (
 	"context"
 	"errors"
+
 	"github.com/beecool-cocktail/application-backend/domain"
 	"github.com/beecool-cocktail/application-backend/service"
 	"github.com/beecool-cocktail/application-backend/util"
@@ -59,7 +60,7 @@ func (u *userUsecase) UpdateUserAvatar(ctx context.Context, d *domain.User, ui *
 
 	newFileName := uuid.New().String()
 
-	savePath := u.service.Configure.Others.File.Image.PathInDB
+	savePath := u.service.Configure.Others.File.Image.PathInServer
 	urlPath := u.service.Configure.Others.File.Image.PathInURL
 
 	err := u.transactionRepo.Transaction(func(i interface{}) error {

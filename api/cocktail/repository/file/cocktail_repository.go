@@ -2,6 +2,7 @@ package file
 
 import (
 	"context"
+
 	"github.com/beecool-cocktail/application-backend/domain"
 	"github.com/beecool-cocktail/application-backend/util"
 )
@@ -15,7 +16,8 @@ func NewFileUserRepository() domain.CocktailFileRepository {
 
 func (u *cocktailFileRepository) SaveAsWebp(ctx context.Context, ci *domain.CocktailImage) error {
 
-	_, _, err := util.DecodeBase64AndSaveAsWebp(ci.Data, ci.Type, "/"+ci.Destination)
+	destination := util.ConcatString("/", ci.Path)
+	_, _, err := util.DecodeBase64AndSaveAsWebp(ci.File, ci.ContentType, destination)
 	if err != nil {
 		return err
 	}
@@ -25,7 +27,8 @@ func (u *cocktailFileRepository) SaveAsWebp(ctx context.Context, ci *domain.Cock
 
 func (u *cocktailFileRepository) SaveAsWebpInLQIP(ctx context.Context, ci *domain.CocktailImage) error {
 
-	err := util.DecodeBase64AndSaveAsWebpInLQIP(ci.Data, ci.Type, "/"+ci.Destination)
+	destination := util.ConcatString("/", ci.Path)
+	err := util.DecodeBase64AndSaveAsWebpInLQIP(ci.File, ci.ContentType, destination)
 	if err != nil {
 		return err
 	}
@@ -33,9 +36,11 @@ func (u *cocktailFileRepository) SaveAsWebpInLQIP(ctx context.Context, ci *domai
 	return nil
 }
 
-func (u *cocktailFileRepository) UpdateAsWebp(ctx context.Context, ci *domain.CocktailImage) error {
+func (u *cocktailFileRepository) UpdateAsWebp(ctx context.Context, ci *domain.CocktailImage, destination string) error {
 
-	err := util.DecodeBase64AndUpdateAsWebp(ci.Data, ci.Type, "/"+ci.Destination)
+	source := util.ConcatString("/", ci.Path)
+	destination = util.ConcatString("/", destination)
+	err := util.DecodeBase64AndUpdateAsWebp(ci.File, ci.ContentType, source, destination)
 	if err != nil {
 		return err
 	}
@@ -43,9 +48,11 @@ func (u *cocktailFileRepository) UpdateAsWebp(ctx context.Context, ci *domain.Co
 	return nil
 }
 
-func (u *cocktailFileRepository) UpdateAsWebpInLQIP(ctx context.Context, ci *domain.CocktailImage) error {
+func (u *cocktailFileRepository) UpdateAsWebpInLQIP(ctx context.Context, ci *domain.CocktailImage, destination string) error {
 
-	err := util.DecodeBase64AndUpdateAsWebpInLQIP(ci.Data, ci.Type, "/"+ci.Destination)
+	source := util.ConcatString("/", ci.Path)
+	destination = util.ConcatString("/", destination)
+	err := util.DecodeBase64AndUpdateAsWebpInLQIP(ci.File, ci.ContentType, source, destination)
 	if err != nil {
 		return err
 	}

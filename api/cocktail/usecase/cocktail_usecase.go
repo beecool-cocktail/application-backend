@@ -3,6 +3,8 @@ package usecase
 import (
 	"context"
 	"errors"
+	"time"
+
 	"github.com/beecool-cocktail/application-backend/domain"
 	"github.com/beecool-cocktail/application-backend/enum/cockarticletype"
 	"github.com/beecool-cocktail/application-backend/enum/httpaction"
@@ -11,7 +13,6 @@ import (
 	"github.com/beecool-cocktail/application-backend/util"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
-	"time"
 )
 
 type cocktailUsecase struct {
@@ -234,50 +235,62 @@ func (c *cocktailUsecase) getAction(id int64, data string) (httpaction.HttpActio
 }
 
 func (c *cocktailUsecase) addPhoto(ctx context.Context, tx *gorm.DB, image *domain.CocktailImage) error {
-	savePath := c.service.Configure.Others.File.Image.PathInDB
-	urlPath := c.service.Configure.Others.File.Image.PathInURL
+	pathInServer := c.service.Configure.Others.File.Image.PathInServer
+	pathInURL := c.service.Configure.Others.File.Image.PathInURL
 
 	newFileName := uuid.New().String()
-	image.Name = newFileName
 	lowQualityBundleID := util.GetID(util.IdGenerator)
 
-	if !util.ValidateImageType(image.Type) {
+	if !util.ValidateImageType(image.ContentType) {
 		return domain.ErrCodeFileTypeIllegal
 	}
 
-	image.Destination = savePath + newFileName
-	err := c.cocktailFileRepo.SaveAsWebp(ctx, image)
+	serverPath := util.ConcatString(pathInServer, newFileName)
+	err := c.cocktailFileRepo.SaveAsWebp(ctx, 
+		&domain.CocktailImage{
+			File: image.File,
+			ContentType: image.ContentType,
+			Path: serverPath,
+	})
 	if err != nil {
 		return err
 	}
 
-	image.Destination = urlPath + newFileName + ".webp"
+	imageType := util.GetImageType(image.ContentType)
+	urlPath := util.ConcatString(pathInURL, newFileName, ".", imageType)
 	err = c.cocktailPhotoMySQLRepo.StoreTx(ctx, tx,
 		&domain.CocktailPhoto{
 			CocktailID:         image.CocktailID,
-			Photo:              image.Destination,
+			Photo:              urlPath,
 			IsCoverPhoto:       image.IsCoverPhoto,
 			IsLowQuality:       false,
 			LowQualityBundleID: lowQualityBundleID,
+			Order:              image.Order,
 		})
 	if err != nil {
 		return err
 	}
 
-	image.Destination = savePath + newFileName
-	err = c.cocktailFileRepo.SaveAsWebpInLQIP(ctx, image)
+	lowQualityServerPath := util.ConcatString(pathInServer, newFileName)
+	err = c.cocktailFileRepo.SaveAsWebpInLQIP(ctx, 
+		&domain.CocktailImage{
+			File: image.File,
+			ContentType: image.ContentType,
+			Path: lowQualityServerPath,
+	})
 	if err != nil {
 		return err
 	}
 
-	image.Destination = urlPath + newFileName + "_lq.webp"
+	lowQualityURLPath := util.ConcatString(pathInURL, newFileName, "_lq.", imageType)
 	err = c.cocktailPhotoMySQLRepo.StoreTx(ctx, tx,
 		&domain.CocktailPhoto{
 			CocktailID:         image.CocktailID,
-			Photo:              image.Destination,
+			Photo:              lowQualityURLPath,
 			IsCoverPhoto:       image.IsCoverPhoto,
 			IsLowQuality:       true,
 			LowQualityBundleID: lowQualityBundleID,
+			Order:              image.Order,
 		})
 	if err != nil {
 		return err
@@ -287,32 +300,43 @@ func (c *cocktailUsecase) addPhoto(ctx context.Context, tx *gorm.DB, image *doma
 }
 
 func (c *cocktailUsecase) editPhoto(ctx context.Context, tx *gorm.DB, image *domain.CocktailImage) error {
-	savePath := c.service.Configure.Others.File.Image.PathInDB
-	urlPath := c.service.Configure.Others.File.Image.PathInURL
+	pathInServer := c.service.Configure.Others.File.Image.PathInServer
+	pathInURL := c.service.Configure.Others.File.Image.PathInURL
 
 	photo, err := c.cocktailPhotoMySQLRepo.QueryPhotoById(ctx, image.ImageID)
 	if err != nil {
 		return err
 	}
 
-	fileName, err := util.GetFileNameByPath(photo.Photo)
+	newFileName := uuid.New().String()
+	oldFileName, err := util.GetFileNameByPath(photo.Photo)
 	if err != nil {
 		return err
 	}
 
-	image.Destination = savePath + fileName
-	err = c.cocktailFileRepo.UpdateAsWebp(ctx, image)
+	imageType := util.GetImageType(image.ContentType)
+
+	oldServerPath := util.ConcatString(pathInServer, oldFileName)
+	newServerPath := util.ConcatString(pathInServer, newFileName, ".", imageType)
+	err = c.cocktailFileRepo.UpdateAsWebp(ctx,
+		&domain.CocktailImage{
+			File:        image.File,
+			ContentType: image.ContentType,
+			Path:        oldServerPath,
+		},
+		newServerPath)
 	if err != nil {
 		return err
 	}
 
 	//this file already have type
-	image.Destination = urlPath + fileName
+	newURLPath := util.ConcatString(pathInURL, newFileName, ".", imageType)
 	_, err = c.cocktailPhotoMySQLRepo.UpdateTx(ctx, tx,
 		&domain.CocktailPhoto{
-			ID:           image.ImageID,
-			Photo:        image.Destination,
+			ID:           photo.ID,
+			Photo:        newURLPath,
 			IsCoverPhoto: image.IsCoverPhoto,
+			Order:        image.Order,
 		})
 	if err != nil {
 		return err
@@ -323,24 +347,31 @@ func (c *cocktailUsecase) editPhoto(ctx context.Context, tx *gorm.DB, image *dom
 		return err
 	}
 
-	lowQualityFileName, err := util.GetFileNameByPath(lowQualityPhoto.Photo)
+	oldLowQualityFileName, err := util.GetFileNameByPath(lowQualityPhoto.Photo)
 	if err != nil {
 		return err
 	}
 
-	image.Destination = savePath + lowQualityFileName
-	err = c.cocktailFileRepo.UpdateAsWebpInLQIP(ctx, image)
+	lowQualityOldServerPath := util.ConcatString(pathInServer, oldLowQualityFileName)
+	lowQualityNewServerPath := util.ConcatString(pathInServer, newFileName, "_lq.", imageType)
+	err = c.cocktailFileRepo.UpdateAsWebpInLQIP(ctx, 
+		&domain.CocktailImage{
+		File:        image.File,
+		ContentType: image.ContentType,
+		Path:        lowQualityOldServerPath,
+	},
+	lowQualityNewServerPath)
 	if err != nil {
 		return err
 	}
 
-	//this file already have type
-	image.Destination = urlPath + lowQualityFileName
+	newLowQualityURLPath := util.ConcatString(pathInURL, newFileName, "_lq.", imageType)
 	_, err = c.cocktailPhotoMySQLRepo.UpdateTx(ctx, tx,
 		&domain.CocktailPhoto{
-			ID:           image.ImageID,
-			Photo:        image.Destination,
+			ID:           lowQualityPhoto.ID,
+			Photo:        newLowQualityURLPath,
 			IsCoverPhoto: image.IsCoverPhoto,
+			Order:        image.Order,
 		})
 	if err != nil {
 		return err
@@ -540,8 +571,8 @@ func (c *cocktailUsecase) QueryFormalCountsByUserID(ctx context.Context, id int6
 func (c *cocktailUsecase) Store(ctx context.Context, co *domain.Cocktail, ingredients []domain.CocktailIngredient,
 	steps []domain.CocktailStep, images []domain.CocktailImage, userID int64) error {
 
-	savePath := c.service.Configure.Others.File.Image.PathInDB
-	urlPath := c.service.Configure.Others.File.Image.PathInURL
+	pathInServer := c.service.Configure.Others.File.Image.PathInServer
+	pathInURL := c.service.Configure.Others.File.Image.PathInURL
 
 	newCocktailID := util.GetID(util.IdGenerator)
 
@@ -582,49 +613,52 @@ func (c *cocktailUsecase) Store(ctx context.Context, co *domain.Cocktail, ingred
 			return err
 		}
 
-		for _, image := range images {
+		for order, image := range images {
 
 			newFileName := uuid.New().String()
 			image.Name = newFileName
 			lowQualityBundleID := util.GetID(util.IdGenerator)
 
-			if !util.ValidateImageType(image.Type) {
+			if !util.ValidateImageType(image.ContentType) {
 				return domain.ErrCodeFileTypeIllegal
 			}
 
-			image.Destination = savePath + newFileName
+			image.Path = pathInServer + newFileName
 			err := c.cocktailFileRepo.SaveAsWebp(ctx, &image)
 			if err != nil {
 				return err
 			}
 
-			image.Destination = urlPath + newFileName + "." + util.GetImageType(image.Type)
+			imageType := util.GetImageType(image.ContentType)
+			image.Path = util.ConcatString(pathInURL, newFileName, ".", imageType)
 			err = c.cocktailPhotoMySQLRepo.StoreTx(ctx, tx,
 				&domain.CocktailPhoto{
 					CocktailID:         newCocktailID,
-					Photo:              image.Destination,
+					Photo:              image.Path,
 					IsCoverPhoto:       image.IsCoverPhoto,
 					IsLowQuality:       false,
 					LowQualityBundleID: lowQualityBundleID,
+					Order:              order,
 				})
 			if err != nil {
 				return err
 			}
 
-			image.Destination = savePath + newFileName
+			image.Path = util.ConcatString(pathInServer, newFileName)
 			err = c.cocktailFileRepo.SaveAsWebpInLQIP(ctx, &image)
 			if err != nil {
 				return err
 			}
 
-			image.Destination = urlPath + newFileName + "_lq." + util.GetImageType(image.Type)
+			image.Path = util.ConcatString(pathInURL, newFileName, "_lq.", imageType)
 			err = c.cocktailPhotoMySQLRepo.StoreTx(ctx, tx,
 				&domain.CocktailPhoto{
 					CocktailID:         newCocktailID,
-					Photo:              image.Destination,
+					Photo:              image.Path,
 					IsCoverPhoto:       image.IsCoverPhoto,
 					IsLowQuality:       true,
 					LowQualityBundleID: lowQualityBundleID,
+					Order:              order,
 				})
 			if err != nil {
 				return err
@@ -713,7 +747,7 @@ func (c *cocktailUsecase) Update(ctx context.Context, co *domain.Cocktail, ingre
 
 		// update cocktail photo
 		for _, image := range images {
-			action, err := c.getAction(image.ImageID, image.Data)
+			action, err := c.getAction(image.ImageID, image.File)
 			if err != nil {
 				return err
 			}
@@ -729,7 +763,19 @@ func (c *cocktailUsecase) Update(ctx context.Context, co *domain.Cocktail, ingre
 					return err
 				}
 			} else {
-				//keep photo
+				//keep photo and change order
+				photo, err := c.cocktailPhotoMySQLRepo.QueryPhotoById(ctx, image.ImageID)
+				if err != nil {
+					return err
+				}
+				_, err = c.cocktailPhotoMySQLRepo.UpdatePhotoOrderTx(ctx, tx, &domain.CocktailPhoto{
+					LowQualityBundleID: photo.LowQualityBundleID,
+					Order:              image.Order,
+					IsCoverPhoto:       image.IsCoverPhoto,
+				})
+				if err != nil {
+					return err
+				}
 			}
 		}
 

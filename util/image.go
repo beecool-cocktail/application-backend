@@ -99,14 +99,14 @@ func DecodeBase64AndSaveAsWebp(base64EncodedData string, imageType string, dst s
 	return width, height, nil
 }
 
-func DecodeBase64AndUpdateAsWebp(base64EncodedData string, imageType string, dst string) error {
+func DecodeBase64AndUpdateAsWebp(base64EncodedData string, imageType string, sourceFile, destinationFile string) error {
 
 	img, _, err := image.Decode(bytes.NewReader([]byte(base64EncodedData)))
 	if err != nil {
 		return err
 	}
 
-	f, err := os.OpenFile(dst, os.O_RDWR|os.O_TRUNC, 0666)
+	f, err := os.OpenFile(sourceFile, os.O_RDWR|os.O_TRUNC, 0666)
 	if err != nil {
 		return err
 	}
@@ -138,6 +138,11 @@ func DecodeBase64AndUpdateAsWebp(base64EncodedData string, imageType string, dst
 
 	default:
 		return nil
+	}
+
+	err = os.Rename(sourceFile, destinationFile)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -191,7 +196,7 @@ func DecodeBase64AndSaveAsWebpInLQIP(base64EncodedData string, imageType string,
 	return nil
 }
 
-func DecodeBase64AndUpdateAsWebpInLQIP(base64EncodedData string, imageType string, dst string) error {
+func DecodeBase64AndUpdateAsWebpInLQIP(base64EncodedData string, imageType string, sourceFile, destinationFile string) error {
 
 	img, _, err := image.Decode(bytes.NewReader([]byte(base64EncodedData)))
 	if err != nil {
@@ -202,7 +207,7 @@ func DecodeBase64AndUpdateAsWebpInLQIP(base64EncodedData string, imageType strin
 
 	blurImage := imaging.Blur(src, 5)
 
-	f, err := os.OpenFile(dst, os.O_RDWR|os.O_TRUNC, 0666)
+	f, err := os.OpenFile(sourceFile, os.O_RDWR|os.O_TRUNC, 0666)
 	if err != nil {
 		return err
 	}
@@ -230,6 +235,11 @@ func DecodeBase64AndUpdateAsWebpInLQIP(base64EncodedData string, imageType strin
 
 	default:
 		return nil
+	}
+
+	err = os.Rename(sourceFile, destinationFile)
+	if err != nil {
+		return err
 	}
 
 	return nil

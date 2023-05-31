@@ -450,8 +450,8 @@ func (co *CocktailHandler) PostArticle(c *gin.Context) {
 		}
 
 		out := domain.CocktailImage{
-			Data:         string(dataURL.Data),
-			Type:         dataURL.MediaType.ContentType(),
+			File:         string(dataURL.Data),
+			ContentType:  dataURL.MediaType.ContentType(),
 			IsCoverPhoto: isCoverPhoto,
 		}
 		images = append(images, out)
@@ -536,8 +536,8 @@ func (co *CocktailHandler) PostDraftArticle(c *gin.Context) {
 		}
 
 		out := domain.CocktailImage{
-			Data:         string(dataURL.Data),
-			Type:         dataURL.MediaType.ContentType(),
+			File:         string(dataURL.Data),
+			ContentType:  dataURL.MediaType.ContentType(),
 			IsCoverPhoto: isCoverPhoto,
 		}
 		images = append(images, out)
@@ -689,9 +689,10 @@ func (co *CocktailHandler) UpdateDraftArticle(c *gin.Context) {
 			out := domain.CocktailImage{
 				ImageID:      photo.ID,
 				CocktailID:   requestUri.ID,
-				Data:         string(dataURL.Data),
-				Type:         dataURL.MediaType.ContentType(),
+				File:         string(dataURL.Data),
+				ContentType:  dataURL.MediaType.ContentType(),
 				IsCoverPhoto: isCoverPhoto,
+				Order:        idx,
 			}
 			images = append(images, out)
 		} else {
@@ -699,6 +700,7 @@ func (co *CocktailHandler) UpdateDraftArticle(c *gin.Context) {
 				ImageID:      photo.ID,
 				CocktailID:   requestUri.ID,
 				IsCoverPhoto: isCoverPhoto,
+				Order:        idx,
 			}
 			images = append(images, out)
 		}
@@ -752,7 +754,7 @@ func (co *CocktailHandler) UpdateFormalArticle(c *gin.Context) {
 	var requestBody viewmodels.UpdateFormalArticleRequest
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
 		co.Service.Logger.LogFile(c, logrus.InfoLevel, co.Service.Logger.GetLoggerFields(userId, c.ClientIP(),
-			c.Request.Method, nil, c.Request.RequestURI), "query by cocktail id failed - %s", err)
+			c.Request.Method, nil, c.Request.RequestURI), "parameter illegal - %s", err)
 		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
 		return
 	}
@@ -799,7 +801,7 @@ func (co *CocktailHandler) UpdateFormalArticle(c *gin.Context) {
 			dataURL, err := dataurl.DecodeString(photo.ImageFile)
 			if err != nil {
 				co.Service.Logger.LogFile(c, logrus.InfoLevel, loggerFields,
-					"query by cocktail id failed - %s", err)
+					"decode dataurl failed - %s", err)
 				util.PackResponseWithError(c, err, err.Error())
 				return
 			}
@@ -807,9 +809,10 @@ func (co *CocktailHandler) UpdateFormalArticle(c *gin.Context) {
 			out := domain.CocktailImage{
 				ImageID:      photo.ID,
 				CocktailID:   requestUri.ID,
-				Data:         string(dataURL.Data),
-				Type:         dataURL.MediaType.ContentType(),
+				File:         string(dataURL.Data),
+				ContentType:  dataURL.MediaType.ContentType(),
 				IsCoverPhoto: isCoverPhoto,
+				Order:        idx,
 			}
 			images = append(images, out)
 		} else {
@@ -817,6 +820,7 @@ func (co *CocktailHandler) UpdateFormalArticle(c *gin.Context) {
 				ImageID:      photo.ID,
 				CocktailID:   requestUri.ID,
 				IsCoverPhoto: isCoverPhoto,
+				Order:        idx,
 			}
 			images = append(images, out)
 		}
@@ -824,7 +828,7 @@ func (co *CocktailHandler) UpdateFormalArticle(c *gin.Context) {
 
 	err := co.CocktailUsecase.Update(c, &cocktail, ingredients, steps, images, userId)
 	if err != nil {
-		co.Service.Logger.LogFile(c, logrus.InfoLevel, loggerFields, "query by cocktail id failed - %s", err)
+		co.Service.Logger.LogFile(c, logrus.InfoLevel, loggerFields, "update cocktail failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
 	}

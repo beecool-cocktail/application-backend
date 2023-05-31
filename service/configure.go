@@ -80,8 +80,8 @@ type File struct {
 }
 
 type Image struct {
-	PathInDB  string
-	PathInURL string
+	PathInServer string
+	PathInURL    string
 }
 
 func newConfigure(fileName string) (*Configure, error) {
