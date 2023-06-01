@@ -826,7 +826,6 @@ definitions:
             - name
             - ingredient_list
             - step_list
-            - description
         type: object
         x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
     UpdateUserAvatarRequest:

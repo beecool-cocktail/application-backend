@@ -303,8 +303,7 @@ type UpdateFormalArticleRequest struct {
 	StepList []CocktailStepWithoutIDInRequest `json:"step_list" binding:"required,gt=0"`
 
 	//example: Very good to drink
-	//required: true
-	Description string `json:"description" binding:"required"`
+	Description string `json:"description"`
 }
 
 type GetSelfCocktailListResponse struct {
