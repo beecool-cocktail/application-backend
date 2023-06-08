@@ -903,7 +903,7 @@ func (c *cocktailUsecase) Delete(ctx context.Context, cocktailID, userID int64) 
 			return err
 		}
 
-		if c.service.Configure.Elastic.Enable {
+		if c.service.Configure.Elastic.Enable && cocktail.Category == cockarticletype.Formal.Int(){
 			err = c.cocktailElasticSearchRepo.Delete(ctx, cocktailID)
 			if err != nil {
 				return err
