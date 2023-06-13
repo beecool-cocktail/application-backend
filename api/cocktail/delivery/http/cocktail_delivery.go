@@ -306,7 +306,22 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 
 		lowQualityPhotos := make([]string, 0)
 		for _, photo := range cocktail.LowQualityPhotos {
-			lowQualityPhotos = append(lowQualityPhotos, photo.Photo)
+			fileName, err := util.GetFileNameByPath(photo.Photo)
+			if err != nil {
+				co.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+					"get file name by path failed - %s", err)
+				util.PackResponseWithError(c, err, err.Error())
+				return
+			}
+			pathInServer := util.ConcatString("/", co.Service.Configure.Others.File.Image.PathInServer, fileName)
+			dataURL, err := util.ParseLQIPFileToDataURL(pathInServer)
+			if err != nil {
+				co.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+					"parse lqip file to data url failed - %s", err)
+				util.PackResponseWithError(c, err, err.Error())
+				return
+			}
+			lowQualityPhotos = append(lowQualityPhotos, dataURL)
 		}
 
 		out := viewmodels.PopularCocktailList{

@@ -7,11 +7,13 @@ import (
 	_ "image/jpeg"
 	"image/png"
 	_ "image/png"
+	"io/ioutil"
 	"os"
 	"strings"
 
 	"github.com/beecool-cocktail/application-backend/domain"
 	"github.com/disintegration/imaging"
+	"github.com/vincent-petithory/dataurl"
 )
 
 func ValidateImageType(fileType string) bool {
@@ -254,4 +256,16 @@ func GetFileNameByPath(path string) (string, error) {
 	} else {
 		return "", domain.ErrFilePathIllegal
 	}
+}
+
+func ParseLQIPFileToDataURL(file string) (string, error) {
+
+	bytes, err := ioutil.ReadFile(file)
+	if err != nil {
+		return "", err
+	}
+
+	dataURL := dataurl.EncodeBytes(bytes)
+
+	return dataURL, nil
 }
