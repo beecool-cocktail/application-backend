@@ -234,6 +234,11 @@ definitions:
                     $ref: '#/definitions/CocktailPhotoWithIDInResponse'
                 type: array
                 x-go-name: Photos
+            low_quality_photos:
+                items:
+                    type: string
+                type: array
+                x-go-name: LowQualityPhotos    
             rotation:
                 description: 旋轉角度
                 format: float
@@ -272,6 +277,7 @@ definitions:
             - coordinate
             - rotation
             - photos
+            - low_quality_photos
             - title
             - description
             - ingredient_list

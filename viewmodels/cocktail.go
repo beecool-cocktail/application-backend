@@ -217,6 +217,8 @@ type GetCocktailByIDResponse struct {
 	//required: true
 	Photos []CocktailPhotoWithIDInResponse `json:"photos"`
 	//required: true
+	LowQualityPhotos []string `json:"low_quality_photos"`
+	//required: true
 	Title string `json:"title"`
 	//required: true
 	Description string `json:"description"`

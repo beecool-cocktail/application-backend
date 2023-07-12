@@ -104,6 +104,26 @@ func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 		photos = append(photos, out)
 	}
 
+	lowQualityPhotos := make([]string, 0)
+	for _, photo := range cocktail.LowQualityPhotos {
+		fileName, err := util.GetFileNameByPath(photo.Photo)
+		if err != nil {
+			co.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+				"get file name by path failed - %s", err)
+			util.PackResponseWithError(c, err, err.Error())
+			return
+		}
+		pathInServer := util.ConcatString("/", co.Service.Configure.Others.File.Image.PathInServer, fileName)
+		dataURL, err := util.ParseLQIPFileToDataURL(pathInServer)
+		if err != nil {
+			co.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+				"parse lqip file to data url failed - %s", err)
+			util.PackResponseWithError(c, err, err.Error())
+			return
+		}
+		lowQualityPhotos = append(lowQualityPhotos, dataURL)
+	}
+
 	cocktailUser, err := co.UserUsecase.QueryById(c, cocktail.UserID)
 	if err != nil {
 		co.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
@@ -129,14 +149,15 @@ func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 				Y: cocktailUser.CoordinateY2,
 			},
 		},
-		Rotation:       cocktailUser.Rotation,
-		Title:          cocktail.Title,
-		Description:    cocktail.Description,
-		IngredientList: ingredients,
-		StepList:       steps,
-		Photos:         photos,
-		IsCollected:    cocktail.IsCollected,
-		CreatedDate:    cocktail.CreatedDate,
+		Rotation:         cocktailUser.Rotation,
+		Title:            cocktail.Title,
+		Description:      cocktail.Description,
+		IngredientList:   ingredients,
+		StepList:         steps,
+		Photos:           photos,
+		LowQualityPhotos: lowQualityPhotos,
+		IsCollected:      cocktail.IsCollected,
+		CreatedDate:      cocktail.CreatedDate,
 	}
 
 	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")

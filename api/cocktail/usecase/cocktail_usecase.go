@@ -138,6 +138,12 @@ func (c *cocktailUsecase) fillCocktailDetails(ctx context.Context, cocktail doma
 	}
 	cocktail.Photos = photos
 
+	lowQualityPhotos, err := c.cocktailPhotoMySQLRepo.QueryLowQualityPhotosByCocktailId(ctx, cocktail.CocktailID)
+		if err != nil {
+			return domain.APICocktail{}, err
+		}
+		cocktail.LowQualityPhotos = lowQualityPhotos
+
 	ingredients, err := c.cocktailIngredientMySQLRepo.QueryByCocktailId(ctx, cocktail.CocktailID)
 	if err != nil {
 		return domain.APICocktail{}, err
