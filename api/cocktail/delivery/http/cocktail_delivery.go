@@ -95,15 +95,6 @@ func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 		steps = append(steps, out)
 	}
 
-	photos := make([]viewmodels.CocktailPhotoWithIDInResponse, 0)
-	for _, photo := range cocktail.Photos {
-		out := viewmodels.CocktailPhotoWithIDInResponse{
-			ID:        photo.ID,
-			ImagePath: photo.Photo,
-		}
-		photos = append(photos, out)
-	}
-
 	lowQualityPhotos := make([]string, 0)
 	for _, photo := range cocktail.LowQualityPhotos {
 		fileName, err := util.GetFileNameByPath(photo.Photo)
@@ -122,6 +113,16 @@ func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 			return
 		}
 		lowQualityPhotos = append(lowQualityPhotos, dataURL)
+	}
+
+	photos := make([]viewmodels.CocktailPhotoWithIDInResponse, 0)
+	for i, photo := range cocktail.Photos {
+		out := viewmodels.CocktailPhotoWithIDInResponse{
+			ID:               photo.ID,
+			ImagePath:        photo.Photo,
+			BlurImageDataURL: lowQualityPhotos[i],
+		}
+		photos = append(photos, out)
 	}
 
 	cocktailUser, err := co.UserUsecase.QueryById(c, cocktail.UserID)
@@ -149,15 +150,14 @@ func (co *CocktailHandler) GetCocktailByCocktailID(c *gin.Context) {
 				Y: cocktailUser.CoordinateY2,
 			},
 		},
-		Rotation:         cocktailUser.Rotation,
-		Title:            cocktail.Title,
-		Description:      cocktail.Description,
-		IngredientList:   ingredients,
-		StepList:         steps,
-		Photos:           photos,
-		LowQualityPhotos: lowQualityPhotos,
-		IsCollected:      cocktail.IsCollected,
-		CreatedDate:      cocktail.CreatedDate,
+		Rotation:       cocktailUser.Rotation,
+		Title:          cocktail.Title,
+		Description:    cocktail.Description,
+		IngredientList: ingredients,
+		StepList:       steps,
+		Photos:         photos,
+		IsCollected:    cocktail.IsCollected,
+		CreatedDate:    cocktail.CreatedDate,
 	}
 
 	util.PackResponseWithData(c, http.StatusOK, response, domain.GetErrorCode(nil), "")
@@ -218,9 +218,9 @@ func (co *CocktailHandler) GetCocktailDraftByCocktailID(c *gin.Context) {
 		steps = append(steps, out)
 	}
 
-	photos := make([]viewmodels.CocktailPhotoWithIDInResponse, 0)
+	photos := make([]viewmodels.DraftCocktailPhotoWithIDInResponse, 0)
 	for _, photo := range cocktail.Photos {
-		out := viewmodels.CocktailPhotoWithIDInResponse{
+		out := viewmodels.DraftCocktailPhotoWithIDInResponse{
 			ID:        photo.ID,
 			ImagePath: photo.Photo,
 		}
@@ -320,11 +320,6 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 			ingredients = append(ingredients, out)
 		}
 
-		photos := make([]string, 0)
-		for _, photo := range cocktail.Photos {
-			photos = append(photos, photo.Photo)
-		}
-
 		lowQualityPhotos := make([]string, 0)
 		for _, photo := range cocktail.LowQualityPhotos {
 			fileName, err := util.GetFileNameByPath(photo.Photo)
@@ -334,6 +329,7 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 				util.PackResponseWithError(c, err, err.Error())
 				return
 			}
+
 			pathInServer := util.ConcatString("/", co.Service.Configure.Others.File.Image.PathInServer, fileName)
 			dataURL, err := util.ParseLQIPFileToDataURL(pathInServer)
 			if err != nil {
@@ -345,13 +341,21 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 			lowQualityPhotos = append(lowQualityPhotos, dataURL)
 		}
 
+		photos := make([]viewmodels.CocktailPhotoWithoutIDInResponse, 0)
+		for i, photo := range cocktail.Photos {
+			out := viewmodels.CocktailPhotoWithoutIDInResponse{
+				ImagePath:        photo.Photo,
+				BlurImageDataURL: lowQualityPhotos[i],
+			}
+			photos = append(photos, out)
+		}
+
 		out := viewmodels.PopularCocktailList{
 			CocktailID:       cocktail.CocktailID,
 			UserID:           cocktail.UserID,
 			UserName:         cocktail.UserName,
 			Title:            cocktail.Title,
 			Photos:           photos,
-			LowQualityPhotos: lowQualityPhotos,
 			IngredientList:   ingredients,
 			IsCollected:      cocktail.IsCollected,
 			CreatedDate:      cocktail.CreatedDate,

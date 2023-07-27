@@ -50,11 +50,42 @@ definitions:
                 format: int64
                 type: integer
                 x-go-name: ID
+            blur_image_data_url:
+                type: string
+                x-go-name: BlurImageDataURL    
+        required:
+            - id
+            - image_path
+            - blur_image_data_url
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    DraftCocktailPhotoWithIDInResponse:
+        properties:
+            image_path:
+                type: string
+                x-go-name: ImagePath
+            id:
+                format: int64
+                type: integer
+                x-go-name: ID
         required:
             - id
             - image_path
         type: object
-        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels    
+    CocktailPhotoWithoutIDInResponse:
+        properties:
+            image_path:
+                type: string
+                x-go-name: ImagePath
+            blur_image_data_url:
+                type: string
+                x-go-name: BlurImageDataURL    
+        required:
+            - image_path
+            - blur_image_data_url
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels    
     CocktailStepWithoutIDInRequest:
         properties:
             description:
@@ -234,11 +265,6 @@ definitions:
                     $ref: '#/definitions/CocktailPhotoWithIDInResponse'
                 type: array
                 x-go-name: Photos
-            low_quality_photos:
-                items:
-                    type: string
-                type: array
-                x-go-name: LowQualityPhotos    
             rotation:
                 description: 旋轉角度
                 format: float
@@ -277,7 +303,6 @@ definitions:
             - coordinate
             - rotation
             - photos
-            - low_quality_photos
             - title
             - description
             - ingredient_list
@@ -316,7 +341,7 @@ definitions:
                 x-go-name: IngredientList
             photos:
                 items:
-                    $ref: '#/definitions/CocktailPhotoWithIDInResponse'
+                    $ref: '#/definitions/DraftCocktailPhotoWithIDInResponse'
                 type: array
                 x-go-name: Photos
             step_list:
@@ -647,16 +672,11 @@ definitions:
             is_collected:
                 type: boolean
                 x-go-name: IsCollected
-            low_quality_photos:
-                items:
-                    type: string
-                type: array
-                x-go-name: LowQualityPhotos
             photos:
                 items:
-                    type: string
+                    $ref: '#/definitions/CocktailPhotoWithoutIDInResponse'
                 type: array
-                x-go-name: Photos
+                x-go-name: IngredientList
             title:
                 type: string
                 x-go-name: Title
@@ -673,7 +693,6 @@ definitions:
             - user_name
             - title
             - photos
-            - low_quality_photos
             - ingredient_list
             - is_collected
             - created_date
