@@ -72,20 +72,7 @@ definitions:
             - id
             - image_path
         type: object
-        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels    
-    CocktailPhotoWithoutIDInResponse:
-        properties:
-            image_path:
-                type: string
-                x-go-name: ImagePath
-            blur_image_data_url:
-                type: string
-                x-go-name: BlurImageDataURL    
-        required:
-            - image_path
-            - blur_image_data_url
-        type: object
-        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels    
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels   
     CocktailStepWithoutIDInRequest:
         properties:
             description:
@@ -674,7 +661,7 @@ definitions:
                 x-go-name: IsCollected
             photos:
                 items:
-                    $ref: '#/definitions/CocktailPhotoWithoutIDInResponse'
+                    $ref: '#/definitions/CocktailPhotoWithIDInResponse'
                 type: array
                 x-go-name: IngredientList
             title:

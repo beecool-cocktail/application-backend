@@ -341,9 +341,10 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 			lowQualityPhotos = append(lowQualityPhotos, dataURL)
 		}
 
-		photos := make([]viewmodels.CocktailPhotoWithoutIDInResponse, 0)
+		photos := make([]viewmodels.CocktailPhotoWithIDInResponse, 0)
 		for i, photo := range cocktail.Photos {
-			out := viewmodels.CocktailPhotoWithoutIDInResponse{
+			out := viewmodels.CocktailPhotoWithIDInResponse{
+				ID:               cocktail.CocktailID,
 				ImagePath:        photo.Photo,
 				BlurImageDataURL: lowQualityPhotos[i],
 			}
@@ -351,14 +352,14 @@ func (co *CocktailHandler) CocktailList(c *gin.Context) {
 		}
 
 		out := viewmodels.PopularCocktailList{
-			CocktailID:       cocktail.CocktailID,
-			UserID:           cocktail.UserID,
-			UserName:         cocktail.UserName,
-			Title:            cocktail.Title,
-			Photos:           photos,
-			IngredientList:   ingredients,
-			IsCollected:      cocktail.IsCollected,
-			CreatedDate:      cocktail.CreatedDate,
+			CocktailID:     cocktail.CocktailID,
+			UserID:         cocktail.UserID,
+			UserName:       cocktail.UserName,
+			Title:          cocktail.Title,
+			Photos:         photos,
+			IngredientList: ingredients,
+			IsCollected:    cocktail.IsCollected,
+			CreatedDate:    cocktail.CreatedDate,
 		}
 
 		cocktailList = append(cocktailList, out)

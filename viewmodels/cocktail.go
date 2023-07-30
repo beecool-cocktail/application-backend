@@ -29,7 +29,7 @@ type PopularCocktailList struct {
 	//required: true
 	Title string `json:"title"`
 	//required: true
-	Photos []CocktailPhotoWithoutIDInResponse `json:"photos"`
+	Photos []CocktailPhotoWithIDInResponse `json:"photos"`
 	//required: true
 	IngredientList []CocktailIngredientWithoutIDInResponse `json:"ingredient_list"`
 	//required: true
@@ -180,13 +180,6 @@ type CocktailPhotoWithIDInRequest struct {
 type CocktailPhotoWithIDInResponse struct {
 	//required: true
 	ID int64 `json:"id"`
-	//required: true
-	ImagePath string `json:"image_path"`
-	//required: true
-	BlurImageDataURL string `json:"blur_image_data_url"`
-}
-
-type CocktailPhotoWithoutIDInResponse struct {
 	//required: true
 	ImagePath string `json:"image_path"`
 	//required: true
