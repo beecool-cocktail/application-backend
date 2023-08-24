@@ -3,7 +3,6 @@ package elastic
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/beecool-cocktail/application-backend/domain"
 	"github.com/fatih/structs"
 	"github.com/olivere/elastic/v7"
@@ -12,8 +11,10 @@ import (
 )
 
 type cocktailsInfo struct {
-	Title       string `structs:"title"`
-	Description string `structs:"description"`
+	Title       string   `structs:"title"`
+	Description string   `structs:"description"`
+	Steps       []string `structs:"steps"`
+	Ingredients []string `structs:"ingredients"`
 }
 
 type cocktailElasticSearchRepository struct {
@@ -25,7 +26,6 @@ func NewElasticSearchCocktailRepository(es *elastic.Client) domain.CocktailElast
 }
 
 func (c *cocktailElasticSearchRepository) Index(ctx context.Context, co *domain.CocktailElasticSearch) error {
-	fmt.Printf("insert value: %+v\n", co)
 	_, err := c.es.Index().
 		Index(domain.CocktailsIndex).
 		Id(strconv.FormatInt(co.CocktailID, 10)).
@@ -85,6 +85,8 @@ func (c *cocktailElasticSearchRepository) Update(ctx context.Context, co *domain
 
 	updateField := cocktailsInfo{
 		Title:       co.Title,
+		Steps:       co.Steps,
+		Ingredients: co.Ingredients,
 		Description: co.Description,
 	}
 
