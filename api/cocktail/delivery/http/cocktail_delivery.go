@@ -802,6 +802,7 @@ func (co *CocktailHandler) UpdateFormalArticle(c *gin.Context) {
 		CocktailID:  requestUri.ID,
 		Title:       requestBody.Name,
 		Description: requestBody.Description,
+		Category:    cockarticletype.Formal.Int(),
 	}
 
 	var ingredients []domain.CocktailIngredient
