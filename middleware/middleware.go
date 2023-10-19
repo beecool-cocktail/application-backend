@@ -16,6 +16,7 @@ type PayloadData struct {
 	UserID  int64  `json:"user_id"`
 	Account string `json:"account"`
 	Name    string `json:"name"`
+	Type    int    `json:"type"`
 }
 
 type MyClaims struct {
@@ -120,6 +121,8 @@ func (h *Handler) JWTAuthMiddleware() func(c *gin.Context) {
 		// Store info into Context
 		c.Set("account", mc.Account)
 		c.Set("user_id", mc.UserID)
+		c.Set("name", mc.Name)
+		c.Set("type", mc.Type)
 		c.Next()
 	}
 }

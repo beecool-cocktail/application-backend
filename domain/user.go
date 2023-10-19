@@ -11,6 +11,7 @@ type User struct {
 	Account            string    `gorm:"type:varchar(20) NOT NULL;uniqueIndex:idx_account"`
 	Password           string    `gorm:"type:varchar(100) NOT NULL DEFAULT ''"`
 	Status             int       `gorm:"type:tinyint(1) NOT NULL DEFAULT 0"`
+	Type               int       `gorm:"type:tinyint(1) NOT NULL DEFAULT 1; comment: 帳號類型 0=測試, 1=正式"`
 	Name               string    `gorm:"type:varchar(32) NOT NULL DEFAULT ''"`
 	Email              string    `gorm:"type:varchar(64) NOT NULL DEFAULT ''"`
 	OriginAvatar       string    `gorm:"type:varchar(128) NOT NULL"`

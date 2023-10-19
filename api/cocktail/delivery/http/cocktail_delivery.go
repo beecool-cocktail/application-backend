@@ -1,10 +1,12 @@
 package http
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/beecool-cocktail/application-backend/domain"
 	"github.com/beecool-cocktail/application-backend/enum/cockarticletype"
+	"github.com/beecool-cocktail/application-backend/enum/usertype"
 	"github.com/beecool-cocktail/application-backend/middleware"
 	"github.com/beecool-cocktail/application-backend/service"
 	"github.com/beecool-cocktail/application-backend/util"
@@ -436,6 +438,7 @@ func (co *CocktailHandler) CocktailDraftList(c *gin.Context) {
 
 func (co *CocktailHandler) PostArticle(c *gin.Context) {
 	userId := c.GetInt64("user_id")
+	userType := c.GetInt("type")
 
 	var request viewmodels.PostArticleRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -447,6 +450,13 @@ func (co *CocktailHandler) PostArticle(c *gin.Context) {
 	}
 	loggerFields := co.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, request,
 		c.Request.RequestURI)
+
+	if userType == usertype.Test.Int() {
+		co.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+			"!!test!! store article failed - %s", errors.New("test fail"))
+		util.PackResponseWithError(c, domain.ErrInternalError, domain.ErrInternalError.Error())
+		return
+	}
 
 	var cocktail = domain.Cocktail{
 		UserID:      userId,
@@ -523,6 +533,7 @@ func (co *CocktailHandler) PostArticle(c *gin.Context) {
 
 func (co *CocktailHandler) PostDraftArticle(c *gin.Context) {
 	userId := c.GetInt64("user_id")
+	userType := c.GetInt("type")
 
 	var request viewmodels.PostDraftArticleRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -533,6 +544,13 @@ func (co *CocktailHandler) PostDraftArticle(c *gin.Context) {
 	}
 	loggerFields := co.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, request,
 		c.Request.RequestURI)
+
+	if userType == usertype.Test.Int() {
+		co.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+			"!!test!! store article failed - %s", errors.New("test fail"))
+		util.PackResponseWithError(c, domain.ErrInternalError, domain.ErrInternalError.Error())
+		return
+	}
 
 	var cocktail = domain.Cocktail{
 		UserID:      userId,
@@ -682,6 +700,14 @@ func (co *CocktailHandler) UpdateDraftArticle(c *gin.Context) {
 	loggerFields := co.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, requestBody,
 		c.Request.RequestURI)
 
+	userType := c.GetInt("type")
+	if userType == usertype.Test.Int() {
+		co.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+			"!!test!! store article failed - %s", errors.New("test fail"))
+		util.PackResponseWithError(c, domain.ErrInternalError, domain.ErrInternalError.Error())
+		return
+	}
+
 	var cocktail = domain.Cocktail{
 		CocktailID:  requestUri.ID,
 		Title:       requestBody.Name,
@@ -803,6 +829,14 @@ func (co *CocktailHandler) UpdateFormalArticle(c *gin.Context) {
 	loggerFields := co.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, requestBody,
 		c.Request.RequestURI)
 
+	userType := c.GetInt("type")
+	if userType == usertype.Test.Int() {
+		co.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+			"!!test!! store article failed - %s", errors.New("test fail"))
+		util.PackResponseWithError(c, domain.ErrInternalError, domain.ErrInternalError.Error())
+		return
+	}
+
 	var cocktail = domain.Cocktail{
 		CocktailID:  requestUri.ID,
 		Title:       requestBody.Name,
@@ -904,6 +938,14 @@ func (co *CocktailHandler) DeleteDraftArticle(c *gin.Context) {
 	loggerFields := co.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, request,
 		c.Request.RequestURI)
 
+	userType := c.GetInt("type")
+	if userType == usertype.Test.Int() {
+		co.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+			"!!test!! store article failed - %s", errors.New("test fail"))
+		util.PackResponseWithError(c, domain.ErrInternalError, domain.ErrInternalError.Error())
+		return
+	}
+
 	for _, ids := range request.DeletedIds {
 		err := co.CocktailUsecase.Delete(c, ids, userId)
 		if err != nil {
@@ -941,6 +983,14 @@ func (co *CocktailHandler) DeleteFormalArticle(c *gin.Context) {
 
 	loggerFields := co.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, request,
 		c.Request.RequestURI)
+
+	userType := c.GetInt("type")
+	if userType == usertype.Test.Int() {
+		co.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+			"!!test!! store article failed - %s", errors.New("test fail"))
+		util.PackResponseWithError(c, domain.ErrInternalError, domain.ErrInternalError.Error())
+		return
+	}
 
 	for _, ids := range request.DeletedIds {
 		err := co.CocktailUsecase.Delete(c, ids, userId)

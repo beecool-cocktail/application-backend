@@ -3,11 +3,12 @@ package usecase
 import (
 	"context"
 	"errors"
+
 	"github.com/beecool-cocktail/application-backend/domain"
 	social_account "github.com/beecool-cocktail/application-backend/enum/social-account"
+	"github.com/beecool-cocktail/application-backend/enum/usertype"
 	"github.com/beecool-cocktail/application-backend/middleware"
 	"github.com/beecool-cocktail/application-backend/util"
-	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
 	"gorm.io/gorm"
 )
@@ -45,16 +46,17 @@ func (s *socialLoginUsecase) GetUserInfo(ctx context.Context, token *oauth2.Toke
 	}
 
 	var userID int64
+	var userType int
 	var account, name string
 	socialAccount, err := s.socialAccountMySQLRepo.QueryById(ctx, googleUserInfo.Sub)
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			logrus.Error(err)
 			return "", err
 		} else {
 			// first time use google login, register a new user
 			account = util.GenString(16)
 			name = googleUserInfo.Name
+			userType = usertype.Normal.Int()
 			userID, err = s.socialAccountMySQLRepo.Store(ctx,
 				&domain.SocialAccount{
 					SocialID: googleUserInfo.Sub,
@@ -79,12 +81,14 @@ func (s *socialLoginUsecase) GetUserInfo(ctx context.Context, token *oauth2.Toke
 		account = user.Account
 		userID = user.ID
 		name = user.Name
+		userType = user.Type
 	}
 
 	payloadData := middleware.PayloadData{
 		UserID:  userID,
 		Account: account,
 		Name:    name,
+		Type:    userType,
 	}
 	jwtToken, err := middleware.GenToken(payloadData)
 	if err != nil {

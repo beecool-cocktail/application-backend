@@ -1,8 +1,12 @@
 package http
 
 import (
+	"errors"
+	"net/http"
+
 	"github.com/beecool-cocktail/application-backend/domain"
 	"github.com/beecool-cocktail/application-backend/enum/cockarticletype"
+	"github.com/beecool-cocktail/application-backend/enum/usertype"
 	"github.com/beecool-cocktail/application-backend/middleware"
 	"github.com/beecool-cocktail/application-backend/service"
 	"github.com/beecool-cocktail/application-backend/util"
@@ -12,7 +16,6 @@ import (
 	"github.com/vincent-petithory/dataurl"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
-	"net/http"
 )
 
 type UserHandler struct {
@@ -321,6 +324,14 @@ func (u *UserHandler) UpdateUserInfo(c *gin.Context) {
 	loggerFields := u.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, request,
 		c.Request.RequestURI)
 
+	userType := c.GetInt("type")
+	if userType == usertype.Test.Int() {
+		u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+			"!!test!! store article failed - %s", errors.New("test fail"))
+		util.PackResponseWithError(c, domain.ErrInternalError, domain.ErrInternalError.Error())
+		return
+	}
+
 	if request.Name != nil {
 		err := u.UserUsecase.UpdateUserName(c,
 			&domain.User{
@@ -377,6 +388,13 @@ func (u *UserHandler) UpdateUserAvatar(c *gin.Context) {
 
 	loggerFields := u.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, request,
 		c.Request.RequestURI)
+	userType := c.GetInt("type")
+	if userType == usertype.Test.Int() {
+		u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+			"!!test!! store article failed - %s", errors.New("test fail"))
+		util.PackResponseWithError(c, domain.ErrInternalError, domain.ErrInternalError.Error())
+		return
+	}
 
 	if len(request.Coordinate) != 2 {
 		u.Service.Logger.LogFile(c, logrus.InfoLevel, loggerFields, "parameter illegal")
@@ -450,6 +468,13 @@ func (u *UserHandler) DeleteUserAvatar(c *gin.Context) {
 
 	loggerFields := u.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, nil,
 		c.Request.RequestURI)
+	userType := c.GetInt("type")
+	if userType == usertype.Test.Int() {
+		u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+			"!!test!! store article failed - %s", errors.New("test fail"))
+		util.PackResponseWithError(c, domain.ErrInternalError, domain.ErrInternalError.Error())
+		return
+	}
 
 	err := u.UserUsecase.DeleteUserAvatar(c, userId)
 	if err != nil {
@@ -486,6 +511,13 @@ func (u *UserHandler) CollectArticle(c *gin.Context) {
 
 	loggerFields := u.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, request,
 		c.Request.RequestURI)
+	userType := c.GetInt("type")
+	if userType == usertype.Test.Int() {
+		u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+			"!!test!! store article failed - %s", errors.New("test fail"))
+		util.PackResponseWithError(c, domain.ErrInternalError, domain.ErrInternalError.Error())
+		return
+	}
 
 	favoriteCocktail := domain.FavoriteCocktail{
 		CocktailID: request.ID,
@@ -525,6 +557,13 @@ func (u *UserHandler) RemoveCollectionArticle(c *gin.Context) {
 
 	loggerFields := u.Service.Logger.GetLoggerFields(userId, c.ClientIP(), c.Request.Method, nil,
 		c.Request.RequestURI)
+	userType := c.GetInt("type")
+	if userType == usertype.Test.Int() {
+		u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields,
+			"!!test!! store article failed - %s", errors.New("test fail"))
+		util.PackResponseWithError(c, domain.ErrInternalError, domain.ErrInternalError.Error())
+		return
+	}
 
 	var request viewmodels.DeleteFavoriteCocktailRequest
 	var response viewmodels.DeleteFavoriteCocktailResponse

@@ -49,6 +49,7 @@ var (
 	ErrCodeFileSizeIllegal                      = errors.New("illegal file size")
 	ErrFilePathIllegal                          = errors.New("illegal file path")
 	ErrRedisLockNotObtained                     = errors.New("lock not obtained")
+	ErrInternalError														= errors.New("internal error")
 )
 
 func GetErrorCode(err error) string {

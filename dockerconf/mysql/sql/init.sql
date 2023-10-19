@@ -54,6 +54,7 @@ CREATE TABLE `users`
     `account`              varchar(20) COLLATE utf8mb4_general_ci  NOT NULL,
     `password`             varchar(100) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
     `status`               tinyint(1)                              NOT NULL DEFAULT '0',
+    `type` tinyint(1)                              NOT NULL DEFAULT '1',
     `name`                 varchar(32) COLLATE utf8mb4_general_ci  NOT NULL DEFAULT '',
     `email`                varchar(64) COLLATE utf8mb4_general_ci  NOT NULL DEFAULT '',
     `origin_avatar`        varchar(128) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
@@ -82,16 +83,16 @@ LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users`
     DISABLE KEYS */;
 
-INSERT INTO `users` (`id`, `account`, `password`, `status`, `name`, `email`, `origin_avatar`, `crop_avatar`,
+INSERT INTO `users` (`id`, `account`, `password`, `status`, `type`, `name`, `email`, `origin_avatar`, `crop_avatar`,
                      `height`, `width`, `coordinate_x1`, `coordinate_y1`, `coordinate_x2`, `coordinate_y2`, `rotation`,
                      `number_of_post`, `number_of_collection`, `number_of_draft`, `is_collection_public`, `remark`,
                      `created_date`)
-VALUES (1, 'mockAccount1', '', 1, 'mockUser1', '', '', '', 30, 10, 5, 5, 10, 10, 0, 0, 0, 0, 0, '', '2022-03-12 13:36:24'),
-       (2, 'mockAccount2', '', 1, 'mockUser2', '', '', '', 30, 10, 5, 5, 10, 10, 0, 0, 0, 0, 0, '', '2022-03-12 13:36:24'),
-       (3, 'mockAccount3', '', 1, 'mockUser3', '', '', '', 30, 10, 5, 5, 10, 10, 0, 0, 0, 0, 0, '', '2022-03-12 13:36:24'),
-       (4, 'mockAccount4', '', 1, 'mockUser4', '', '', '', 30, 10, 5, 5, 10, 10, 0, 0, 0, 0, 1, '', '2022-03-12 13:36:24'),
-       (5, 'mockAccount5', '', 1, 'mockUser5', '', '', '', 30, 10, 5, 5, 10, 10, 0, 0, 0, 0, 1, '', '2022-03-12 13:36:24'),
-       (6, 'mockAccount6', '', 1, 'mockUser6', '', '', '', 30, 10, 5, 5, 10, 10, 0, 0, 0, 0, 1, '', '2022-03-12 13:36:24');
+VALUES (1, 'mockAccount1', '', 1, 1, 'mockUser1', '', '', '', 30, 10, 5, 5, 10, 10, 0, 0, 0, 0, 0, '', '2022-03-12 13:36:24'),
+       (2, 'mockAccount2', '', 1, 1, 'mockUser2', '', '', '', 30, 10, 5, 5, 10, 10, 0, 0, 0, 0, 0, '', '2022-03-12 13:36:24'),
+       (3, 'mockAccount3', '', 1, 1, 'mockUser3', '', '', '', 30, 10, 5, 5, 10, 10, 0, 0, 0, 0, 0, '', '2022-03-12 13:36:24'),
+       (4, 'mockAccount4', '', 1, 1, 'mockUser4', '', '', '', 30, 10, 5, 5, 10, 10, 0, 0, 0, 0, 1, '', '2022-03-12 13:36:24'),
+       (5, 'mockAccount5', '', 1, 1, 'mockUser5', '', '', '', 30, 10, 5, 5, 10, 10, 0, 0, 0, 0, 1, '', '2022-03-12 13:36:24'),
+       (6, 'mockAccount6', '', 1, 1, 'mockUser6', '', '', '', 30, 10, 5, 5, 10, 10, 0, 0, 0, 0, 1, '', '2022-03-12 13:36:24');
 
 /*!40000 ALTER TABLE `users`
     ENABLE KEYS */;
