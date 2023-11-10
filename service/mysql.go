@@ -14,7 +14,7 @@ func newMySQL(configure *Configure) (*gorm.DB, error) {
 	}
 	mainDBConf := configure.DB.MainDB
 
-	dbUrl := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True",
+	dbUrl := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&collation=utf8mb4_unicode_ci&parseTime=True",
 		mainDBConf.User, mainDBConf.Password, mainDBConf.Address, mainDBConf.DBName)
 
 	dbConnection, err := gorm.Open(mysql.Open(dbUrl), &gorm.Config{DisableForeignKeyConstraintWhenMigrating:true})
