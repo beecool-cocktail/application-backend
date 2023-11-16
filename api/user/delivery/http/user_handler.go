@@ -73,7 +73,8 @@ func (u *UserHandler) SocialLogin(c *gin.Context) {
 		Endpoint:     google.Endpoint,
 	}
 
-	url := googleOAuth2Config.AuthCodeURL("whispering-corner")
+	opt := oauth2.SetAuthURLParam("prompt", "select_account")
+	url := googleOAuth2Config.AuthCodeURL("whispering-corner", opt)
 
 	c.Redirect(http.StatusTemporaryRedirect, url)
 }
