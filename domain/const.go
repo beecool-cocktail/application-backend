@@ -23,4 +23,7 @@ const (
 	IngredientWeight  = 3
 	DescriptionWeight = 2
 	StepWeight        = 1
+
+	//Image size
+	AllowMaxImageSizeInMB = 5 // 5MB
 )

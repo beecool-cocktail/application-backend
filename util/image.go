@@ -39,16 +39,13 @@ func GetImageType(fileType string) string {
 }
 
 func DecodeBase64AndSaveAsWebp(base64EncodedData string, imageType string, dst string) (int, int, error) {
-	//dst = dst + ".webp"
-	//options, err := encoder.NewLossyEncoderOptions(encoder.PresetDefault, 100)
-	//if err != nil {
-	//	return 0, 0, err
-	//}
 
 	img, _, err := image.Decode(bytes.NewReader([]byte(base64EncodedData)))
 	if err != nil {
 		return 0, 0, err
 	}
+
+	compressionRatio := getCompressionRatio(base64EncodedData, domain.AllowMaxImageSizeInMB)
 
 	width := img.Bounds().Max.X
 	height := img.Bounds().Max.Y
@@ -68,7 +65,7 @@ func DecodeBase64AndSaveAsWebp(base64EncodedData string, imageType string, dst s
 		f, _ := os.Create(dst)
 		defer f.Close()
 		err := jpeg.Encode(f, img, &jpeg.Options{
-			Quality: 100,
+			Quality: compressionRatio,
 		})
 		if err != nil {
 			return 0, 0, err
@@ -79,7 +76,7 @@ func DecodeBase64AndSaveAsWebp(base64EncodedData string, imageType string, dst s
 		f, _ := os.Create(dst)
 		defer f.Close()
 		err := jpeg.Encode(f, img, &jpeg.Options{
-			Quality: 100,
+			Quality: compressionRatio,
 		})
 		if err != nil {
 			return 0, 0, err
@@ -88,15 +85,6 @@ func DecodeBase64AndSaveAsWebp(base64EncodedData string, imageType string, dst s
 	default:
 		return 0, 0, nil
 	}
-
-	//out, err := os.Create(dst)
-	//if err != nil {
-	//	return 0, 0, err
-	//}
-
-	//if err := webp.Encode(out, img, options); err != nil {
-	//	return 0, 0, err
-	//}
 
 	return width, height, nil
 }
@@ -107,6 +95,8 @@ func DecodeBase64AndUpdateAsWebp(base64EncodedData string, imageType string, sou
 	if err != nil {
 		return err
 	}
+
+	compressionRatio := getCompressionRatio(base64EncodedData, domain.AllowMaxImageSizeInMB)
 
 	f, err := os.OpenFile(sourceFile, os.O_RDWR|os.O_TRUNC, 0666)
 	if err != nil {
@@ -124,7 +114,7 @@ func DecodeBase64AndUpdateAsWebp(base64EncodedData string, imageType string, sou
 
 	case "image/jpg":
 		err := jpeg.Encode(f, img, &jpeg.Options{
-			Quality: 100,
+			Quality: compressionRatio,
 		})
 		if err != nil {
 			return err
@@ -132,7 +122,7 @@ func DecodeBase64AndUpdateAsWebp(base64EncodedData string, imageType string, sou
 
 	case "image/jpeg":
 		err := jpeg.Encode(f, img, &jpeg.Options{
-			Quality: 100,
+			Quality: compressionRatio,
 		})
 		if err != nil {
 			return err
@@ -268,4 +258,13 @@ func ParseLQIPFileToDataURL(file string) (string, error) {
 	dataURL := dataurl.EncodeBytes(bytes)
 
 	return dataURL, nil
+}
+
+func getCompressionRatio(image string, targetSizeInMB int) int {
+	originSizeInMB := len(image) / (1024 * 1024)
+	if originSizeInMB < 5 {
+		return 100
+	}
+
+	return originSizeInMB / targetSizeInMB
 }
