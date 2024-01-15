@@ -19,6 +19,7 @@ func Test_socialLoginUsecase_Exchange(t *testing.T) {
 	mockUserRedisRepo := new(mocks.UserRedisRepository)
 	mockSocialAccountGoogleOAuth2Repo := new(mocks.SocialAccountGoogleOAuthRepository)
 	mockSocialAccountMySQLRepo := new(mocks.SocialAccountMySQLRepository)
+	mockSocialAccountRedisRepo := new(mocks.SocialAccountRedisRepository)
 
 	go util.StartUserIdGenerator()
 
@@ -27,7 +28,8 @@ func Test_socialLoginUsecase_Exchange(t *testing.T) {
 			On("Exchange", mock.Anything, mock.MatchedBy(func(code string) bool { return code == "code" })).
 			Return(nil, nil).Once()
 
-		s := NewSocialAccountUsecase(mockUserMySQLRepo, mockUserRedisRepo, mockSocialAccountMySQLRepo, mockSocialAccountGoogleOAuth2Repo)
+		s := NewSocialAccountUsecase(mockUserMySQLRepo, mockUserRedisRepo, mockSocialAccountMySQLRepo, mockSocialAccountRedisRepo,
+			mockSocialAccountGoogleOAuth2Repo)
 		_, err := s.Exchange(context.TODO(), "code")
 
 		assert.NoError(t, err)
@@ -39,6 +41,7 @@ func Test_socialLoginUsecase_GetUserInfo(t *testing.T) {
 	mockUserRedisRepo := new(mocks.UserRedisRepository)
 	mockSocialAccountGoogleOAuth2Repo := new(mocks.SocialAccountGoogleOAuthRepository)
 	mockSocialAccountMySQLRepo := new(mocks.SocialAccountMySQLRepository)
+	mockSocialAccountRedisRepo := new(mocks.SocialAccountRedisRepository)
 
 	oauthToken := &oauth2.Token{
 		AccessToken: "token",
@@ -79,7 +82,8 @@ func Test_socialLoginUsecase_GetUserInfo(t *testing.T) {
 			})).
 			Return(nil).Once()
 
-		s := NewSocialAccountUsecase(mockUserMySQLRepo, mockUserRedisRepo, mockSocialAccountMySQLRepo, mockSocialAccountGoogleOAuth2Repo)
+		s := NewSocialAccountUsecase(mockUserMySQLRepo, mockUserRedisRepo, mockSocialAccountMySQLRepo, mockSocialAccountRedisRepo,
+			mockSocialAccountGoogleOAuth2Repo)
 		_, err := s.GetUserInfo(context.TODO(), oauthToken)
 
 		assert.NoError(t, err)
@@ -102,7 +106,8 @@ func Test_socialLoginUsecase_GetUserInfo(t *testing.T) {
 			On("Store", mock.Anything, mock.Anything).
 			Return(nil).Once()
 
-		s := NewSocialAccountUsecase(mockUserMySQLRepo, mockUserRedisRepo, mockSocialAccountMySQLRepo, mockSocialAccountGoogleOAuth2Repo)
+		s := NewSocialAccountUsecase(mockUserMySQLRepo, mockUserRedisRepo, mockSocialAccountMySQLRepo, mockSocialAccountRedisRepo,
+			mockSocialAccountGoogleOAuth2Repo)
 		_, err := s.GetUserInfo(context.TODO(), oauthToken)
 
 		assert.NoError(t, err)
@@ -113,7 +118,8 @@ func Test_socialLoginUsecase_GetUserInfo(t *testing.T) {
 			On("GetUserInfo", mock.Anything, mock.MatchedBy(func(token *oauth2.Token) bool { return token == oauthToken })).
 			Return(nil, errors.New("get google user info failed")).Once()
 
-		s := NewSocialAccountUsecase(mockUserMySQLRepo, mockUserRedisRepo, mockSocialAccountMySQLRepo, mockSocialAccountGoogleOAuth2Repo)
+		s := NewSocialAccountUsecase(mockUserMySQLRepo, mockUserRedisRepo, mockSocialAccountMySQLRepo, mockSocialAccountRedisRepo,
+			mockSocialAccountGoogleOAuth2Repo)
 		_, err := s.GetUserInfo(context.TODO(), oauthToken)
 
 		assert.Equal(t, err, errors.New("get google user info failed"))
@@ -128,7 +134,8 @@ func Test_socialLoginUsecase_GetUserInfo(t *testing.T) {
 			On("QueryById", mock.Anything, mock.MatchedBy(func(googleUUID string) bool { return googleUUID == mockGoogleUserInfo.Sub })).
 			Return(nil, errors.New("get social account info failed")).Once()
 
-		s := NewSocialAccountUsecase(mockUserMySQLRepo, mockUserRedisRepo, mockSocialAccountMySQLRepo, mockSocialAccountGoogleOAuth2Repo)
+		s := NewSocialAccountUsecase(mockUserMySQLRepo, mockUserRedisRepo, mockSocialAccountMySQLRepo, mockSocialAccountRedisRepo,
+			mockSocialAccountGoogleOAuth2Repo)
 		_, err := s.GetUserInfo(context.TODO(), oauthToken)
 
 		assert.Equal(t, err, errors.New("get social account info failed"))

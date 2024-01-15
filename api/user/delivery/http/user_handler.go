@@ -64,6 +64,14 @@ func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase, socialAc
 //  307: description: redirect
 
 func (u *UserHandler) SocialLogin(c *gin.Context) {
+	var request viewmodels.GoogleLoginRequest
+	if err := c.BindJSON(&request); err != nil {
+		u.Service.Logger.LogFile(c, logrus.InfoLevel, u.Service.Logger.GetLoggerFields(domain.NoUser, c.ClientIP(),
+			c.Request.Method, nil, c.Request.RequestURI), "parameter illegal - %s", err)
+		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())
+		return
+	}
+
 	g := u.Service.Configure.Others.GoogleOAuth2
 	googleOAuth2Config := &oauth2.Config{
 		ClientID:     g.ClientID,
@@ -73,8 +81,20 @@ func (u *UserHandler) SocialLogin(c *gin.Context) {
 		Endpoint:     google.Endpoint,
 	}
 
+	state, err := u.SocialAccountUsecase.GenerateState(c, domain.State{
+		RedirectPath: request.RedirectPath,
+		CollectAfterLogin: request.CollectAfterLogin,
+	})
+
+	if err != nil {
+		u.Service.Logger.LogFile(c, logrus.ErrorLevel, u.Service.Logger.GetLoggerFields(domain.NoUser, c.ClientIP(),
+			c.Request.Method, nil, c.Request.RequestURI), "generate state failed - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
 	opt := oauth2.SetAuthURLParam("prompt", "select_account")
-	url := googleOAuth2Config.AuthCodeURL("whispering-corner", opt)
+	url := googleOAuth2Config.AuthCodeURL(state, opt)
 
 	c.Redirect(http.StatusTemporaryRedirect, url)
 }
@@ -113,6 +133,19 @@ func (u *UserHandler) GoogleAuthenticate(c *gin.Context) {
 		u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields, "get user info failed - %s", err)
 		util.PackResponseWithError(c, err, err.Error())
 		return
+	}
+
+	state, err := u.SocialAccountUsecase.GetState(c, request.State)
+	if err != nil {
+		u.Service.Logger.LogFile(c, logrus.ErrorLevel, loggerFields, "get state failed - %s", err)
+		util.PackResponseWithError(c, err, err.Error())
+		return
+	}
+
+	response = viewmodels.GoogleAuthenticateResponse{
+		Token: jwtToken,
+		RedirectPath: state.RedirectPath,
+		CollectAfterLogin: state.CollectAfterLogin,
 	}
 
 	response.Token = jwtToken

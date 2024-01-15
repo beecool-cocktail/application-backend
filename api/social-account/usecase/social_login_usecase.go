@@ -2,7 +2,10 @@ package usecase
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/base64"
 	"errors"
+	"io"
 
 	"github.com/beecool-cocktail/application-backend/domain"
 	social_account "github.com/beecool-cocktail/application-backend/enum/social-account"
@@ -17,15 +20,18 @@ type socialLoginUsecase struct {
 	userMySQLRepo                domain.UserMySQLRepository
 	userRedisRepo                domain.UserRedisRepository
 	socialAccountMySQLRepo       domain.SocialAccountMySQLRepository
+	socialAccountRedisRepo 		 domain.SocialAccountRedisRepository
 	socialAccountGoogleOAuthRepo domain.SocialAccountGoogleOAuthRepository
 }
 
 func NewSocialAccountUsecase(userMySQLRepo domain.UserMySQLRepository, userRedisRepo domain.UserRedisRepository,
-	socialAccountMySQLRepo domain.SocialAccountMySQLRepository, socialAccountGoogleOAuthRepo domain.SocialAccountGoogleOAuthRepository) domain.SocialAccountUsecase {
+	socialAccountMySQLRepo domain.SocialAccountMySQLRepository, socialAccountRedisRepo 		 domain.SocialAccountRedisRepository, 
+	socialAccountGoogleOAuthRepo domain.SocialAccountGoogleOAuthRepository) domain.SocialAccountUsecase {
 	return &socialLoginUsecase{
 		userMySQLRepo:                userMySQLRepo,
 		userRedisRepo:                userRedisRepo,
 		socialAccountMySQLRepo:       socialAccountMySQLRepo,
+		socialAccountRedisRepo: 		 socialAccountRedisRepo,
 		socialAccountGoogleOAuthRepo: socialAccountGoogleOAuthRepo,
 	}
 }
@@ -106,4 +112,35 @@ func (s *socialLoginUsecase) GetUserInfo(ctx context.Context, token *oauth2.Toke
 	}
 
 	return jwtToken, nil
+}
+
+func (s *socialLoginUsecase) GenerateState(ctx context.Context, state domain.State) (string, error) {
+	stateString, err := getState(32)
+	if err != nil {
+		return "", err
+	}
+
+	err = s.socialAccountRedisRepo.StoreState(ctx, stateString, state)
+	if err != nil {
+		return "", err
+	}
+
+	return stateString, nil
+}
+
+func getState(n int) (string, error) {
+	data := make([]byte, n)
+	if _, err := io.ReadFull(rand.Reader, data); err != nil {
+		return "", err
+	}
+	return base64.StdEncoding.EncodeToString(data), nil
+}
+
+func (s *socialLoginUsecase) GetState(ctx context.Context, stateString string) (domain.State, error) {
+	state, err := s.socialAccountRedisRepo.GetState(ctx, stateString)
+	if err != nil {
+		return domain.State{}, err
+	}
+
+	return state, nil
 }

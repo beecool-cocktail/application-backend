@@ -25,9 +25,20 @@ type GoogleUserInfo struct {
 	Locale        string
 }
 
+type State struct {
+	RedirectPath      string `structs:"redirect_path"`
+	CollectAfterLogin string `structs:"collect_after_login"`
+}
+
 type SocialAccountMySQLRepository interface {
 	QueryById(ctx context.Context, id string) (*SocialAccount, error)
 	Store(ctx context.Context, s *SocialAccount, u *User) (int64, error)
+}
+
+type SocialAccountRedisRepository interface {
+	StoreState(ctx context.Context, key string, state State) error
+	GetState(ctx context.Context, key string) (State, error)
+	DeleteState(ctx context.Context, key string) error
 }
 
 type SocialAccountGoogleOAuthRepository interface {
@@ -38,4 +49,6 @@ type SocialAccountGoogleOAuthRepository interface {
 type SocialAccountUsecase interface {
 	Exchange(ctx context.Context, code string) (*oauth2.Token, error)
 	GetUserInfo(ctx context.Context, token *oauth2.Token) (string, error)
+	GenerateState(ctx context.Context, state State) (string, error)
+	GetState(ctx context.Context, stateString string) (State, error)
 }

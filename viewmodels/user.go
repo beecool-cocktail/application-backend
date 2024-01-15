@@ -1,13 +1,21 @@
 package viewmodels
 
+type GoogleLoginRequest struct {
+	RedirectPath      string `json:"redirect_path"`
+	CollectAfterLogin string `json:"collect_after_login"`
+}
+
 type GoogleAuthenticateRequest struct {
 	//required: true
-	Code string `json:"code"`
+	Code  string `json:"code"`
+	State string `json:"state"`
 }
 
 type GoogleAuthenticateResponse struct {
 	//required: true
-	Token string `json:"token"`
+	Token             string `json:"token"`
+	RedirectPath      string `json:"redirect_path"`
+	CollectAfterLogin string `json:"collect_after_login"`
 }
 
 type LogoutRequest struct {

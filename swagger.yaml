@@ -584,13 +584,27 @@ definitions:
             - is_collection_public
         type: object
         x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
+    GoogleLoginRequest:
+        properties:
+            redirect_path:
+                type: string
+            collect_after_login:
+                type: string    
+        required:
+            - redirect_path
+            - collect_after_login
+        type: object
+        x-go-package: github.com/beecool-cocktail/application-backend/viewmodels    
     GoogleAuthenticateRequest:
         properties:
             code:
                 type: string
                 x-go-name: Code
+            state:
+                type: string
         required:
             - code
+            - state
         type: object
         x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
     GoogleAuthenticateResponse:
@@ -598,8 +612,14 @@ definitions:
             token:
                 type: string
                 x-go-name: Token
+            redirect_path:
+                type: string
+            collect_after_login:
+                type: string       
         required:
             - token
+            - redirect_path
+            - collect_after_login
         type: object
         x-go-package: github.com/beecool-cocktail/application-backend/viewmodels
     LogoutRequest:
@@ -988,6 +1008,11 @@ paths:
         get:
             description: Will redirect with authorization code.
             operationId: googleLogin
+            parameters:
+                - in: body
+                  name: Body
+                  schema:
+                    $ref: '#/definitions/GoogleLoginRequest'
             responses:
                 "307":
                     description: ' redirect'
