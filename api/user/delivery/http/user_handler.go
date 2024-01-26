@@ -65,7 +65,7 @@ func NewUserHandler(s *service.Service, userUsecase domain.UserUsecase, socialAc
 
 func (u *UserHandler) SocialLogin(c *gin.Context) {
 	var request viewmodels.GoogleLoginRequest
-	if err := c.BindQuery(&request); err != nil {
+	if err := c.ShouldBind(&request); err != nil {
 		u.Service.Logger.LogFile(c, logrus.InfoLevel, u.Service.Logger.GetLoggerFields(domain.NoUser, c.ClientIP(),
 			c.Request.Method, nil, c.Request.RequestURI), "parameter illegal - %s", err)
 		util.PackResponseWithError(c, domain.ErrParameterIllegal, domain.ErrParameterIllegal.Error())

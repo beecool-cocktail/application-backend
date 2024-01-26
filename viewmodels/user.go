@@ -1,8 +1,8 @@
 package viewmodels
 
 type GoogleLoginRequest struct {
-	RedirectPath      string `json:"redirect_path"`
-	CollectAfterLogin string `json:"collect_after_login"`
+	RedirectPath      string `form:"redirect_path" json:"redirect_path"`
+	CollectAfterLogin string `form:"collect_after_login" json:"collect_after_login"`
 }
 
 type GoogleAuthenticateRequest struct {
