@@ -26,8 +26,8 @@ type GoogleUserInfo struct {
 }
 
 type State struct {
-	RedirectPath      string `structs:"redirect_path"`
-	CollectAfterLogin string `structs:"collect_after_login"`
+	RedirectPath      string `structs:"redirect_path" redis:"redirect_path"`
+	CollectAfterLogin string `structs:"collect_after_login" redis:"collect_after_login"`
 }
 
 type SocialAccountMySQLRepository interface {
