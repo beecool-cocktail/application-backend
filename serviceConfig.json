@@ -21,8 +21,8 @@
     "Address":"",
     "Port":"6969",
     "IsTLS":false,
-    "CertificateFile":"server.pem-chain",
-    "KeyFile":"server.key"
+    "CertificateFile":"",
+    "KeyFile":""
   },
   "Redis":{
     "Network":"tcp",
@@ -35,7 +35,7 @@
     "PoolSize":10
   },
   "Elastic":{
-    "Enable": true,
+    "Enable": false,
     "Urls": [
       "http://elasticsearch:9200"
     ]

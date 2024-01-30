@@ -10,12 +10,12 @@ cd $BUILD_DIR
 
 case "$1" in
   runall)
-    docker-compose pull
-    docker-compose up -d
+    docker-compose --profile general pull
+    docker-compose --profile general up -d
     ;;
   runsimplify)
-     docker-compose -f docker-compose-simplification.yml pull
-     docker-compose -f docker-compose-simplification.yml up -d
+     docker-compose --profile simplification pull
+     docker-compose --profile simplification up -d
      ;;
   down)
     docker-compose down -v

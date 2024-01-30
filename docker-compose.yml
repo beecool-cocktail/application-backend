@@ -2,19 +2,23 @@ services:
   db:
     image: mariadb:latest
     container_name: whispering-mariadb
+    profiles:
+      - general
+      - simplification
     networks:
       whispering:
         ipv4_address: 172.28.0.2
     ports:
       - "${MYSQL_PORT}:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: whispering_conner
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     restart: always
     volumes:
-#      - ${DATA_DIR}/mysql_data:/var/lib/mysql
+      # - ${DATA_DIR}/mysql_data:/var/lib/mysql
       - ${MYSQL_CONFIG}:/etc/mysql/my.cnf
       - ./dockerconf/mysql/sql:/docker-entrypoint-initdb.d
+      # - ./mysql_log/error.log:/var/log/mysql/error.log
     deploy:
       resources:
         limits:
@@ -23,6 +27,9 @@ services:
   redis:
     image: redis:${REDIS_VERSION}
     container_name: whispering-redis
+    profiles:
+      - general
+      - simplification
     networks:
       whispering:
         ipv4_address: 172.28.0.3
@@ -30,7 +37,7 @@ services:
       - "${REDIS_PORT}:6379"
     restart: always
     volumes:
-#      - ${DATA_DIR}/redis_data/redis:/data
+      # - ${DATA_DIR}/redis_data/redis:/data
       - ${REDIS_CONFIG}:/etc/redis.conf
       - ./dockerconf/redis/redis_init.lua:/data/redis_init.lua
     command:
@@ -51,6 +58,9 @@ services:
   server:
     image: blawhi2435/whispering-corner:${APPLICATION_VERSION}
     container_name: whispering-server
+    profiles:
+      - general
+      - simplification
     networks:
       whispering:
         ipv4_address: 172.28.0.4
@@ -59,15 +69,16 @@ services:
     restart: always
     volumes:
       - ${IMAGE_PATH}:/static/images
-      - ./serviceConfig.json:/app/serviceConfig.json
       - ./log/:/app/log/
+      - ./serviceConfig.json:/app/serviceConfig.json
+      - ./cert/server.key:/app/server.key
+      - ./cert/server.pem-chain:/app/server.pem-chain
     ports:
       - "${APPLICATION_PORT}:6969"
-    command: ./wait-for-it.sh elasticsearch:9200 -- ./main --config serviceConfig.json
+    command: ./wait-for-it.sh db:3306 -- ./main --config serviceConfig.json
     depends_on:
       - redis
       - db
-      - elasticsearch
     deploy:
       resources:
         limits:
@@ -77,6 +88,9 @@ services:
   swagger:
     image: quay.io/goswagger/swagger
     container_name: whispering-swagger
+    profiles:
+      - general
+      - simplification
     networks:
       whispering:
         ipv4_address: 172.28.0.5
@@ -90,8 +104,10 @@ services:
       - server
 
   elasticsearch:
-    container_name: whispering-elastic
     image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_SEARCH_VERSION}
+    container_name: whispering-elastic
+    profiles:
+      - general
     environment:
       - xpack.security.enabled=false
       - "discovery.type=single-node"
@@ -101,7 +117,7 @@ services:
         ipv4_address: 172.28.0.6
     volumes:
       - ${ELASTIC_PLUGINS}:/usr/share/elasticsearch/plugins
-#      - ${DATA_DIR}/elastic_data:/usr/share/elasticsearch/data
+      # - ${DATA_DIR}/elastic_data:/usr/share/elasticsearch/data
     ports:
       - "${ELASTIC_SEARCH_PORT}:9200"
     deploy:
@@ -111,8 +127,10 @@ services:
           memory: 800M
 
   kibana:
-    container_name: whispering-kibana
     image: docker.elastic.co/kibana/kibana:${ELASTIC_SEARCH_VERSION}
+    container_name: whispering-kibana
+    profiles:
+      - general
     environment:
       - ELASTICSEARCH_HOSTS=http://whispering-elastic:9200
     networks:
@@ -124,8 +142,11 @@ services:
       - "${KIBANA_PORT}:5601"
 
   proxy:
-    container_name: whispering-proxy
     image: nginx:latest
+    container_name: whispering-proxy
+    profiles:
+      - general
+      - simplification
     ports:
       - "${NGINX_PORT}:80"
     volumes:

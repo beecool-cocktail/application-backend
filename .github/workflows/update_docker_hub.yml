@@ -7,8 +7,6 @@ on:
       - 'master'
 
 env:
-  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  CONFIG_FILE: serviceConfigDev.json
   TAGS: latest
 
 jobs:
