@@ -27,13 +27,7 @@ ARG REVISION_ID
 LABEL revision_id=${REVISION_ID}
 
 COPY --from=build /app/main ./
-COPY --from=build /app/serviceConfig.json ./
-COPY --from=build /app/serviceConfigSimplification.json ./
-COPY --from=build /app/serviceConfigDev.json ./
 COPY --from=build /app/wait-for-it.sh ./
-COPY --from=build /app/cert/server.key ./
-COPY --from=build /app/cert/server.pem ./
-COPY --from=build /app/cert/server.pem-chain ./
 
 RUN apk update && \
     apk upgrade && \
