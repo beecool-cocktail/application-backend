@@ -1,3 +1,4 @@
+version: '3'
 services:
   db:
     image: mariadb:latest
@@ -71,8 +72,8 @@ services:
       - ${IMAGE_PATH}:/static/images
       - ./log/:/app/log/
       - ./serviceConfig.json:/app/serviceConfig.json
-      - ./cert/server.key:/app/server.key
-      - ./cert/server.pem-chain:/app/server.pem-chain
+      # - ./cert/server.key:/app/server.key
+      # - ./cert/server.pem-chain:/app/server.pem-chain
     ports:
       - "${APPLICATION_PORT}:6969"
     command: ./wait-for-it.sh db:3306 -- ./main --config serviceConfig.json
